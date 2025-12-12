@@ -19,26 +19,7 @@ class OffsetPage<T>(
     items: List<T>
 ) : Page<T>(items)
 
-sealed class PageQuery(
-    open val size: Int,
-    open val orderBy: String? = "createdAt"
-)
-
-abstract class CursorPageQuery(
-    size: Int,
-    orderBy: String?
-) : PageQuery(size, orderBy) {
-    abstract val cursor: String?
-}
-
-abstract class OffsetPageQuery(
-    size: Int,
-    orderBy: String?
-) : PageQuery(size, orderBy) {
-    abstract val page: Int
-}
-
-interface NewPageQuery {
+interface PageQuery {
     val pageInfo: PageInfo
 }
 
