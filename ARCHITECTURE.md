@@ -82,8 +82,8 @@ xyz.robinjoon.growweek/
     │   ├── request/             # 요청 DTO
     │   └── response/            # 응답 DTO
     ├── application/             # Application Layer (Use Cases)
-    │   ├── command/            # Command Use Cases
-    │   ├── query/              # Query Use Cases
+    │   ├── command/            # Command 표현 DTO
+    │   ├── query/              # Query 표현 DTO
     │   └── service/            # Application Services
     ├── domain/                  # Domain Layer (비즈니스 로직)
     │   ├── model/              # 도메인 모델

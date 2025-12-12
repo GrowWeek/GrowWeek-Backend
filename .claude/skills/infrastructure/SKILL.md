@@ -1,5 +1,5 @@
 ---
-name: add=or-update-infrastructure
+name: add-or-update-infrastructure
 description: Bounded Context(도메인)에 새로운 infrastructure 를 추가하거나 수정할 때 사용하세요.
 ---
 

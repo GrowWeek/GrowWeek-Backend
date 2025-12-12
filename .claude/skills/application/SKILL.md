@@ -1,29 +1,32 @@
 ---
-name: add-or-update-domain
-description: Bounded Context(도메인)에 새로운 도메인을 추가하거나 수정할 때 사용하세요.
+name: add=or-update-application
+description: Bounded Context(도메인)에 새로운 application 레이어를 추가하거나 수정할 때 사용하세요.
 ---
 
-# Add or Update Domain
+# Add or Update Application
 
 ## Instructions
 
-새로운 도메인을 추가하거나 기존 도메인을 수정할 때 다음 규칙을 따르세요:
+새로운 애플리케이션 레이어를 추가하거나 기존 애플리케이션 레이어를 수정할 때 다음 규칙을 따르세요:
 
-### 1. model 디렉토리
+### 1. application 디렉토리
 
 ```
-├── domain/
-│   ├── model/
-│   │   ├── command/
-│   │   └── query/
+└── application/
+    ├── command/
+    ├── dto/
+    ├── query/
+    ├── service/
+    └── usecase/
 ```
+
+### 2. command 디렉토리
 
 command 에는 생성/수정/삭제를 위한 조건이나 데이터를 표현하는 클래스가 위치합니다.
 
 command 클래스는 마커 인터페이스로 정의하고, 필요한 속성들을 구현체에 정의합니다. 예를 들어:
-
 ```kotlin
-sealed interface TaskCommand {
+sealed interface TaskApplicationCommand {
     data class CreateTask(
         val title: TaskTitle,
         val description: TaskDescription?,
@@ -31,26 +34,49 @@ sealed interface TaskCommand {
         val step: TaskStep,
         val memberId: MemberId,
         val weekId: WeekId,
-    ): TaskCommand
+    ) : TaskApplicationCommand
 
     data class UpdateTask(
         val taskId: TaskId,
         val title: TaskTitle,
         val description: TaskDescription?,
-    ) : TaskCommand
+    ) : TaskApplicationCommand
 
     data class DeleteTask(
         val taskId: TaskId,
-    ) : TaskCommand
+    ) : TaskApplicationCommand
 }
 ```
+
+이 command 클래스는 domain/model/command 디렉토리의 클래스와 유사하지만, 애플리케이션 레이어에 맞게 조정될 수 있습니다.
+또한, 내부 필드에서는 common 과 같은 바운디드 컨텍스트의 domain 레이어의 VO 클래스를 사용할 수 있습니다.
+
+### 3. dto 디렉토리
+dto 디렉토리에는 애플리케이션 레이어에서 사용하는 서비스나 유스케이스에서 반환하는 응답 DTO를 정의할 수 있습니다. 예를 들어:
+
+```kotlin
+data class TaskDto(
+    val id: TaskId,
+    val title: TaskTitle,
+    val description: TaskDescription?,
+    val state: TaskState,
+    val step: TaskStep,
+    val memberId: MemberId,
+    val weekId: WeekId,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime
+)
+```
+또한, 내부 필드에서는 common 과 같은 바운디드 컨텍스트의 domain 레이어의 VO 클래스를 사용할 수 있습니다.
+
+### 4. query 디렉토리
 
 query 에는 조회를 위한 조건을 표현하는 클래스가 위치합니다.
 
 query 클래스는 반드시 xyz.robinjoon.growweek.common.PageQuery 인터페이스를 구현한 sealed class로 정의하고, 이를 다시 구체적인 클래스가 상속하도록 합니다. 예를 들어:
 
 ```kotlin
-sealed class TaskQuery(
+sealed class TaskApplicationQuery(
     override val pageInfo: PageInfo
 ) : PageQuery {
 
@@ -130,7 +156,7 @@ sealed class TaskQuery(
         val memberId: MemberId,
         val weekId: WeekId,
         override val pageInfo: CursorPageInfo
-    ) : TaskQuery(pageInfo) {
+    ) : TaskApplicationQuery(pageInfo) {
         val cursor get() = pageInfo.cursor
         val size get() = pageInfo.size
         val orderBy: String? get() = pageInfo.orderBy
@@ -139,7 +165,7 @@ sealed class TaskQuery(
     data class CursorByTaskIds(
         val taskIds: List<TaskId>,
         override val pageInfo: CursorPageInfo
-    ) : TaskQuery(pageInfo) {
+    ) : TaskApplicationQuery(pageInfo) {
         val cursor get() = pageInfo.cursor
         val size get() = pageInfo.size
         val orderBy: String? get() = pageInfo.orderBy
@@ -149,7 +175,7 @@ sealed class TaskQuery(
         val memberId: MemberId,
         val weekId: WeekId,
         override val pageInfo: OffsetPageInfo
-    ) : TaskQuery(pageInfo) {
+    ) : TaskApplicationQuery(pageInfo) {
         val page get() = pageInfo.page
         val size get() = pageInfo.size
         val orderBy: String? get() = pageInfo.orderBy
@@ -158,7 +184,7 @@ sealed class TaskQuery(
     data class OffsetByTaskIds(
         val taskIds: List<TaskId>,
         override val pageInfo: OffsetPageInfo
-    ) : TaskQuery(pageInfo) {
+    ) : TaskApplicationQuery(pageInfo) {
         val page get() = pageInfo.page
         val size get() = pageInfo.size
         val orderBy: String? get() = pageInfo.orderBy
@@ -166,60 +192,66 @@ sealed class TaskQuery(
 }
 ```
 
-그 외 도메인의 엔티티나 VO 등은 model 디렉토리에 함께 위치시키며 다음 조건을 따릅니다.
+이 query 클래스는 domain/model/query 디렉토리의 클래스와 유사하지만, 애플리케이션 레이어에 맞게 조정될 수 있습니다.
+또한, 내부 필드에서는 common 과 같은 바운디드 컨텍스트의 domain 레이어의 VO 클래스를 사용할 수 있습니다.
 
-1. 다른 바운디드 컨텍스트에서 사용해야 하는 것들은 common 에 추가합니다.
-    ```kotlin
-        @JvmInline
-        value class MemberId(val value: Long) {
-            init {
-                require(value >= 0) { "MemberId must be greater than or equal to 0" }
-            }
-        }
-   ```
+### 5. usecase 및 service 디렉토리
 
-    ```
-       ├── common /
-       │   ├── domain/
-       │   │   ├── MemberId.kt/
-       {bounded-context}/
-       ├── domain/
-       │   ├── model/
-       │   │   ├── command/
-       │   │   └── query/
-       │   ├── repository/
-       │   └── service/
-    ```
-2. **common 을 제외한 다른 바운디드 컨텍스트의 도메인 모델**은 참조하지 않도록 합니다.
-
-### 2. repository 디렉토리
-
-```
-├── domain/
-│   ├── model/
-│   │   ├── command/
-│   │   └── query/
-│   ├── repository/
-```
-
-repository 디렉토리에는 도메인 모델에 대한 영속성 인터페이스를 정의합니다. 이때, 반드시 saveAll(List<command>) : List<Domain> , findAll(query) : Page<Domain> 메서드만을 포함합니다. 예를 들어:
+usecase 디렉토리에는 애플리케이션의 유스케이스(Use Case)를 interface로 정의합니다. 각 유스케이스는 command 또는 query를 처리하는 책임을 집니다. 
+service 디렉토리에는 usecase 인터페이스의 구현체가 위치합니다. 이 구현체는 도메인 레이어의 리포지토리 (혹은 도메인 서비스)와 상호작용하여 비즈니스 로직을 수행합니다.
+예를 들어:
 
 ```kotlin
-interface TaskRepository {
-    fun saveAll(commands: List<TaskCommand>): List<Task>
-    fun findAll(query: TaskQuery): Page<Task>
+// usecase/CreateTaskUseCase.kt
+
+interface CreateTaskUseCase {
+    fun createTask(command: TaskApplicationCommand.CreateTask): TaskDto
 }
 ```
 
-### 3. service 디렉토리
-
+```kotlin
+// service/CreateTaskService.kt
+class CreateTaskService(
+    private val taskRepository: TaskRepository
+) : CreateTaskUseCase {
+    override fun createTask(command: TaskApplicationCommand.CreateTask): TaskDto {
+        val task = Task.create(
+            title = command.title,
+            description = command.description,
+            state = command.state,
+            step = command.step,
+            memberId = command.memberId,
+            weekId = command.weekId
+        )
+        taskRepository.save(task)
+        return task.toDto()
+    }
+}
 ```
-├── domain/
-│   ├── model/
-│   │   ├── command/
-│   │   └── query/
-│   ├── repository/
-│   └── service/
+
+로직이 복잡할 것이라 예상된다면 구체적인 command/query 별로 usecase/service 를 나누는 것을 허용합니다. 예를 들어:
+
+```kotlin
+// usecase/UpdateTaskUseCase.kt
+interface UpdateTaskUseCase {
+    fun updateTask(command: TaskApplicationCommand.UpdateTask): TaskDto
+}
 ```
 
-service 디렉토리는 도메인 서비스가 위치합니다. 단, 도메인 서비스는 [도메인 서비스 추가 필요성 결정 기준 문서](domain-service.md)에 따라 신중하게 설계하고 구현해야 합니다.
+```kotlin
+// service/UpdateTaskService.kt
+class UpdateTaskService(
+    private val taskRepository: TaskRepository
+) : UpdateTaskUseCase {
+    override fun updateTask(command: TaskApplicationCommand.UpdateTask): TaskDto {
+        val task = taskRepository.findById(command.taskId)
+            ?: throw TaskNotFoundException("Task with id ${command.taskId} not found")
+        task.update(
+            title = command.title,
+            description = command.description
+        )
+        taskRepository.save(task)
+        return task.toDto()
+    }
+}
+```
