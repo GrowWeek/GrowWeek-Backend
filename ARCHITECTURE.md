@@ -79,12 +79,16 @@ xyz.robinjoon.growweek/
 ├── common/                        # 공통 모듈
 └── {bounded-context}/            # 도메인별 Bounded Context (예: task)
     ├── presentation/             # API Layer (Controllers, DTOs)
-    │   ├── request/             # 요청 DTO
-    │   └── response/            # 응답 DTO
+    │   └── rest/                # REST API
+    │       ├── request/         # 요청 DTO
+    │       ├── response/        # 응답 DTO
+    │       └── controller/      # REST Controllers
     ├── application/             # Application Layer (Use Cases)
     │   ├── command/            # Command 표현 DTO
+    │   ├── dto/                # 응답 DTO
     │   ├── query/              # Query 표현 DTO
-    │   └── service/            # Application Services
+    │   ├── service/            # Application Services (구현체)
+    │   └── usecase/            # Use Case 인터페이스
     ├── domain/                  # Domain Layer (비즈니스 로직)
     │   ├── model/              # 도메인 모델
     │   │   ├── command/       # Command 모델
@@ -101,18 +105,22 @@ xyz.robinjoon.growweek/
 ### Presentation Layer (presentation/)
 - **역할**: HTTP 요청/응답 처리, API 엔드포인트 정의
 - **포함 요소**:
-  - REST Controllers
-  - Request DTOs: 클라이언트 요청 데이터 구조
-  - Response DTOs: 클라이언트 응답 데이터 구조
+  - **rest/controller/**: REST Controllers
+  - **rest/request/**: 클라이언트 요청 데이터 구조 (Primitive Type 사용)
+  - **rest/response/**: 클라이언트 응답 데이터 구조 (Primitive Type 사용)
 - **의존성**: Application Layer에만 의존
+- **주의사항**: 도메인 레이어의 VO 클래스를 직접 사용하지 않고, Primitive Type 또는 데이터 클래스 형태의 DTO 사용
 
 ### Application Layer (application/)
 - **역할**: Use Case 구현, 트랜잭션 관리, 도메인 객체 조율
 - **포함 요소**:
-  - **command/**: 상태를 변경하는 Use Case (생성, 수정, 삭제)
-  - **query/**: 데이터를 조회하는 Use Case
+  - **command/**: 상태를 변경하는 Command DTO (생성, 수정, 삭제)
+  - **dto/**: 서비스/유스케이스에서 반환하는 응답 DTO
+  - **query/**: 데이터를 조회하는 Query DTO (PageQuery 인터페이스 구현)
+  - **usecase/**: Use Case 인터페이스 정의
   - **service/**: Application Service (Use Case 구현체)
 - **의존성**: Domain Layer에 의존
+- **주의사항**: command/query/dto 내부 필드에서 common 등 다른 바운디드 컨텍스트의 도메인 VO 클래스 사용 가능
 
 ### Domain Layer (domain/)
 - **역할**: 핵심 비즈니스 로직, 비즈니스 규칙
@@ -178,12 +186,16 @@ Request → Controller → Query UseCase → Domain Model (query/)
 ```
 user/
 ├── presentation/
-│   ├── request/
-│   └── response/
+│   └── rest/
+│       ├── request/
+│       ├── response/
+│       └── controller/
 ├── application/
 │   ├── command/
+│   ├── dto/
 │   ├── query/
-│   └── service/
+│   ├── service/
+│   └── usecase/
 ├── domain/
 │   ├── model/
 │   │   ├── command/

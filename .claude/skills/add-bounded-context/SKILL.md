@@ -16,12 +16,16 @@ description: 새로운 Bounded Context(도메인)를 DDD, Clean Architecture, CQ
 ```
 {bounded-context}/
 ├── presentation/
-│   ├── request/
-│   └── response/
+│   └── rest/
+│       ├── request/
+│       ├── response/
+│       └── controller/
 ├── application/
 │   ├── command/
+│   ├── dto/
 │   ├── query/
-│   └── service/
+│   ├── service/
+│   └── usecase/
 ├── domain/
 │   ├── model/
 │   │   ├── command/
@@ -41,8 +45,8 @@ description: 새로운 Bounded Context(도메인)를 DDD, Clean Architecture, CQ
 
 ### 3. 각 레이어의 역할
 
-- **presentation/**: REST API Controllers, Request/Response DTOs
-- **application/**: Use Cases (Command, Query), Application Services
+- **presentation/**: REST API Controllers, Request/Response DTOs (rest/ 하위에 구성)
+- **application/**: Use Cases 인터페이스(usecase/), Application Services 구현체(service/), Command/Query DTOs, Response DTOs(dto/)
 - **domain/**: 도메인 모델, Repository 인터페이스, Domain Services
 - **infrastructure/**: Exposed ORM, Repository 구현, OpenFeign 클라이언트
 
@@ -58,7 +62,7 @@ description: 새로운 Bounded Context(도메인)를 DDD, Clean Architecture, CQ
 
 ```bash
 # 디렉토리 구조 생성
-mkdir -p server/src/main/kotlin/xyz/robinjoon/growweek/user/{presentation/{request,response},application/{command,query,service},domain/{model/{command,query},repository,service},infrastructure/{persistence,external}}
+mkdir -p server/src/main/kotlin/xyz/robinjoon/growweek/user/{presentation/rest/{request,response,controller},application/{command,dto,query,service,usecase},domain/{model/{command,query},repository,service},infrastructure/{persistence,external}}
 ```
 
 ### 기본 패키지 구조
