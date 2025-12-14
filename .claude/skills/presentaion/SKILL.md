@@ -1,6 +1,6 @@
 ---
 name: add-or-update-presentation
-description: 새로운 presentation 레이어를 추가하거나 기존 presentation 레이어를 수정할 때 다음 규칙을 따르세요
+description: Bounded Context에 새로운 presentation 레이어를 추가하거나 수정할 때 사용하세요.
 ---
 
 # Add or Update Presentation
