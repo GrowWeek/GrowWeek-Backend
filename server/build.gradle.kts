@@ -22,7 +22,7 @@ repositories {
 
 extra["springCloudVersion"] = "2025.1.0"
 
-val kotestVersion = "6.0.0"
+val kotestVersion = "6.0.7"
 val mockkVersion = "1.14.6"
 val jjwtVersion = "0.12.6"  // JJWT 최신 안정 버전
 val exposedVersion = "1.0.0-rc-4"
@@ -70,6 +70,7 @@ dependencies {
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-property:$kotestVersion")
+    testImplementation("io.kotest:kotest-extensions-spring:$kotestVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
