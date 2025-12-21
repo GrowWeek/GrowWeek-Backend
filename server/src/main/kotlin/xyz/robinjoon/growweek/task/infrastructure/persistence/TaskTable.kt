@@ -1,8 +1,9 @@
 package xyz.robinjoon.growweek.task.infrastructure.persistence
 
-import org.jetbrains.exposed.dao.id.LongIdTable
-import org.jetbrains.exposed.sql.javatime.date
-import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
+import org.jetbrains.exposed.v1.javatime.date
+import org.jetbrains.exposed.v1.javatime.datetime
+
 
 object TaskTable : LongIdTable("tasks") {
     // 기본 필드

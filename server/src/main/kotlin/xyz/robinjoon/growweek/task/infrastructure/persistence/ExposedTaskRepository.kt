@@ -1,6 +1,13 @@
 package xyz.robinjoon.growweek.task.infrastructure.persistence
 
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.lessEq
+import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.select
+import org.jetbrains.exposed.v1.jdbc.*
+import org.jetbrains.exposed.v1.jdbc.update
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import xyz.robinjoon.growweek.common.CursorPage
@@ -39,7 +46,7 @@ class ExposedTaskRepository : TaskRepository {
                     } get TaskTable.id
 
                     // 생성된 Task 조회
-                    val createdTask = TaskTable.select { TaskTable.id eq insertedId }
+                    val createdTask = TaskTable.selectAll().where { TaskTable.id eq insertedId }
                         .map { it.toTask() }
                         .single()
                     savedTasks.add(createdTask)
@@ -47,9 +54,8 @@ class ExposedTaskRepository : TaskRepository {
 
                 is TaskCommand.UpdateTask -> {
                     // 기존 Task 조회
-                    val existingTask = TaskTable.select {
-                        (TaskTable.id eq command.taskId.value) and
-                                (TaskTable.userId eq command.userId.value)
+                    val existingTask = TaskTable.selectAll().where {
+                        (TaskTable.id eq command.taskId.value) and (TaskTable.userId eq command.userId.value)
                     }.map { it.toTask() }.singleOrNull()
                         ?: throw IllegalArgumentException("Task not found: ${command.taskId.value}")
 
@@ -84,7 +90,7 @@ class ExposedTaskRepository : TaskRepository {
 
                 is TaskCommand.UpdateTaskStatus -> {
                     // 기존 Task 조회
-                    val existingTask = TaskTable.select {
+                    val existingTask = TaskTable.selectAll().where {
                         (TaskTable.id eq command.taskId.value) and
                                 (TaskTable.userId eq command.userId.value)
                     }.map { it.toTask() }.singleOrNull()
@@ -118,7 +124,7 @@ class ExposedTaskRepository : TaskRepository {
                         it[updatedAt] = LocalDateTime.now()
                     }
 
-                    val updatedTask = TaskTable.select { TaskTable.id eq command.taskId.value }
+                    val updatedTask = TaskTable.selectAll().where { TaskTable.id eq command.taskId.value }
                         .map { it.toTask() }
                         .singleOrNull()
                         ?: throw IllegalArgumentException("Task not found: ${command.taskId.value}")
