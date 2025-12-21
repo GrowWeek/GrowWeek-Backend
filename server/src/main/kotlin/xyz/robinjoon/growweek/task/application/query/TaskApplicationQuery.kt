@@ -2,7 +2,7 @@ package xyz.robinjoon.growweek.task.application.query
 
 import xyz.robinjoon.growweek.common.*
 import xyz.robinjoon.growweek.common.domain.UserId
-import xyz.robinjoon.growweek.task.domain.model.TaskId
+import xyz.robinjoon.growweek.common.domain.TaskId
 import java.time.LocalDate
 
 sealed class TaskApplicationQuery(

@@ -1,4 +1,4 @@
-package xyz.robinjoon.growweek.task.domain.model
+package xyz.robinjoon.growweek.common.domain
 
 @JvmInline
 value class TaskId(val value: Long) {

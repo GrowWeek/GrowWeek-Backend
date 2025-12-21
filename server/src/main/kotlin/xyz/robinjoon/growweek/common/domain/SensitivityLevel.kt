@@ -1,4 +1,4 @@
-package xyz.robinjoon.growweek.task.domain.model
+package xyz.robinjoon.growweek.common.domain
 
 enum class SensitivityLevel {
     NONE,        // 민감하지 않음 - 모든 정보 AI에 전달

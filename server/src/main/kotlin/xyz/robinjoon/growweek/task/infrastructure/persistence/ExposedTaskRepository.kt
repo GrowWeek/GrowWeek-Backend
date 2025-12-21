@@ -6,6 +6,9 @@ import org.springframework.transaction.annotation.Transactional
 import xyz.robinjoon.growweek.common.CursorPage
 import xyz.robinjoon.growweek.common.OffsetPage
 import xyz.robinjoon.growweek.common.Page
+import xyz.robinjoon.growweek.common.domain.RetrospectiveId
+import xyz.robinjoon.growweek.common.domain.SensitivityLevel
+import xyz.robinjoon.growweek.common.domain.TaskId
 import xyz.robinjoon.growweek.task.domain.model.*
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
 import xyz.robinjoon.growweek.task.domain.model.query.TaskQuery

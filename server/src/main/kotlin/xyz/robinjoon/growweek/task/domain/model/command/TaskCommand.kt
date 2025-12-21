@@ -1,5 +1,8 @@
 package xyz.robinjoon.growweek.task.domain.model.command
 
+import xyz.robinjoon.growweek.common.domain.RetrospectiveId
+import xyz.robinjoon.growweek.common.domain.SensitivityLevel
+import xyz.robinjoon.growweek.common.domain.TaskId
 import xyz.robinjoon.growweek.common.domain.UserId
 import xyz.robinjoon.growweek.task.domain.model.*
 import java.time.LocalDate
