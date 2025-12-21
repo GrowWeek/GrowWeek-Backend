@@ -25,6 +25,7 @@ Clean Architecture 구조에 맞춰 각 레이어별 테스트 전략을 정의�
 
 - **대상**: Entity, Value Object(VO), Domain Service
 - **목표**: 비즈니스 로직의 정확성 검증
+- **필수여부** : 필수
 - **방식**:
     - 외부 의존성 없이 순수 Kotlin 코드로 작성합니다.
     - Spring Context를 띄우지 않습니다. (`POJO` 테스트)
@@ -60,9 +61,10 @@ Clean Architecture 구조에 맞춰 각 레이어별 테스트 전략을 정의�
 
 - **대상**: Service (UseCase 구현체)
 - **목표**: 애플리케이션 유스케이스 흐름 검증
+- **필수여부** : 필수
 - **방식**:
     - Repository, Domain Service 등 하위 레이어의 의존성은 `Mockk`를 사용하여 Mocking 합니다.
-    - Spring Context를 띄우지 않는 것을 권장합니다.
+    - Spring Context를 띄우지 않습니다. (`POJO` 테스트)
     - 입력(Command)에 따른 도메인 로직 호출 및 결과(DTO) 반환을 검증합니다.
 - **예시**:
     ```kotlin
@@ -92,6 +94,7 @@ Clean Architecture 구조에 맞춰 각 레이어별 테스트 전략을 정의�
 
 - **대상**: Repository 구현체 (Exposed), 외부 API Client
 - **목표**: 실제 인프라와의 연동성 및 매핑 검증
+- **필수여부** : 선택적 (중요한 부분에 한해 작성, 작성 여부 결정은 오직 사람이 판단)
 - **방식**:
     - **Repository**:
         - H2 Database 등을 사용하여 실제 DB 환경과 유사하게 테스트합니다.
@@ -121,6 +124,7 @@ Clean Architecture 구조에 맞춰 각 레이어별 테스트 전략을 정의�
 
 - **대상**: Controller
 - **목표**: HTTP 인터페이스 검증
+- **필수여부** : 선택적 (중요한 부분에 한해 작성, 작성 여부 결정은 오직 사람이 판단)
 - **방식**:
     - `@WebMvcTest`를 사용하여 Controller 관련 Bean만 로드합니다.
     - Service(UseCase)는 `@MockkBean`으로 Mocking 합니다.
