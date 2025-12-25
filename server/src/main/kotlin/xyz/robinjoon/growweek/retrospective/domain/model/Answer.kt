@@ -3,7 +3,7 @@ package xyz.robinjoon.growweek.retrospective.domain.model
 import java.time.LocalDateTime
 
 data class Answer(
-    val id: AnswerId,
+    val id: AnswerId?,
     val questionId: QuestionId,
     val content: String?,
     val createdAt: LocalDateTime,

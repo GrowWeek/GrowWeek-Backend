@@ -59,7 +59,7 @@ data class QuestionDto(
 }
 
 data class AnswerDto(
-    val id: AnswerId,
+    val id: AnswerId?,
     val questionId: QuestionId,
     val content: String?,
     val createdAt: LocalDateTime,

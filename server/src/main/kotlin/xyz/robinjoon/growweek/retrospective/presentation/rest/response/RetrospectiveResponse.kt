@@ -57,7 +57,7 @@ data class QuestionResponse(
 }
 
 data class AnswerResponse(
-    val id: Long,
+    val id: Long?,
     val questionId: Long,
     val content: String?,
     val createdAt: String,
@@ -68,7 +68,7 @@ data class AnswerResponse(
 
         fun from(dto: AnswerDto): AnswerResponse {
             return AnswerResponse(
-                id = dto.id.value,
+                id = dto.id?.value,
                 questionId = dto.questionId.value,
                 content = dto.content,
                 createdAt = dto.createdAt.format(dateTimeFormatter),

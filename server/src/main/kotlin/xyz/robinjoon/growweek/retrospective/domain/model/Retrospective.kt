@@ -67,7 +67,7 @@ data class Retrospective(
         val existingAnswer = answers[questionId]
         val now = LocalDateTime.now()
         val newAnswer = Answer(
-            id = existingAnswer?.id ?: AnswerId(0),
+            id = existingAnswer?.id,
             questionId = questionId,
             content = content,
             createdAt = existingAnswer?.createdAt ?: now,
