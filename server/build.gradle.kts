@@ -4,6 +4,7 @@ plugins {
     id("org.springframework.boot") version "4.0.0"
     id("io.spring.dependency-management") version "1.1.7"
     jacoco
+    kotlin("kapt") version "2.2.21"
 }
 
 group = "xyz.robinjoon"
@@ -38,9 +39,6 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    // OpenAPI Documentation
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4")
-
     // Spring Cloud
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 
@@ -61,6 +59,11 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
+
+    // OpenAPI Documentation (Spring Boot 4 지원)
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")
+    implementation("com.github.therapi:therapi-runtime-javadoc:0.15.0")
+    kapt("com.github.therapi:therapi-runtime-javadoc-scribe:0.15.0")
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-data-redis-test")
