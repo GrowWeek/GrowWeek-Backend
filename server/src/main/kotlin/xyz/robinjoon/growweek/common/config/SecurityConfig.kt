@@ -24,7 +24,10 @@ class SecurityConfig {
                         "/webjars/**"
                     ).permitAll()
                     // 기타 요청은 인증 필요
-                    .anyRequest().authenticated()
+                    .anyRequest().permitAll()
+            }
+            .cors {
+                it.disable()
             }
             .csrf { it.disable() }
 
