@@ -136,7 +136,7 @@ class RetrospectiveCompletedHandlerTest : BehaviorSpec({
 
     Given("supports 메서드 테스트") {
         When("RetrospectiveEventPayload.Completed 타입이 전달되면") {
-            val result = handler.supports(RetrospectiveEventPayload.Completed::class.java)
+            val result = handler.supports(RetrospectiveEventPayload.Completed::class)
 
             Then("true를 반환해야 한다") {
                 result shouldBe true
@@ -144,7 +144,7 @@ class RetrospectiveCompletedHandlerTest : BehaviorSpec({
         }
 
         When("다른 타입이 전달되면") {
-            val result = handler.supports(String::class.java)
+            val result = handler.supports(String::class)
 
             Then("false를 반환해야 한다") {
                 result shouldBe false
