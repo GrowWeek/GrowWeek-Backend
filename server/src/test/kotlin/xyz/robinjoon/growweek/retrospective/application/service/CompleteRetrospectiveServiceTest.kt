@@ -9,6 +9,9 @@ import io.mockk.slot
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.event.DomainEvent
+import xyz.robinjoon.growweek.common.event.DomainEventPublisher
+import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.*
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
@@ -21,7 +24,8 @@ class CompleteRetrospectiveServiceTest : BehaviorSpec({
     isolationMode = IsolationMode.InstancePerLeaf
 
     val retrospectiveRepository = mockk<RetrospectiveRepository>()
-    val service = CompleteRetrospectiveService(retrospectiveRepository)
+    val eventPublisher = mockk<DomainEventPublisher>(relaxed = true)
+    val service = CompleteRetrospectiveService(retrospectiveRepository, eventPublisher)
 
     Given("회고 완료 요청이 왔을 때") {
         val retrospectiveId = RetrospectiveId(1L)
@@ -82,6 +86,17 @@ class CompleteRetrospectiveServiceTest : BehaviorSpec({
             Then("완료된 회고 DTO를 반환해야 한다") {
                 result.id shouldBe retrospectiveId
                 result.status shouldBe RetrospectiveStatus.DONE
+            }
+
+            Then("회고 완료 이벤트를 발행해야 한다") {
+                val eventSlot = slot<RetrospectiveEventPayload.Completed>()
+                verify(exactly = 1) { eventPublisher.publish(capture(eventSlot)) }
+
+                val capturedPayload = eventSlot.captured
+                capturedPayload.retrospectiveId shouldBe retrospectiveId
+                capturedPayload.userId shouldBe userId
+                capturedPayload.startDate shouldBe LocalDate.of(2025, 1, 6)
+                capturedPayload.endDate shouldBe LocalDate.of(2025, 1, 12)
             }
         }
     }
