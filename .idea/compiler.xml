@@ -13,9 +13,9 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="grow-week" options="-parameters" />
-      <module name="grow-week.main" options="-parameters" />
-      <module name="grow-week.test" options="-parameters" />
+      <module name="grow-week" options="-parameters -proc:none" />
+      <module name="grow-week.main" options="-parameters -proc:none" />
+      <module name="grow-week.test" options="-parameters -proc:none" />
     </option>
   </component>
 </project>

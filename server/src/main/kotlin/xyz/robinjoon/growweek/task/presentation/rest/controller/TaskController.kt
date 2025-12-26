@@ -19,6 +19,9 @@ import xyz.robinjoon.growweek.task.presentation.rest.response.WeeklyTaskResponse
 import xyz.robinjoon.growweek.task.presentation.rest.response.toResponse
 import java.time.LocalDate
 
+/**
+ * 할일 관리 API 컨트롤러
+ */
 @RestController
 @RequestMapping("/api/v1/tasks")
 class TaskController(
@@ -31,6 +34,13 @@ class TaskController(
     private val getUserTasksUseCase: GetUserTasksUseCase
 ) {
 
+    /**
+     * 새로운 할일을 생성한다.
+     *
+     * @param request 할일 생성 요청 정보
+     * @param userId 사용자 식별자
+     * @return 생성된 할일 정보
+     */
     @PostMapping
     fun createTask(
         @RequestBody request: CreateTaskRequest,
@@ -53,6 +63,14 @@ class TaskController(
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
+    /**
+     * 할일 정보를 수정한다.
+     *
+     * @param taskId 할일 식별자
+     * @param request 할일 수정 요청 정보
+     * @param userId 사용자 식별자
+     * @return 수정된 할일 정보
+     */
     @PutMapping("/{taskId}")
     fun updateTask(
         @PathVariable taskId: Long,
@@ -76,6 +94,14 @@ class TaskController(
         return ResponseEntity.ok(response)
     }
 
+    /**
+     * 할일 상태를 변경한다.
+     *
+     * @param taskId 할일 식별자
+     * @param request 상태 변경 요청 정보
+     * @param userId 사용자 식별자
+     * @return 상태가 변경된 할일 정보
+     */
     @PatchMapping("/{taskId}/status")
     fun updateTaskStatus(
         @PathVariable taskId: Long,
@@ -94,6 +120,13 @@ class TaskController(
         return ResponseEntity.ok(response)
     }
 
+    /**
+     * 할일을 삭제한다.
+     *
+     * @param taskId 할일 식별자
+     * @param userId 사용자 식별자
+     * @return 204 No Content
+     */
     @DeleteMapping("/{taskId}")
     fun deleteTask(
         @PathVariable taskId: Long,
@@ -109,6 +142,13 @@ class TaskController(
         return ResponseEntity.noContent().build()
     }
 
+    /**
+     * 할일 상세 정보를 조회한다.
+     *
+     * @param taskId 할일 식별자
+     * @param userId 사용자 식별자
+     * @return 할일 상세 정보, 존재하지 않으면 404 Not Found
+     */
     @GetMapping("/{taskId}")
     fun getTask(
         @PathVariable taskId: Long,
@@ -127,6 +167,16 @@ class TaskController(
         return ResponseEntity.ok(response)
     }
 
+    /**
+     * 주간 할일 목록과 통계를 조회한다.
+     *
+     * @param weekStart 조회할 주의 시작일 (yyyy-MM-dd)
+     * @param userId 사용자 식별자
+     * @param page 페이지 번호 (오프셋 기반, 0부터 시작)
+     * @param size 페이지 크기 (기본값: 20)
+     * @param cursor 커서 (커서 기반 페이징 시 사용)
+     * @return 주간 할일 목록과 통계
+     */
     @GetMapping("/weekly")
     fun getWeeklyTasks(
         @RequestParam weekStart: String,
@@ -165,6 +215,15 @@ class TaskController(
         return ResponseEntity.ok(response)
     }
 
+    /**
+     * 사용자의 전체 할일 목록을 조회한다.
+     *
+     * @param userId 사용자 식별자
+     * @param page 페이지 번호 (오프셋 기반, 0부터 시작)
+     * @param size 페이지 크기 (기본값: 20)
+     * @param cursor 커서 (커서 기반 페이징 시 사용)
+     * @return 할일 목록 (페이지네이션 적용)
+     */
     @GetMapping
     fun getUserTasks(
         @RequestHeader("X-User-Id") userId: Long,
