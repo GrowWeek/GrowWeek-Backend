@@ -8,7 +8,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
 import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepository
@@ -22,11 +22,11 @@ class DeleteRetrospectiveServiceTest : BehaviorSpec({
 
     Given("회고 삭제 요청이 왔을 때") {
         val retrospectiveId = RetrospectiveId(1L)
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
 
         val command = RetrospectiveApplicationCommand.DeleteRetrospective(
             retrospectiveId = retrospectiveId,
-            userId = userId
+            memberId = memberId
         )
 
         val commandSlot = slot<List<RetrospectiveCommand>>()
@@ -42,7 +42,7 @@ class DeleteRetrospectiveServiceTest : BehaviorSpec({
             Then("Application Command가 Domain Command로 변환되어야 한다") {
                 val capturedCommand = commandSlot.captured.first() as RetrospectiveCommand.DeleteRetrospective
                 capturedCommand.retrospectiveId shouldBe retrospectiveId
-                capturedCommand.userId shouldBe userId
+                capturedCommand.memberId shouldBe memberId
             }
         }
     }

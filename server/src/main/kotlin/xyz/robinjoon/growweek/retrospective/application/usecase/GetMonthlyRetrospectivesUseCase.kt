@@ -4,5 +4,5 @@ import xyz.robinjoon.growweek.retrospective.application.dto.MonthlyRetrospective
 import xyz.robinjoon.growweek.retrospective.application.query.RetrospectiveApplicationQuery
 
 interface GetMonthlyRetrospectivesUseCase {
-    fun execute(query: RetrospectiveApplicationQuery.OffsetByUserIdAndMonth): MonthlyRetrospectiveDto
+    fun execute(query: RetrospectiveApplicationQuery.OffsetByMemberIdAndMonth): MonthlyRetrospectiveDto
 }

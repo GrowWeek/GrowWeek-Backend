@@ -20,12 +20,12 @@ class GetUserTasksService(
     override fun execute(query: TaskApplicationQuery): Page<TaskDto> {
         // Application Query를 Domain Query로 변환
         val domainQuery = when (query) {
-            is TaskApplicationQuery.CursorByUserId -> TaskQuery.CursorByUserId(
-                userId = query.userId,
+            is TaskApplicationQuery.CursorByMemberId -> TaskQuery.CursorByMemberId(
+                memberId = query.memberId,
                 pageInfo = query.pageInfo
             )
-            is TaskApplicationQuery.OffsetByUserId -> TaskQuery.OffsetByUserId(
-                userId = query.userId,
+            is TaskApplicationQuery.OffsetByMemberId -> TaskQuery.OffsetByMemberId(
+                memberId = query.memberId,
                 pageInfo = query.pageInfo
             )
             else -> throw IllegalArgumentException("Unsupported query type for GetUserTasks: ${query::class.simpleName}")

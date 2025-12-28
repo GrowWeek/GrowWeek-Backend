@@ -20,7 +20,7 @@ class CompleteRetrospectiveService(
     override fun execute(command: RetrospectiveApplicationCommand.CompleteRetrospective): RetrospectiveDto {
         val domainCommand = RetrospectiveCommand.CompleteRetrospective(
             retrospectiveId = command.retrospectiveId,
-            userId = command.userId
+            memberId = command.memberId
         )
 
         val savedRetrospectives = retrospectiveRepository.saveAll(listOf(domainCommand))
@@ -30,7 +30,7 @@ class CompleteRetrospectiveService(
         eventPublisher.publish(
             RetrospectiveEventPayload.Completed(
                 retrospectiveId = completed.id,
-                userId = completed.userId,
+                memberId = completed.memberId,
                 startDate = completed.period.startDate,
                 endDate = completed.period.endDate
             )

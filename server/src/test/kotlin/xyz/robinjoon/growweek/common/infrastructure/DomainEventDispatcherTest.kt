@@ -5,7 +5,7 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.*
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.event.DefaultDomainEvent
 import xyz.robinjoon.growweek.common.event.DomainEvent
 import xyz.robinjoon.growweek.common.event.DomainEventHandler
@@ -33,7 +33,7 @@ class DomainEventDispatcherTest : BehaviorSpec({
         When("Completed 이벤트가 디스패치되면") {
             val completedPayload = RetrospectiveEventPayload.Completed(
                 retrospectiveId = RetrospectiveId(1L),
-                userId = UserId(1L),
+                memberId = MemberId(1L),
                 startDate = LocalDate.of(2025, 1, 6),
                 endDate = LocalDate.of(2025, 1, 12)
             )
@@ -55,7 +55,7 @@ class DomainEventDispatcherTest : BehaviorSpec({
         When("Deleted 이벤트가 디스패치되면") {
             val deletedPayload = RetrospectiveEventPayload.Deleted(
                 retrospectiveId = RetrospectiveId(1L),
-                userId = UserId(1L)
+                memberId = MemberId(1L)
             )
             val event = DefaultDomainEvent(payload = deletedPayload)
 
@@ -79,7 +79,7 @@ class DomainEventDispatcherTest : BehaviorSpec({
         When("이벤트가 디스패치되면") {
             val payload = RetrospectiveEventPayload.Completed(
                 retrospectiveId = RetrospectiveId(1L),
-                userId = UserId(1L),
+                memberId = MemberId(1L),
                 startDate = LocalDate.of(2025, 1, 6),
                 endDate = LocalDate.of(2025, 1, 12)
             )

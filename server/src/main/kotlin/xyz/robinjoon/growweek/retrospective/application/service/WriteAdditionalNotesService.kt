@@ -18,7 +18,7 @@ class WriteAdditionalNotesService(
     override fun execute(command: RetrospectiveApplicationCommand.WriteAdditionalNotes): RetrospectiveDto {
         val domainCommand = RetrospectiveCommand.WriteAdditionalNotes(
             retrospectiveId = command.retrospectiveId,
-            userId = command.userId,
+            memberId = command.memberId,
             notes = AdditionalNotes(command.notes)
         )
 

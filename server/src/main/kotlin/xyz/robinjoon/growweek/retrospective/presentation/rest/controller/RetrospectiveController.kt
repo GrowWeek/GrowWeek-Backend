@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.application.query.RetrospectiveApplicationQuery
 import xyz.robinjoon.growweek.retrospective.application.usecase.*
@@ -45,7 +45,7 @@ class RetrospectiveController(
         @RequestHeader("X-User-Id") userId: Long
     ): ResponseEntity<RetrospectiveResponse> {
         val command = RetrospectiveApplicationCommand.CreateRetrospective(
-            userId = UserId(userId),
+            memberId = MemberId(userId),
             startDate = LocalDate.parse(request.startDate),
             endDate = LocalDate.parse(request.endDate),
             questionCount = request.questionCount
@@ -71,7 +71,7 @@ class RetrospectiveController(
     ): ResponseEntity<RetrospectiveResponse> {
         val command = RetrospectiveApplicationCommand.GenerateQuestions(
             retrospectiveId = RetrospectiveId(retrospectiveId),
-            userId = UserId(userId)
+            memberId = MemberId(userId)
         )
 
         val dto = runBlocking {
@@ -98,7 +98,7 @@ class RetrospectiveController(
     ): ResponseEntity<RetrospectiveResponse> {
         val command = RetrospectiveApplicationCommand.WriteAnswer(
             retrospectiveId = RetrospectiveId(retrospectiveId),
-            userId = UserId(userId),
+            memberId = MemberId(userId),
             questionId = QuestionId(request.questionId),
             content = request.content
         )
@@ -125,7 +125,7 @@ class RetrospectiveController(
     ): ResponseEntity<RetrospectiveResponse> {
         val command = RetrospectiveApplicationCommand.WriteAdditionalNotes(
             retrospectiveId = RetrospectiveId(retrospectiveId),
-            userId = UserId(userId),
+            memberId = MemberId(userId),
             notes = request.notes
         )
 
@@ -149,7 +149,7 @@ class RetrospectiveController(
     ): ResponseEntity<RetrospectiveResponse> {
         val command = RetrospectiveApplicationCommand.CompleteRetrospective(
             retrospectiveId = RetrospectiveId(retrospectiveId),
-            userId = UserId(userId)
+            memberId = MemberId(userId)
         )
 
         val dto = completeRetrospectiveUseCase.execute(command)
@@ -172,7 +172,7 @@ class RetrospectiveController(
     ): ResponseEntity<Void> {
         val command = RetrospectiveApplicationCommand.DeleteRetrospective(
             retrospectiveId = RetrospectiveId(retrospectiveId),
-            userId = UserId(userId)
+            memberId = MemberId(userId)
         )
 
         deleteRetrospectiveUseCase.execute(command)
@@ -194,7 +194,7 @@ class RetrospectiveController(
     ): ResponseEntity<RetrospectiveResponse> {
         val query = RetrospectiveApplicationQuery.ByRetrospectiveId(
             retrospectiveId = RetrospectiveId(retrospectiveId),
-            userId = UserId(userId)
+            memberId = MemberId(userId)
         )
 
         val dto = getRetrospectiveUseCase.getById(query)
@@ -220,15 +220,15 @@ class RetrospectiveController(
         @RequestParam(required = false) cursor: String?
     ): ResponseEntity<PageResponse<RetrospectiveSummaryResponse>> {
         val pageDto = if (cursor != null) {
-            val query = RetrospectiveApplicationQuery.Cursor.byUserId(
-                userId = UserId(userId),
+            val query = RetrospectiveApplicationQuery.Cursor.byMemberId(
+                memberId = MemberId(userId),
                 cursor = cursor,
                 size = size ?: 20
             )
             getRetrospectiveUseCase.getList(query)
         } else {
-            val query = RetrospectiveApplicationQuery.Offset.byUserId(
-                userId = UserId(userId),
+            val query = RetrospectiveApplicationQuery.Offset.byMemberId(
+                memberId = MemberId(userId),
                 page = page ?: 0,
                 size = size ?: 20
             )
@@ -254,8 +254,8 @@ class RetrospectiveController(
         @RequestParam year: Int,
         @RequestParam month: Int
     ): ResponseEntity<MonthlyRetrospectiveResponse> {
-        val query = RetrospectiveApplicationQuery.Offset.byUserIdAndMonth(
-            userId = UserId(userId),
+        val query = RetrospectiveApplicationQuery.Offset.byMemberIdAndMonth(
+            memberId = MemberId(userId),
             year = year,
             month = month,
             size = 31

@@ -33,7 +33,7 @@ class ExposedTaskRepository : TaskRepository {
             when (command) {
                 is TaskCommand.CreateTask -> {
                     val insertedId = TaskTable.insert {
-                        it[userId] = command.userId.value
+                        it[userId] = command.memberId.value
                         it[title] = command.title.value
                         it[description] = command.description?.value
                         it[status] = TaskStatus.TODO.name
@@ -55,7 +55,7 @@ class ExposedTaskRepository : TaskRepository {
                 is TaskCommand.UpdateTask -> {
                     // 기존 Task 조회
                     val existingTask = TaskTable.selectAll().where {
-                        (TaskTable.id eq command.taskId.value) and (TaskTable.userId eq command.userId.value)
+                        (TaskTable.id eq command.taskId.value) and (TaskTable.userId eq command.memberId.value)
                     }.map { it.toTask() }.singleOrNull()
                         ?: throw IllegalArgumentException("Task not found: ${command.taskId.value}")
 
@@ -92,7 +92,7 @@ class ExposedTaskRepository : TaskRepository {
                     // 기존 Task 조회
                     val existingTask = TaskTable.selectAll().where {
                         (TaskTable.id eq command.taskId.value) and
-                                (TaskTable.userId eq command.userId.value)
+                                (TaskTable.userId eq command.memberId.value)
                     }.map { it.toTask() }.singleOrNull()
                         ?: throw IllegalArgumentException("Task not found: ${command.taskId.value}")
 
@@ -112,7 +112,7 @@ class ExposedTaskRepository : TaskRepository {
                     // 물리 삭제
                     TaskTable.deleteWhere {
                         (TaskTable.id eq command.taskId.value) and
-                                (TaskTable.userId eq command.userId.value)
+                                (TaskTable.userId eq command.memberId.value)
                     }
                     // 삭제된 경우 반환할 Task 없음
                 }
@@ -151,12 +151,12 @@ class ExposedTaskRepository : TaskRepository {
 
         // 쿼리 타입별 필터 적용
         when (query) {
-            is TaskQuery.CursorByUserId -> {
-                baseQuery = baseQuery.andWhere { TaskTable.userId eq query.userId.value }
+            is TaskQuery.CursorByMemberId -> {
+                baseQuery = baseQuery.andWhere { TaskTable.userId eq query.memberId.value }
             }
-            is TaskQuery.CursorByUserIdAndWeek -> {
+            is TaskQuery.CursorByMemberIdAndWeek -> {
                 baseQuery = baseQuery.andWhere {
-                    (TaskTable.userId eq query.userId.value) and
+                    (TaskTable.userId eq query.memberId.value) and
                             (TaskTable.startDate lessEq query.weekEnd) and
                             (TaskTable.dueDate greaterEq query.weekStart)
                 }
@@ -207,12 +207,12 @@ class ExposedTaskRepository : TaskRepository {
 
         // 쿼리 타입별 필터 적용
         when (query) {
-            is TaskQuery.OffsetByUserId -> {
-                baseQuery = baseQuery.andWhere { TaskTable.userId eq query.userId.value }
+            is TaskQuery.OffsetByMemberId -> {
+                baseQuery = baseQuery.andWhere { TaskTable.userId eq query.memberId.value }
             }
-            is TaskQuery.OffsetByUserIdAndWeek -> {
+            is TaskQuery.OffsetByMemberIdAndWeek -> {
                 baseQuery = baseQuery.andWhere {
-                    (TaskTable.userId eq query.userId.value) and
+                    (TaskTable.userId eq query.memberId.value) and
                             (TaskTable.startDate lessEq query.weekEnd) and
                             (TaskTable.dueDate greaterEq query.weekStart)
                 }
@@ -252,7 +252,7 @@ class ExposedTaskRepository : TaskRepository {
     private fun ResultRow.toTask(): Task {
         return Task(
             id = TaskId(this[TaskTable.id].value),
-            userId = xyz.robinjoon.growweek.common.domain.UserId(this[TaskTable.userId]),
+            memberId = xyz.robinjoon.growweek.common.domain.MemberId(this[TaskTable.userId]),
             title = TaskTitle(this[TaskTable.title]),
             description = this[TaskTable.description]?.let { TaskDescription(it) },
             status = TaskStatus.valueOf(this[TaskTable.status]),

@@ -8,7 +8,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.event.DomainEvent
 import xyz.robinjoon.growweek.common.event.DomainEventPublisher
 import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
@@ -29,11 +29,11 @@ class CompleteRetrospectiveServiceTest : BehaviorSpec({
 
     Given("회고 완료 요청이 왔을 때") {
         val retrospectiveId = RetrospectiveId(1L)
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
 
         val command = RetrospectiveApplicationCommand.CompleteRetrospective(
             retrospectiveId = retrospectiveId,
-            userId = userId
+            memberId = memberId
         )
 
         val now = LocalDateTime.now()
@@ -56,7 +56,7 @@ class CompleteRetrospectiveServiceTest : BehaviorSpec({
 
         val completedRetrospective = Retrospective(
             id = retrospectiveId,
-            userId = userId,
+            memberId = memberId,
             period = RetrospectivePeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 12)),
             status = RetrospectiveStatus.DONE,
             questionCount = QuestionCount(3),
@@ -80,7 +80,7 @@ class CompleteRetrospectiveServiceTest : BehaviorSpec({
             Then("Application Command가 Domain Command로 변환되어야 한다") {
                 val capturedCommand = commandSlot.captured.first() as RetrospectiveCommand.CompleteRetrospective
                 capturedCommand.retrospectiveId shouldBe retrospectiveId
-                capturedCommand.userId shouldBe userId
+                capturedCommand.memberId shouldBe memberId
             }
 
             Then("완료된 회고 DTO를 반환해야 한다") {
@@ -94,7 +94,7 @@ class CompleteRetrospectiveServiceTest : BehaviorSpec({
 
                 val capturedPayload = eventSlot.captured
                 capturedPayload.retrospectiveId shouldBe retrospectiveId
-                capturedPayload.userId shouldBe userId
+                capturedPayload.memberId shouldBe memberId
                 capturedPayload.startDate shouldBe LocalDate.of(2025, 1, 6)
                 capturedPayload.endDate shouldBe LocalDate.of(2025, 1, 12)
             }

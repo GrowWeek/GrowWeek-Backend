@@ -19,7 +19,7 @@ class UpdateTaskService(
         // Application Command를 Domain Command로 변환
         val domainCommand = TaskCommand.UpdateTask(
             taskId = command.taskId,
-            userId = command.userId,
+            memberId = command.memberId,
             title = command.title?.let { TaskTitle(it) },
             description = command.description?.let { TaskDescription(it) },
             status = command.status,

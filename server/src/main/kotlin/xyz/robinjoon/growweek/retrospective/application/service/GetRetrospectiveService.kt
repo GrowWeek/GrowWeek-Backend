@@ -52,50 +52,50 @@ class GetRetrospectiveService(
 
     private fun toDomainQuery(query: RetrospectiveApplicationQuery): RetrospectiveQuery {
         return when (query) {
-            is RetrospectiveApplicationQuery.CursorByUserId ->
-                RetrospectiveQuery.Cursor.byUserId(
-                    userId = query.userId,
+            is RetrospectiveApplicationQuery.CursorByMemberId ->
+                RetrospectiveQuery.Cursor.byMemberId(
+                    memberId = query.memberId,
                     cursor = query.pageInfo.cursor,
                     size = query.pageInfo.size,
                     orderBy = query.pageInfo.orderBy
                 )
-            is RetrospectiveApplicationQuery.CursorByUserIdAndPeriod ->
-                RetrospectiveQuery.Cursor.byUserIdAndPeriod(
-                    userId = query.userId,
+            is RetrospectiveApplicationQuery.CursorByMemberIdAndPeriod ->
+                RetrospectiveQuery.Cursor.byMemberIdAndPeriod(
+                    memberId = query.memberId,
                     startDate = query.startDate,
                     endDate = query.endDate,
                     cursor = query.pageInfo.cursor,
                     size = query.pageInfo.size,
                     orderBy = query.pageInfo.orderBy
                 )
-            is RetrospectiveApplicationQuery.CursorByUserIdAndMonth ->
-                RetrospectiveQuery.Cursor.byUserIdAndMonth(
-                    userId = query.userId,
+            is RetrospectiveApplicationQuery.CursorByMemberIdAndMonth ->
+                RetrospectiveQuery.Cursor.byMemberIdAndMonth(
+                    memberId = query.memberId,
                     year = query.year,
                     month = query.month,
                     cursor = query.pageInfo.cursor,
                     size = query.pageInfo.size,
                     orderBy = query.pageInfo.orderBy
                 )
-            is RetrospectiveApplicationQuery.OffsetByUserId ->
-                RetrospectiveQuery.Offset.byUserId(
-                    userId = query.userId,
+            is RetrospectiveApplicationQuery.OffsetByMemberId ->
+                RetrospectiveQuery.Offset.byMemberId(
+                    memberId = query.memberId,
                     page = query.pageInfo.page,
                     size = query.pageInfo.size,
                     orderBy = query.pageInfo.orderBy
                 )
-            is RetrospectiveApplicationQuery.OffsetByUserIdAndPeriod ->
-                RetrospectiveQuery.Offset.byUserIdAndPeriod(
-                    userId = query.userId,
+            is RetrospectiveApplicationQuery.OffsetByMemberIdAndPeriod ->
+                RetrospectiveQuery.Offset.byMemberIdAndPeriod(
+                    memberId = query.memberId,
                     startDate = query.startDate,
                     endDate = query.endDate,
                     page = query.pageInfo.page,
                     size = query.pageInfo.size,
                     orderBy = query.pageInfo.orderBy
                 )
-            is RetrospectiveApplicationQuery.OffsetByUserIdAndMonth ->
-                RetrospectiveQuery.Offset.byUserIdAndMonth(
-                    userId = query.userId,
+            is RetrospectiveApplicationQuery.OffsetByMemberIdAndMonth ->
+                RetrospectiveQuery.Offset.byMemberIdAndMonth(
+                    memberId = query.memberId,
                     year = query.year,
                     month = query.month,
                     page = query.pageInfo.page,

@@ -8,7 +8,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.task.application.command.TaskApplicationCommand
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
 import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
@@ -22,11 +22,11 @@ class DeleteTaskServiceTest : BehaviorSpec({
 
     Given("할일 삭제 요청이 왔을 때") {
         val taskId = TaskId(1L)
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
 
         val command = TaskApplicationCommand.DeleteTask(
             taskId = taskId,
-            userId = userId
+            memberId = memberId
         )
 
         val commandSlot = slot<List<TaskCommand>>()
@@ -42,7 +42,7 @@ class DeleteTaskServiceTest : BehaviorSpec({
             Then("Application Command가 Domain Command로 변환되어야 한다") {
                 val capturedCommand = commandSlot.captured.first() as TaskCommand.DeleteTask
                 capturedCommand.taskId shouldBe taskId
-                capturedCommand.userId shouldBe userId
+                capturedCommand.memberId shouldBe memberId
             }
         }
     }

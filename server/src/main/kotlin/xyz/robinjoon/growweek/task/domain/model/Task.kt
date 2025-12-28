@@ -3,13 +3,13 @@ package xyz.robinjoon.growweek.task.domain.model
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class Task(
     val id: TaskId,
-    val userId: UserId,
+    val memberId: MemberId,
     val title: TaskTitle,
     val description: TaskDescription?,
     val status: TaskStatus,

@@ -34,14 +34,14 @@ class GenerateQuestionsService(
         retrospectiveRepository.saveAll(listOf(
             RetrospectiveCommand.GenerateQuestions(
                 retrospectiveId = command.retrospectiveId,
-                userId = command.userId
+                memberId = command.memberId
             )
         ))
 
         // 3. 해당 기간의 할일 목록 조회
         val tasksPage = taskRepository.findAll(
-            TaskQuery.Offset.byUserIdAndWeek(
-                userId = command.userId,
+            TaskQuery.Offset.byMemberIdAndWeek(
+                memberId = command.memberId,
                 weekStart = retrospective.period.startDate,
                 weekEnd = retrospective.period.endDate,
                 size = 100

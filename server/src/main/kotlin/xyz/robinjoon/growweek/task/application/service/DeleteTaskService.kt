@@ -17,7 +17,7 @@ class DeleteTaskService(
         // Application Command를 Domain Command로 변환
         val domainCommand = TaskCommand.DeleteTask(
             taskId = command.taskId,
-            userId = command.userId
+            memberId = command.memberId
         )
 
         // Repository를 통해 삭제

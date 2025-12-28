@@ -8,7 +8,7 @@ import xyz.robinjoon.growweek.common.OffsetPage
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.*
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
@@ -47,19 +47,19 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
 
     Given("질문 생성 요청이 왔을 때") {
         val retrospectiveId = RetrospectiveId(1L)
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
         val startDate = LocalDate.of(2025, 1, 6)
         val endDate = LocalDate.of(2025, 1, 12)
         val now = LocalDateTime.now()
 
         val command = RetrospectiveApplicationCommand.GenerateQuestions(
             retrospectiveId = retrospectiveId,
-            userId = userId
+            memberId = memberId
         )
 
         val existingRetrospective = Retrospective(
             id = retrospectiveId,
-            userId = userId,
+            memberId = memberId,
             period = RetrospectivePeriod(startDate, endDate),
             status = RetrospectiveStatus.TODO,
             questionCount = QuestionCount(3),
@@ -71,9 +71,9 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
         )
 
         val tasks = listOf(
-            createTask(TaskId(1L), userId, "할일 1", "설명 1", SensitivityLevel.NONE),
-            createTask(TaskId(2L), userId, "할일 2", "설명 2", SensitivityLevel.TITLE_ONLY),
-            createTask(TaskId(3L), userId, "할일 3", "설명 3", SensitivityLevel.NEVER)
+            createTask(TaskId(1L), memberId, "할일 1", "설명 1", SensitivityLevel.NONE),
+            createTask(TaskId(2L), memberId, "할일 2", "설명 2", SensitivityLevel.TITLE_ONLY),
+            createTask(TaskId(3L), memberId, "할일 3", "설명 3", SensitivityLevel.NEVER)
         )
 
         val generatedQuestionContents = listOf(
@@ -94,7 +94,7 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
 
         val completedRetrospective = Retrospective(
             id = retrospectiveId,
-            userId = userId,
+            memberId = memberId,
             period = RetrospectivePeriod(startDate, endDate),
             status = RetrospectiveStatus.AFTER_GENERATE_QUESTION,
             questionCount = QuestionCount(3),
@@ -112,7 +112,7 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
             commands.any { it is RetrospectiveCommand.GenerateQuestions }
         }) } returns listOf(existingRetrospective.copy(status = RetrospectiveStatus.BEFORE_GENERATE_QUESTION))
 
-        every { taskRepository.findAll(any<TaskQuery.OffsetByUserIdAndWeek>()) } returns
+        every { taskRepository.findAll(any<TaskQuery.OffsetByMemberIdAndWeek>()) } returns
             OffsetPage(size = 100, page = 0, totalPage = 1, items = tasks)
 
         fakeQuestionGenerationService.returnValue = generatedQuestionContents
@@ -135,7 +135,7 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
             }
 
             Then("해당 기간의 할일을 조회해야 한다") {
-                verify { taskRepository.findAll(any<TaskQuery.OffsetByUserIdAndWeek>()) }
+                verify { taskRepository.findAll(any<TaskQuery.OffsetByMemberIdAndWeek>()) }
             }
 
             Then("AI 질문 생성 서비스를 호출해야 한다") {
@@ -158,19 +158,19 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
 
     Given("민감도가 NEVER인 할일이 포함되어 있을 때") {
         val retrospectiveId = RetrospectiveId(1L)
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
         val startDate = LocalDate.of(2025, 1, 6)
         val endDate = LocalDate.of(2025, 1, 12)
         val now = LocalDateTime.now()
 
         val command = RetrospectiveApplicationCommand.GenerateQuestions(
             retrospectiveId = retrospectiveId,
-            userId = userId
+            memberId = memberId
         )
 
         val existingRetrospective = Retrospective(
             id = retrospectiveId,
-            userId = userId,
+            memberId = memberId,
             period = RetrospectivePeriod(startDate, endDate),
             status = RetrospectiveStatus.TODO,
             questionCount = QuestionCount(3),
@@ -182,8 +182,8 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
         )
 
         val tasks = listOf(
-            createTask(TaskId(1L), userId, "할일 1", "설명 1", SensitivityLevel.NONE),
-            createTask(TaskId(2L), userId, "비밀 할일", "비밀 설명", SensitivityLevel.NEVER)
+            createTask(TaskId(1L), memberId, "할일 1", "설명 1", SensitivityLevel.NONE),
+            createTask(TaskId(2L), memberId, "비밀 할일", "비밀 설명", SensitivityLevel.NEVER)
         )
 
         val generatedQuestionContents = listOf("질문1", "질문2", "질문3")
@@ -208,7 +208,7 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
 
         every { retrospectiveRepository.saveAll(any()) } returns listOf(completedRetrospective)
 
-        every { taskRepository.findAll(any<TaskQuery.OffsetByUserIdAndWeek>()) } returns
+        every { taskRepository.findAll(any<TaskQuery.OffsetByMemberIdAndWeek>()) } returns
             OffsetPage(size = 100, page = 0, totalPage = 1, items = tasks)
 
         fakeQuestionGenerationService.returnValue = generatedQuestionContents
@@ -226,19 +226,19 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
 
     Given("민감도가 TITLE_ONLY인 할일이 포함되어 있을 때") {
         val retrospectiveId = RetrospectiveId(1L)
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
         val startDate = LocalDate.of(2025, 1, 6)
         val endDate = LocalDate.of(2025, 1, 12)
         val now = LocalDateTime.now()
 
         val command = RetrospectiveApplicationCommand.GenerateQuestions(
             retrospectiveId = retrospectiveId,
-            userId = userId
+            memberId = memberId
         )
 
         val existingRetrospective = Retrospective(
             id = retrospectiveId,
-            userId = userId,
+            memberId = memberId,
             period = RetrospectivePeriod(startDate, endDate),
             status = RetrospectiveStatus.TODO,
             questionCount = QuestionCount(3),
@@ -250,7 +250,7 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
         )
 
         val tasks = listOf(
-            createTask(TaskId(1L), userId, "제목만 공개", "비밀 설명", SensitivityLevel.TITLE_ONLY)
+            createTask(TaskId(1L), memberId, "제목만 공개", "비밀 설명", SensitivityLevel.TITLE_ONLY)
         )
 
         val generatedQuestionContents = listOf("질문1", "질문2", "질문3")
@@ -275,7 +275,7 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
 
         every { retrospectiveRepository.saveAll(any()) } returns listOf(completedRetrospective)
 
-        every { taskRepository.findAll(any<TaskQuery.OffsetByUserIdAndWeek>()) } returns
+        every { taskRepository.findAll(any<TaskQuery.OffsetByMemberIdAndWeek>()) } returns
             OffsetPage(size = 100, page = 0, totalPage = 1, items = tasks)
 
         fakeQuestionGenerationService.returnValue = generatedQuestionContents
@@ -294,7 +294,7 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
 
 private fun createTask(
     taskId: TaskId,
-    userId: UserId,
+    memberId: MemberId,
     title: String,
     description: String,
     sensitivityLevel: SensitivityLevel
@@ -302,7 +302,7 @@ private fun createTask(
     val now = LocalDateTime.now()
     return Task(
         id = taskId,
-        userId = userId,
+        memberId = memberId,
         title = TaskTitle(title),
         description = TaskDescription(description),
         status = TaskStatus.TODO,

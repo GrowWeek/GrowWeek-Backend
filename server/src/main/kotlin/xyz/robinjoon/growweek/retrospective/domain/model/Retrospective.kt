@@ -1,12 +1,12 @@
 package xyz.robinjoon.growweek.retrospective.domain.model
 
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import java.time.LocalDateTime
 
 data class Retrospective(
     val id: RetrospectiveId,
-    val userId: UserId,
+    val memberId: MemberId,
     val period: RetrospectivePeriod,
     val status: RetrospectiveStatus,
     val questionCount: QuestionCount,

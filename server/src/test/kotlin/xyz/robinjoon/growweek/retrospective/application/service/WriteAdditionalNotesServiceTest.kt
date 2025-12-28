@@ -8,7 +8,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.*
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
@@ -25,19 +25,19 @@ class WriteAdditionalNotesServiceTest : BehaviorSpec({
 
     Given("기타 회고 내용 작성 요청이 왔을 때") {
         val retrospectiveId = RetrospectiveId(1L)
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
         val notes = "다음 주에는 더 집중해서 일하자."
 
         val command = RetrospectiveApplicationCommand.WriteAdditionalNotes(
             retrospectiveId = retrospectiveId,
-            userId = userId,
+            memberId = memberId,
             notes = notes
         )
 
         val now = LocalDateTime.now()
         val updatedRetrospective = Retrospective(
             id = retrospectiveId,
-            userId = userId,
+            memberId = memberId,
             period = RetrospectivePeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 12)),
             status = RetrospectiveStatus.IN_PROGRESS,
             questionCount = QuestionCount(3),
@@ -61,7 +61,7 @@ class WriteAdditionalNotesServiceTest : BehaviorSpec({
             Then("Application Command가 Domain Command로 변환되어야 한다") {
                 val capturedCommand = commandSlot.captured.first() as RetrospectiveCommand.WriteAdditionalNotes
                 capturedCommand.retrospectiveId shouldBe retrospectiveId
-                capturedCommand.userId shouldBe userId
+                capturedCommand.memberId shouldBe memberId
                 capturedCommand.notes shouldBe AdditionalNotes(notes)
             }
 

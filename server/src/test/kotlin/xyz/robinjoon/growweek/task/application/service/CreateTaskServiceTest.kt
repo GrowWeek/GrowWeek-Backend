@@ -9,7 +9,7 @@ import io.mockk.slot
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.task.application.command.TaskApplicationCommand
 import xyz.robinjoon.growweek.task.domain.model.*
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
@@ -25,9 +25,9 @@ class CreateTaskServiceTest : BehaviorSpec({
     val service = CreateTaskService(taskRepository)
 
     Given("할일 생성 요청이 왔을 때") {
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
         val command = TaskApplicationCommand.CreateTask(
-            userId = userId,
+            memberId = memberId,
             title = "테스트 할일",
             description = "테스트 설명",
             priority = 1,
@@ -58,7 +58,7 @@ class CreateTaskServiceTest : BehaviorSpec({
             Then("Application Command가 Domain Command로 변환되어야 한다") {
                 val capturedCommand = commandSlot.captured.first()
                 capturedCommand shouldBe TaskCommand.CreateTask(
-                    userId = userId,
+                    memberId = memberId,
                     title = TaskTitle(command.title),
                     description = TaskDescription(command.description!!),
                     priority = Priority(command.priority),
@@ -81,7 +81,7 @@ class CreateTaskServiceTest : BehaviorSpec({
 
     Given("설명 없이 할일 생성 요청이 왔을 때") {
         val command = TaskApplicationCommand.CreateTask(
-            userId = UserId(1L),
+            memberId = MemberId(1L),
             title = "설명 없는 할일",
             description = null,
             priority = 2,
@@ -126,7 +126,7 @@ private fun createTask(
     val now = LocalDateTime.now()
     return Task(
         id = TaskId(1L),
-        userId = UserId(1L),
+        memberId = MemberId(1L),
         title = TaskTitle(title),
         description = description?.let { TaskDescription(it) },
         status = TaskStatus.TODO,

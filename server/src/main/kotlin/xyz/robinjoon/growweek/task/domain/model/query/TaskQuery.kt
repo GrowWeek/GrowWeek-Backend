@@ -1,7 +1,7 @@
 package xyz.robinjoon.growweek.task.domain.model.query
 
 import xyz.robinjoon.growweek.common.*
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.TaskId
 import java.time.LocalDate
 
@@ -13,14 +13,14 @@ sealed class TaskQuery(
      * Cursor 기반 쿼리 팩토리
      */
     object Cursor {
-        fun byUserId(
-            userId: UserId,
+        fun byMemberId(
+            memberId: MemberId,
             cursor: String? = null,
             size: Int = 20,
             orderBy: String? = "updatedAt"
-        ): CursorByUserId {
-            return CursorByUserId(
-                userId = userId,
+        ): CursorByMemberId {
+            return CursorByMemberId(
+                memberId = memberId,
                 pageInfo = CursorPageInfo(
                     cursor = cursor,
                     size = size,
@@ -29,16 +29,16 @@ sealed class TaskQuery(
             )
         }
 
-        fun byUserIdAndWeek(
-            userId: UserId,
+        fun byMemberIdAndWeek(
+            memberId: MemberId,
             weekStart: LocalDate,
             weekEnd: LocalDate,
             cursor: String? = null,
             size: Int = 20,
             orderBy: String? = "priority"
-        ): CursorByUserIdAndWeek {
-            return CursorByUserIdAndWeek(
-                userId = userId,
+        ): CursorByMemberIdAndWeek {
+            return CursorByMemberIdAndWeek(
+                memberId = memberId,
                 weekStart = weekStart,
                 weekEnd = weekEnd,
                 pageInfo = CursorPageInfo(
@@ -70,14 +70,14 @@ sealed class TaskQuery(
      * Offset 기반 쿼리 팩토리
      */
     object Offset {
-        fun byUserId(
-            userId: UserId,
+        fun byMemberId(
+            memberId: MemberId,
             page: Int = 0,
             size: Int = 20,
             orderBy: String? = "updatedAt"
-        ): OffsetByUserId {
-            return OffsetByUserId(
-                userId = userId,
+        ): OffsetByMemberId {
+            return OffsetByMemberId(
+                memberId = memberId,
                 pageInfo = OffsetPageInfo(
                     page = page,
                     size = size,
@@ -86,16 +86,16 @@ sealed class TaskQuery(
             )
         }
 
-        fun byUserIdAndWeek(
-            userId: UserId,
+        fun byMemberIdAndWeek(
+            memberId: MemberId,
             weekStart: LocalDate,
             weekEnd: LocalDate,
             page: Int = 0,
             size: Int = 20,
             orderBy: String? = "priority"
-        ): OffsetByUserIdAndWeek {
-            return OffsetByUserIdAndWeek(
-                userId = userId,
+        ): OffsetByMemberIdAndWeek {
+            return OffsetByMemberIdAndWeek(
+                memberId = memberId,
                 weekStart = weekStart,
                 weekEnd = weekEnd,
                 pageInfo = OffsetPageInfo(
@@ -125,8 +125,8 @@ sealed class TaskQuery(
 
     // Cursor 기반 쿼리 구현체들
 
-    data class CursorByUserId(
-        val userId: UserId,
+    data class CursorByMemberId(
+        val memberId: MemberId,
         override val pageInfo: CursorPageInfo
     ) : TaskQuery(pageInfo) {
         val cursor get() = pageInfo.cursor
@@ -134,8 +134,8 @@ sealed class TaskQuery(
         val orderBy: String? get() = pageInfo.orderBy
     }
 
-    data class CursorByUserIdAndWeek(
-        val userId: UserId,
+    data class CursorByMemberIdAndWeek(
+        val memberId: MemberId,
         val weekStart: LocalDate,
         val weekEnd: LocalDate,
         override val pageInfo: CursorPageInfo
@@ -156,8 +156,8 @@ sealed class TaskQuery(
 
     // Offset 기반 쿼리 구현체들
 
-    data class OffsetByUserId(
-        val userId: UserId,
+    data class OffsetByMemberId(
+        val memberId: MemberId,
         override val pageInfo: OffsetPageInfo
     ) : TaskQuery(pageInfo) {
         val page get() = pageInfo.page
@@ -165,8 +165,8 @@ sealed class TaskQuery(
         val orderBy: String? get() = pageInfo.orderBy
     }
 
-    data class OffsetByUserIdAndWeek(
-        val userId: UserId,
+    data class OffsetByMemberIdAndWeek(
+        val memberId: MemberId,
         val weekStart: LocalDate,
         val weekEnd: LocalDate,
         override val pageInfo: OffsetPageInfo

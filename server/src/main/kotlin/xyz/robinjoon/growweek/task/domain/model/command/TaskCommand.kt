@@ -3,7 +3,7 @@ package xyz.robinjoon.growweek.task.domain.model.command
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.task.domain.model.*
 import java.time.LocalDate
 
@@ -12,7 +12,7 @@ sealed interface TaskCommand {
      * 할일 생성 커맨드
      */
     data class CreateTask(
-        val userId: UserId,
+        val memberId: MemberId,
         val title: TaskTitle,
         val description: TaskDescription?,
         val priority: Priority,
@@ -25,7 +25,7 @@ sealed interface TaskCommand {
      */
     data class UpdateTask(
         val taskId: TaskId,
-        val userId: UserId,
+        val memberId: MemberId,
         val title: TaskTitle?,
         val description: TaskDescription?,
         val status: TaskStatus?,
@@ -39,7 +39,7 @@ sealed interface TaskCommand {
      */
     data class UpdateTaskStatus(
         val taskId: TaskId,
-        val userId: UserId,
+        val memberId: MemberId,
         val status: TaskStatus
     ) : TaskCommand
 
@@ -48,7 +48,7 @@ sealed interface TaskCommand {
      */
     data class DeleteTask(
         val taskId: TaskId,
-        val userId: UserId
+        val memberId: MemberId
     ) : TaskCommand
 
     /**

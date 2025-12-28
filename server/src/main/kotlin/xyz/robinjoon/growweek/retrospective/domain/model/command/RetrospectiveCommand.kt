@@ -1,7 +1,7 @@
 package xyz.robinjoon.growweek.retrospective.domain.model.command
 
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.retrospective.domain.model.AdditionalNotes
 import xyz.robinjoon.growweek.retrospective.domain.model.QuestionCount
 import xyz.robinjoon.growweek.retrospective.domain.model.QuestionId
@@ -12,7 +12,7 @@ sealed interface RetrospectiveCommand {
      * 회고 생성 커맨드
      */
     data class CreateRetrospective(
-        val userId: UserId,
+        val memberId: MemberId,
         val period: RetrospectivePeriod,
         val questionCount: QuestionCount = QuestionCount.DEFAULT
     ) : RetrospectiveCommand
@@ -22,7 +22,7 @@ sealed interface RetrospectiveCommand {
      */
     data class GenerateQuestions(
         val retrospectiveId: RetrospectiveId,
-        val userId: UserId
+        val memberId: MemberId
     ) : RetrospectiveCommand
 
     /**
@@ -38,7 +38,7 @@ sealed interface RetrospectiveCommand {
      */
     data class WriteAnswer(
         val retrospectiveId: RetrospectiveId,
-        val userId: UserId,
+        val memberId: MemberId,
         val questionId: QuestionId,
         val content: String?
     ) : RetrospectiveCommand
@@ -48,7 +48,7 @@ sealed interface RetrospectiveCommand {
      */
     data class WriteAdditionalNotes(
         val retrospectiveId: RetrospectiveId,
-        val userId: UserId,
+        val memberId: MemberId,
         val notes: AdditionalNotes
     ) : RetrospectiveCommand
 
@@ -57,7 +57,7 @@ sealed interface RetrospectiveCommand {
      */
     data class CompleteRetrospective(
         val retrospectiveId: RetrospectiveId,
-        val userId: UserId
+        val memberId: MemberId
     ) : RetrospectiveCommand
 
     /**
@@ -65,6 +65,6 @@ sealed interface RetrospectiveCommand {
      */
     data class DeleteRetrospective(
         val retrospectiveId: RetrospectiveId,
-        val userId: UserId
+        val memberId: MemberId
     ) : RetrospectiveCommand
 }

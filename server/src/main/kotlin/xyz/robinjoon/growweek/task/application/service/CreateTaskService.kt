@@ -18,7 +18,7 @@ class CreateTaskService(
     override fun execute(command: TaskApplicationCommand.CreateTask): TaskDto {
         // Application Command를 Domain Command로 변환
         val domainCommand = TaskCommand.CreateTask(
-            userId = command.userId,
+            memberId = command.memberId,
             title = TaskTitle(command.title),
             description = command.description?.let { TaskDescription(it) },
             priority = Priority(command.priority),

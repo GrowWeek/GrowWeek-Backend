@@ -17,9 +17,9 @@ class GetMonthlyRetrospectivesService(
 ) : GetMonthlyRetrospectivesUseCase {
 
     @Transactional(readOnly = true)
-    override fun execute(query: RetrospectiveApplicationQuery.OffsetByUserIdAndMonth): MonthlyRetrospectiveDto {
-        val domainQuery = RetrospectiveQuery.Offset.byUserIdAndMonth(
-            userId = query.userId,
+    override fun execute(query: RetrospectiveApplicationQuery.OffsetByMemberIdAndMonth): MonthlyRetrospectiveDto {
+        val domainQuery = RetrospectiveQuery.Offset.byMemberIdAndMonth(
+            memberId = query.memberId,
             year = query.year,
             month = query.month,
             page = query.pageInfo.page,

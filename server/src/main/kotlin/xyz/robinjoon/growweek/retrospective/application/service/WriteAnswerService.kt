@@ -17,7 +17,7 @@ class WriteAnswerService(
     override fun execute(command: RetrospectiveApplicationCommand.WriteAnswer): RetrospectiveDto {
         val domainCommand = RetrospectiveCommand.WriteAnswer(
             retrospectiveId = command.retrospectiveId,
-            userId = command.userId,
+            memberId = command.memberId,
             questionId = command.questionId,
             content = command.content
         )
