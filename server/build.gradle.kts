@@ -44,6 +44,7 @@ dependencies {
 
     // JWT - JJWT 라이브러리
     implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
 
@@ -75,6 +76,7 @@ dependencies {
     testImplementation("io.kotest:kotest-property:$kotestVersion")
     testImplementation("io.kotest:kotest-extensions-spring:$kotestVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

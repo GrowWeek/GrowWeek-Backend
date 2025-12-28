@@ -31,7 +31,8 @@ class SecurityConfig(
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
                         "/swagger-resources/**",
-                        "/webjars/**"
+                        "/webjars/**",
+                        "/actuator/**",
                     ).permitAll()
                     // H2 Console 허용
                     .requestMatchers("/h2-console/**").permitAll()
