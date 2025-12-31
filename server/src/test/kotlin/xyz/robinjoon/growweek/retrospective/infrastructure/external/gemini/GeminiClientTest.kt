@@ -13,14 +13,14 @@ class GeminiClientTest : BehaviorSpec({
             val properties = GeminiProperties(
                 apiKey = "test-api-key",
                 baseUrl = "https://generativelanguage.googleapis.com",
-                model = "gemini-2.0-flash",
+                model = "gemini-3-flash-preview",
                 thinkingLevel = "low"
             )
 
             Then("모든 값이 올바르게 설정되어야 한다") {
                 properties.apiKey shouldBe "test-api-key"
                 properties.baseUrl shouldBe "https://generativelanguage.googleapis.com"
-                properties.model shouldBe "gemini-2.0-flash"
+                properties.model shouldBe "gemini-3-flash-preview"
                 properties.thinkingLevel shouldBe "low"
             }
         }
