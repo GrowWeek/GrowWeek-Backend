@@ -22,7 +22,7 @@ jwt:
   expiration: 3600000
 
 gemini:
-  api-key: ${GEMINI_API_KEY}
+  api-key: ${GEMINI_API_KEY:mock-gemini-api-key-for-development}
   base-url: https://generativelanguage.googleapis.com
   model: gemini-3-flash-preview
   thinking-level: low
