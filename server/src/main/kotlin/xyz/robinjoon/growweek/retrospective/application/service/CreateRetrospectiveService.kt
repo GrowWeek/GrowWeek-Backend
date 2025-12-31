@@ -18,7 +18,7 @@ class CreateRetrospectiveService(
     @Transactional
     override fun execute(command: RetrospectiveApplicationCommand.CreateRetrospective): RetrospectiveDto {
         val domainCommand = RetrospectiveCommand.CreateRetrospective(
-            userId = command.userId,
+            memberId = command.memberId,
             period = RetrospectivePeriod(command.startDate, command.endDate),
             questionCount = QuestionCount(command.questionCount)
         )

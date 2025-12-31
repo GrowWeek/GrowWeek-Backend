@@ -9,7 +9,7 @@ import io.mockk.slot
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.task.application.command.TaskApplicationCommand
 import xyz.robinjoon.growweek.task.domain.model.*
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
@@ -26,18 +26,18 @@ class UpdateTaskStatusServiceTest : BehaviorSpec({
 
     Given("할일 상태 변경 요청이 왔을 때") {
         val taskId = TaskId(1L)
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
         val newStatus = TaskStatus.IN_PROGRESS
 
         val command = TaskApplicationCommand.UpdateTaskStatus(
             taskId = taskId,
-            userId = userId,
+            memberId = memberId,
             status = newStatus
         )
 
         val updatedTask = Task(
             id = taskId,
-            userId = userId,
+            memberId = memberId,
             title = TaskTitle("테스트 할일"),
             description = null,
             status = newStatus,
@@ -62,7 +62,7 @@ class UpdateTaskStatusServiceTest : BehaviorSpec({
             Then("Application Command가 Domain Command로 변환되어야 한다") {
                 val capturedCommand = commandSlot.captured.first() as TaskCommand.UpdateTaskStatus
                 capturedCommand.taskId shouldBe taskId
-                capturedCommand.userId shouldBe userId
+                capturedCommand.memberId shouldBe memberId
                 capturedCommand.status shouldBe newStatus
             }
 
@@ -75,17 +75,17 @@ class UpdateTaskStatusServiceTest : BehaviorSpec({
 
     Given("TODO에서 DONE으로 상태 변경 요청이 왔을 때") {
         val taskId = TaskId(2L)
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
 
         val command = TaskApplicationCommand.UpdateTaskStatus(
             taskId = taskId,
-            userId = userId,
+            memberId = memberId,
             status = TaskStatus.DONE
         )
 
         val updatedTask = Task(
             id = taskId,
-            userId = userId,
+            memberId = memberId,
             title = TaskTitle("완료된 할일"),
             description = null,
             status = TaskStatus.DONE,
@@ -110,17 +110,17 @@ class UpdateTaskStatusServiceTest : BehaviorSpec({
 
     Given("CANCEL 상태로 변경 요청이 왔을 때") {
         val taskId = TaskId(3L)
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
 
         val command = TaskApplicationCommand.UpdateTaskStatus(
             taskId = taskId,
-            userId = userId,
+            memberId = memberId,
             status = TaskStatus.CANCEL
         )
 
         val updatedTask = Task(
             id = taskId,
-            userId = userId,
+            memberId = memberId,
             title = TaskTitle("취소된 할일"),
             description = null,
             status = TaskStatus.CANCEL,

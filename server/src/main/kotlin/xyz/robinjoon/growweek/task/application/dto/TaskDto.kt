@@ -2,14 +2,14 @@ package xyz.robinjoon.growweek.task.application.dto
 
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.task.domain.model.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class TaskDto(
     val id: TaskId,
-    val userId: UserId,
+    val memberId: MemberId,
     val title: TaskTitle,
     val description: TaskDescription?,
     val status: TaskStatus,
@@ -25,7 +25,7 @@ data class TaskDto(
         fun from(task: Task): TaskDto {
             return TaskDto(
                 id = task.id,
-                userId = task.userId,
+                memberId = task.memberId,
                 title = task.title,
                 description = task.description,
                 status = task.status,

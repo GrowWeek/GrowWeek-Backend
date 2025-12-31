@@ -8,7 +8,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.*
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
@@ -25,13 +25,13 @@ class WriteAnswerServiceTest : BehaviorSpec({
 
     Given("답변 작성 요청이 왔을 때") {
         val retrospectiveId = RetrospectiveId(1L)
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
         val questionId = QuestionId(1L)
         val answerContent = "이번 주는 생산적이었습니다."
 
         val command = RetrospectiveApplicationCommand.WriteAnswer(
             retrospectiveId = retrospectiveId,
-            userId = userId,
+            memberId = memberId,
             questionId = questionId,
             content = answerContent
         )
@@ -55,7 +55,7 @@ class WriteAnswerServiceTest : BehaviorSpec({
 
         val updatedRetrospective = Retrospective(
             id = retrospectiveId,
-            userId = userId,
+            memberId = memberId,
             period = RetrospectivePeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 12)),
             status = RetrospectiveStatus.IN_PROGRESS,
             questionCount = QuestionCount(3),
@@ -79,7 +79,7 @@ class WriteAnswerServiceTest : BehaviorSpec({
             Then("Application Command가 Domain Command로 변환되어야 한다") {
                 val capturedCommand = commandSlot.captured.first() as RetrospectiveCommand.WriteAnswer
                 capturedCommand.retrospectiveId shouldBe retrospectiveId
-                capturedCommand.userId shouldBe userId
+                capturedCommand.memberId shouldBe memberId
                 capturedCommand.questionId shouldBe questionId
                 capturedCommand.content shouldBe answerContent
             }
@@ -95,12 +95,12 @@ class WriteAnswerServiceTest : BehaviorSpec({
 
     Given("답변을 null로 수정 요청이 왔을 때") {
         val retrospectiveId = RetrospectiveId(1L)
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
         val questionId = QuestionId(1L)
 
         val command = RetrospectiveApplicationCommand.WriteAnswer(
             retrospectiveId = retrospectiveId,
-            userId = userId,
+            memberId = memberId,
             questionId = questionId,
             content = null
         )
@@ -124,7 +124,7 @@ class WriteAnswerServiceTest : BehaviorSpec({
 
         val updatedRetrospective = Retrospective(
             id = retrospectiveId,
-            userId = userId,
+            memberId = memberId,
             period = RetrospectivePeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 12)),
             status = RetrospectiveStatus.IN_PROGRESS,
             questionCount = QuestionCount(3),

@@ -5,7 +5,7 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -390,7 +390,7 @@ private fun createRetrospective(
     val now = LocalDateTime.now()
     return Retrospective(
         id = RetrospectiveId(1),
-        userId = UserId(1L),
+        memberId = MemberId(1L),
         period = RetrospectivePeriod(endDate.minusDays(6), endDate),
         status = status,
         questionCount = questionCount,

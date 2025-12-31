@@ -28,8 +28,8 @@ class RetrospectiveCompletedHandler(
         val payload = event.payload
 
         // 해당 기간의 Task 조회
-        val query = TaskQuery.Offset.byUserIdAndWeek(
-            userId = payload.userId,
+        val query = TaskQuery.Offset.byMemberIdAndWeek(
+            memberId = payload.memberId,
             weekStart = payload.startDate,
             weekEnd = payload.endDate,
             size = Int.MAX_VALUE

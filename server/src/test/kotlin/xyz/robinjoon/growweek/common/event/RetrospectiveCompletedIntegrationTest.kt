@@ -14,7 +14,7 @@ import xyz.robinjoon.growweek.common.OffsetPage
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
 import xyz.robinjoon.growweek.common.infrastructure.SpringDomainEventPublisher
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
@@ -57,7 +57,7 @@ class RetrospectiveCompletedIntegrationTest : BehaviorSpec({
         val eventPublisher = SpringDomainEventPublisher(applicationEventPublisher)
         val service = CompleteRetrospectiveService(retrospectiveRepository, eventPublisher)
 
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
         val retrospectiveId = RetrospectiveId(1L)
         val startDate = LocalDate.of(2025, 1, 6)
         val endDate = LocalDate.of(2025, 1, 12)
@@ -83,7 +83,7 @@ class RetrospectiveCompletedIntegrationTest : BehaviorSpec({
 
         val completedRetrospective = Retrospective(
             id = retrospectiveId,
-            userId = userId,
+            memberId = memberId,
             period = RetrospectivePeriod(startDate, endDate),
             status = RetrospectiveStatus.DONE,
             questionCount = QuestionCount(3),
@@ -97,7 +97,7 @@ class RetrospectiveCompletedIntegrationTest : BehaviorSpec({
         // Task 데이터 설정
         val task1 = Task(
             id = TaskId(1L),
-            userId = userId,
+            memberId = memberId,
             title = TaskTitle("할일 1"),
             description = null,
             status = TaskStatus.DONE,
@@ -109,7 +109,7 @@ class RetrospectiveCompletedIntegrationTest : BehaviorSpec({
         )
         val task2 = Task(
             id = TaskId(2L),
-            userId = userId,
+            memberId = memberId,
             title = TaskTitle("할일 2"),
             description = null,
             status = TaskStatus.IN_PROGRESS,
@@ -137,7 +137,7 @@ class RetrospectiveCompletedIntegrationTest : BehaviorSpec({
             When("회고 완료 서비스를 실행하면") {
                 val command = RetrospectiveApplicationCommand.CompleteRetrospective(
                     retrospectiveId = retrospectiveId,
-                    userId = userId
+                    memberId = memberId
                 )
 
                 val result = service.execute(command)
@@ -157,7 +157,7 @@ class RetrospectiveCompletedIntegrationTest : BehaviorSpec({
                     val event = eventSlot.captured as DomainEvent<*>
                     event.payload shouldBe RetrospectiveEventPayload.Completed(
                         retrospectiveId = retrospectiveId,
-                        userId = userId,
+                        memberId = memberId,
                         startDate = startDate,
                         endDate = endDate
                     )
@@ -197,7 +197,7 @@ class RetrospectiveCompletedIntegrationTest : BehaviorSpec({
             When("회고 완료 서비스를 실행하면") {
                 val command = RetrospectiveApplicationCommand.CompleteRetrospective(
                     retrospectiveId = retrospectiveId,
-                    userId = userId
+                    memberId = memberId
                 )
 
                 val result = service.execute(command)

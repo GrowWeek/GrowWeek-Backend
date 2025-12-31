@@ -6,7 +6,7 @@ import io.kotest.matchers.shouldBe
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -421,7 +421,7 @@ private fun createTask(): Task {
     val now = LocalDateTime.now()
     return Task(
         id = TaskId(1),
-        userId = UserId(1L),
+        memberId = MemberId(1L),
         title = TaskTitle("테스트 할일"),
         description = TaskDescription("테스트 설명"),
         status = TaskStatus.TODO,

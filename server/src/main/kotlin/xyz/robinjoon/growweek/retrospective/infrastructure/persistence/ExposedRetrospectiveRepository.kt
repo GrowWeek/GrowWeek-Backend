@@ -10,7 +10,7 @@ import xyz.robinjoon.growweek.common.OffsetPage
 import xyz.robinjoon.growweek.common.OffsetPageInfo
 import xyz.robinjoon.growweek.common.Page
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.retrospective.domain.model.*
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.query.RetrospectiveQuery
@@ -30,7 +30,7 @@ class ExposedRetrospectiveRepository : RetrospectiveRepository {
                 is RetrospectiveCommand.CreateRetrospective -> {
                     val now = LocalDateTime.now()
                     val insertedId = RetrospectiveTable.insert {
-                        it[userId] = command.userId.value
+                        it[userId] = command.memberId.value
                         it[startDate] = command.period.startDate
                         it[endDate] = command.period.endDate
                         it[status] = RetrospectiveStatus.TODO.name
@@ -158,12 +158,12 @@ class ExposedRetrospectiveRepository : RetrospectiveRepository {
         var baseQuery = RetrospectiveTable.selectAll()
 
         when (query) {
-            is RetrospectiveQuery.CursorByUserId -> {
-                baseQuery = baseQuery.andWhere { RetrospectiveTable.userId eq query.userId.value }
+            is RetrospectiveQuery.CursorByMemberId -> {
+                baseQuery = baseQuery.andWhere { RetrospectiveTable.userId eq query.memberId.value }
             }
-            is RetrospectiveQuery.CursorByUserIdAndPeriod -> {
+            is RetrospectiveQuery.CursorByMemberIdAndPeriod -> {
                 baseQuery = baseQuery.andWhere {
-                    (RetrospectiveTable.userId eq query.userId.value) and
+                    (RetrospectiveTable.userId eq query.memberId.value) and
                             (RetrospectiveTable.startDate lessEq query.endDate) and
                             (RetrospectiveTable.endDate greaterEq query.startDate)
                 }
@@ -171,12 +171,12 @@ class ExposedRetrospectiveRepository : RetrospectiveRepository {
             is RetrospectiveQuery.CursorByRetrospectiveId -> {
                 baseQuery = baseQuery.andWhere { RetrospectiveTable.id eq query.retrospectiveId.value }
             }
-            is RetrospectiveQuery.CursorByUserIdAndMonth -> {
+            is RetrospectiveQuery.CursorByMemberIdAndMonth -> {
                 val yearMonth = YearMonth.of(query.year, query.month)
                 val monthStart = yearMonth.atDay(1)
                 val monthEnd = yearMonth.atEndOfMonth()
                 baseQuery = baseQuery.andWhere {
-                    (RetrospectiveTable.userId eq query.userId.value) and
+                    (RetrospectiveTable.userId eq query.memberId.value) and
                             (RetrospectiveTable.startDate lessEq monthEnd) and
                             (RetrospectiveTable.endDate greaterEq monthStart)
                 }
@@ -219,12 +219,12 @@ class ExposedRetrospectiveRepository : RetrospectiveRepository {
         var baseQuery = RetrospectiveTable.selectAll()
 
         when (query) {
-            is RetrospectiveQuery.OffsetByUserId -> {
-                baseQuery = baseQuery.andWhere { RetrospectiveTable.userId eq query.userId.value }
+            is RetrospectiveQuery.OffsetByMemberId -> {
+                baseQuery = baseQuery.andWhere { RetrospectiveTable.userId eq query.memberId.value }
             }
-            is RetrospectiveQuery.OffsetByUserIdAndPeriod -> {
+            is RetrospectiveQuery.OffsetByMemberIdAndPeriod -> {
                 baseQuery = baseQuery.andWhere {
-                    (RetrospectiveTable.userId eq query.userId.value) and
+                    (RetrospectiveTable.userId eq query.memberId.value) and
                             (RetrospectiveTable.startDate lessEq query.endDate) and
                             (RetrospectiveTable.endDate greaterEq query.startDate)
                 }
@@ -232,12 +232,12 @@ class ExposedRetrospectiveRepository : RetrospectiveRepository {
             is RetrospectiveQuery.OffsetByRetrospectiveId -> {
                 baseQuery = baseQuery.andWhere { RetrospectiveTable.id eq query.retrospectiveId.value }
             }
-            is RetrospectiveQuery.OffsetByUserIdAndMonth -> {
+            is RetrospectiveQuery.OffsetByMemberIdAndMonth -> {
                 val yearMonth = YearMonth.of(query.year, query.month)
                 val monthStart = yearMonth.atDay(1)
                 val monthEnd = yearMonth.atEndOfMonth()
                 baseQuery = baseQuery.andWhere {
-                    (RetrospectiveTable.userId eq query.userId.value) and
+                    (RetrospectiveTable.userId eq query.memberId.value) and
                             (RetrospectiveTable.startDate lessEq monthEnd) and
                             (RetrospectiveTable.endDate greaterEq monthStart)
                 }
@@ -284,7 +284,7 @@ class ExposedRetrospectiveRepository : RetrospectiveRepository {
 
         return Retrospective(
             id = retrospectiveId,
-            userId = UserId(this[RetrospectiveTable.userId]),
+            memberId = MemberId(this[RetrospectiveTable.userId]),
             period = RetrospectivePeriod(
                 startDate = this[RetrospectiveTable.startDate],
                 endDate = this[RetrospectiveTable.endDate]

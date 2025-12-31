@@ -1,14 +1,14 @@
 package xyz.robinjoon.growweek.retrospective.application.dto
 
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.retrospective.domain.model.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class RetrospectiveDto(
     val id: RetrospectiveId,
-    val userId: UserId,
+    val memberId: MemberId,
     val startDate: LocalDate,
     val endDate: LocalDate,
     val status: RetrospectiveStatus,
@@ -23,7 +23,7 @@ data class RetrospectiveDto(
         fun from(retrospective: Retrospective): RetrospectiveDto {
             return RetrospectiveDto(
                 id = retrospective.id,
-                userId = retrospective.userId,
+                memberId = retrospective.memberId,
                 startDate = retrospective.period.startDate,
                 endDate = retrospective.period.endDate,
                 status = retrospective.status,

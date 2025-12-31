@@ -9,7 +9,7 @@ import io.mockk.slot
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.task.application.command.TaskApplicationCommand
 import xyz.robinjoon.growweek.task.domain.model.*
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
@@ -26,10 +26,10 @@ class UpdateTaskServiceTest : BehaviorSpec({
 
     Given("할일 수정 요청이 왔을 때") {
         val taskId = TaskId(1L)
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
         val command = TaskApplicationCommand.UpdateTask(
             taskId = taskId,
-            userId = userId,
+            memberId = memberId,
             title = "수정된 제목",
             description = "수정된 설명",
             status = TaskStatus.IN_PROGRESS,
@@ -40,7 +40,7 @@ class UpdateTaskServiceTest : BehaviorSpec({
 
         val updatedTask = Task(
             id = taskId,
-            userId = userId,
+            memberId = memberId,
             title = TaskTitle(command.title!!),
             description = TaskDescription(command.description!!),
             status = command.status!!,
@@ -65,7 +65,7 @@ class UpdateTaskServiceTest : BehaviorSpec({
             Then("Application Command가 Domain Command로 변환되어야 한다") {
                 val capturedCommand = commandSlot.captured.first() as TaskCommand.UpdateTask
                 capturedCommand.taskId shouldBe taskId
-                capturedCommand.userId shouldBe userId
+                capturedCommand.memberId shouldBe memberId
                 capturedCommand.title shouldBe TaskTitle(command.title!!)
                 capturedCommand.description shouldBe TaskDescription(command.description!!)
                 capturedCommand.status shouldBe command.status
@@ -88,10 +88,10 @@ class UpdateTaskServiceTest : BehaviorSpec({
 
     Given("일부 필드만 수정 요청이 왔을 때") {
         val taskId = TaskId(1L)
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
         val command = TaskApplicationCommand.UpdateTask(
             taskId = taskId,
-            userId = userId,
+            memberId = memberId,
             title = "제목만 수정",
             description = null,
             status = null,
@@ -102,7 +102,7 @@ class UpdateTaskServiceTest : BehaviorSpec({
 
         val updatedTask = Task(
             id = taskId,
-            userId = userId,
+            memberId = memberId,
             title = TaskTitle(command.title!!),
             description = TaskDescription("기존 설명"),
             status = TaskStatus.TODO,

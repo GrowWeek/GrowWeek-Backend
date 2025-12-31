@@ -18,7 +18,7 @@ class UpdateTaskStatusService(
         // Application Command를 Domain Command로 변환
         val domainCommand = TaskCommand.UpdateTaskStatus(
             taskId = command.taskId,
-            userId = command.userId,
+            memberId = command.memberId,
             status = command.status
         )
 

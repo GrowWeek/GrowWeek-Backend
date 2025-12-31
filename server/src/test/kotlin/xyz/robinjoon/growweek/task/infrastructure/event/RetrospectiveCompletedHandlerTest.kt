@@ -12,7 +12,7 @@ import xyz.robinjoon.growweek.common.OffsetPage
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.event.DefaultDomainEvent
 import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
 import xyz.robinjoon.growweek.task.domain.model.*
@@ -31,14 +31,14 @@ class RetrospectiveCompletedHandlerTest : BehaviorSpec({
 
     Given("회고 완료 이벤트가 발행되었을 때") {
         val retrospectiveId = RetrospectiveId(1L)
-        val userId = UserId(1L)
+        val memberId = MemberId(1L)
         val startDate = LocalDate.of(2025, 1, 6)
         val endDate = LocalDate.of(2025, 1, 12)
 
         val event = DefaultDomainEvent(
             payload = RetrospectiveEventPayload.Completed(
                 retrospectiveId = retrospectiveId,
-                userId = userId,
+                memberId = memberId,
                 startDate = startDate,
                 endDate = endDate
             )
@@ -49,7 +49,7 @@ class RetrospectiveCompletedHandlerTest : BehaviorSpec({
         And("해당 기간에 Task가 있는 경우") {
             val task1 = Task(
                 id = TaskId(1L),
-                userId = userId,
+                memberId = memberId,
                 title = TaskTitle("할일 1"),
                 description = null,
                 status = TaskStatus.DONE,
@@ -61,7 +61,7 @@ class RetrospectiveCompletedHandlerTest : BehaviorSpec({
             )
             val task2 = Task(
                 id = TaskId(2L),
-                userId = userId,
+                memberId = memberId,
                 title = TaskTitle("할일 2"),
                 description = null,
                 status = TaskStatus.IN_PROGRESS,
@@ -89,8 +89,8 @@ class RetrospectiveCompletedHandlerTest : BehaviorSpec({
                 Then("해당 기간의 Task를 조회해야 한다") {
                     verify(exactly = 1) { taskRepository.findAll(any()) }
 
-                    val capturedQuery = querySlot.captured as TaskQuery.OffsetByUserIdAndWeek
-                    capturedQuery.userId shouldBe userId
+                    val capturedQuery = querySlot.captured as TaskQuery.OffsetByMemberIdAndWeek
+                    capturedQuery.memberId shouldBe memberId
                     capturedQuery.weekStart shouldBe startDate
                     capturedQuery.weekEnd shouldBe endDate
                 }

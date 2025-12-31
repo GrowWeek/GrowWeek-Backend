@@ -1,7 +1,7 @@
 package xyz.robinjoon.growweek.common.event.payload
 
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.UserId
 import java.time.LocalDate
 
 /**
@@ -17,7 +17,7 @@ sealed interface RetrospectiveEventPayload {
      */
     data class Completed(
         val retrospectiveId: RetrospectiveId,
-        val userId: UserId,
+        val memberId: MemberId,
         val startDate: LocalDate,
         val endDate: LocalDate
     ) : RetrospectiveEventPayload
@@ -27,6 +27,6 @@ sealed interface RetrospectiveEventPayload {
      */
     data class Deleted(
         val retrospectiveId: RetrospectiveId,
-        val userId: UserId
+        val memberId: MemberId
     ) : RetrospectiveEventPayload
 }

@@ -16,7 +16,7 @@ class DeleteRetrospectiveService(
     override fun execute(command: RetrospectiveApplicationCommand.DeleteRetrospective) {
         val domainCommand = RetrospectiveCommand.DeleteRetrospective(
             retrospectiveId = command.retrospectiveId,
-            userId = command.userId
+            memberId = command.memberId
         )
 
         retrospectiveRepository.saveAll(listOf(domainCommand))

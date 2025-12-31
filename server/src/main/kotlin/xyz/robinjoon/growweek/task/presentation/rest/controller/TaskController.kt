@@ -3,7 +3,7 @@ package xyz.robinjoon.growweek.task.presentation.rest.controller
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.task.application.command.TaskApplicationCommand
 import xyz.robinjoon.growweek.task.application.query.TaskApplicationQuery
 import xyz.robinjoon.growweek.task.application.usecase.*
@@ -47,7 +47,7 @@ class TaskController(
         @RequestHeader("X-User-Id") userId: Long
     ): ResponseEntity<TaskResponse> {
         val command = TaskApplicationCommand.CreateTask(
-            userId = UserId(userId),
+            memberId = MemberId(userId),
             title = request.title,
             description = request.description,
             priority = request.priority,
@@ -79,7 +79,7 @@ class TaskController(
     ): ResponseEntity<TaskResponse> {
         val command = TaskApplicationCommand.UpdateTask(
             taskId = TaskId(taskId),
-            userId = UserId(userId),
+            memberId = MemberId(userId),
             title = request.title,
             description = request.description,
             status = request.status?.let { TaskStatus.valueOf(it) },
@@ -110,7 +110,7 @@ class TaskController(
     ): ResponseEntity<TaskResponse> {
         val command = TaskApplicationCommand.UpdateTaskStatus(
             taskId = TaskId(taskId),
-            userId = UserId(userId),
+            memberId = MemberId(userId),
             status = TaskStatus.valueOf(request.status)
         )
 
@@ -134,7 +134,7 @@ class TaskController(
     ): ResponseEntity<Void> {
         val command = TaskApplicationCommand.DeleteTask(
             taskId = TaskId(taskId),
-            userId = UserId(userId)
+            memberId = MemberId(userId)
         )
 
         deleteTaskUseCase.execute(command)
@@ -156,7 +156,7 @@ class TaskController(
     ): ResponseEntity<TaskResponse> {
         val query = TaskApplicationQuery.Offset.byTaskId(
             taskId = TaskId(taskId),
-            userId = UserId(userId)
+            memberId = MemberId(userId)
         )
 
         val taskDto = getTaskUseCase.execute(query)
@@ -190,8 +190,8 @@ class TaskController(
 
         val weeklyDto = if (cursor != null) {
             // Cursor 기반 페이징
-            val query = TaskApplicationQuery.Cursor.byUserIdAndWeek(
-                userId = UserId(userId),
+            val query = TaskApplicationQuery.Cursor.byMemberIdAndWeek(
+                memberId = MemberId(userId),
                 weekStart = startDate,
                 weekEnd = endDate,
                 cursor = cursor,
@@ -200,8 +200,8 @@ class TaskController(
             getWeeklyTasksUseCase.execute(query)
         } else {
             // Offset 기반 페이징
-            val query = TaskApplicationQuery.Offset.byUserIdAndWeek(
-                userId = UserId(userId),
+            val query = TaskApplicationQuery.Offset.byMemberIdAndWeek(
+                memberId = MemberId(userId),
                 weekStart = startDate,
                 weekEnd = endDate,
                 page = page ?: 0,
@@ -233,16 +233,16 @@ class TaskController(
     ): ResponseEntity<PageResponse<TaskResponse>> {
         val pageDto = if (cursor != null) {
             // Cursor 기반 페이징
-            val query = TaskApplicationQuery.Cursor.byUserId(
-                userId = UserId(userId),
+            val query = TaskApplicationQuery.Cursor.byMemberId(
+                memberId = MemberId(userId),
                 cursor = cursor,
                 size = size ?: 20
             )
             getUserTasksUseCase.execute(query)
         } else {
             // Offset 기반 페이징
-            val query = TaskApplicationQuery.Offset.byUserId(
-                userId = UserId(userId),
+            val query = TaskApplicationQuery.Offset.byMemberId(
+                memberId = MemberId(userId),
                 page = page ?: 0,
                 size = size ?: 20
             )

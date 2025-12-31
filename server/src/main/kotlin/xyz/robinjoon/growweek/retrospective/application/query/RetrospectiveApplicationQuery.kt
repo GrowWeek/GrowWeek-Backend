@@ -5,7 +5,7 @@ import xyz.robinjoon.growweek.common.OffsetPageInfo
 import xyz.robinjoon.growweek.common.PageInfo
 import xyz.robinjoon.growweek.common.PageQuery
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.UserId
+import xyz.robinjoon.growweek.common.domain.MemberId
 import java.time.LocalDate
 
 sealed class RetrospectiveApplicationQuery(
@@ -13,14 +13,14 @@ sealed class RetrospectiveApplicationQuery(
 ) : PageQuery {
 
     object Cursor {
-        fun byUserId(
-            userId: UserId,
+        fun byMemberId(
+            memberId: MemberId,
             cursor: String? = null,
             size: Int = 20,
             orderBy: String? = "createdAt"
-        ): CursorByUserId {
-            return CursorByUserId(
-                userId = userId,
+        ): CursorByMemberId {
+            return CursorByMemberId(
+                memberId = memberId,
                 pageInfo = CursorPageInfo(
                     cursor = cursor,
                     size = size,
@@ -29,16 +29,16 @@ sealed class RetrospectiveApplicationQuery(
             )
         }
 
-        fun byUserIdAndPeriod(
-            userId: UserId,
+        fun byMemberIdAndPeriod(
+            memberId: MemberId,
             startDate: LocalDate,
             endDate: LocalDate,
             cursor: String? = null,
             size: Int = 20,
             orderBy: String? = "startDate"
-        ): CursorByUserIdAndPeriod {
-            return CursorByUserIdAndPeriod(
-                userId = userId,
+        ): CursorByMemberIdAndPeriod {
+            return CursorByMemberIdAndPeriod(
+                memberId = memberId,
                 startDate = startDate,
                 endDate = endDate,
                 pageInfo = CursorPageInfo(
@@ -49,16 +49,16 @@ sealed class RetrospectiveApplicationQuery(
             )
         }
 
-        fun byUserIdAndMonth(
-            userId: UserId,
+        fun byMemberIdAndMonth(
+            memberId: MemberId,
             year: Int,
             month: Int,
             cursor: String? = null,
             size: Int = 20,
             orderBy: String? = "startDate"
-        ): CursorByUserIdAndMonth {
-            return CursorByUserIdAndMonth(
-                userId = userId,
+        ): CursorByMemberIdAndMonth {
+            return CursorByMemberIdAndMonth(
+                memberId = memberId,
                 year = year,
                 month = month,
                 pageInfo = CursorPageInfo(
@@ -71,14 +71,14 @@ sealed class RetrospectiveApplicationQuery(
     }
 
     object Offset {
-        fun byUserId(
-            userId: UserId,
+        fun byMemberId(
+            memberId: MemberId,
             page: Int = 0,
             size: Int = 20,
             orderBy: String? = "createdAt"
-        ): OffsetByUserId {
-            return OffsetByUserId(
-                userId = userId,
+        ): OffsetByMemberId {
+            return OffsetByMemberId(
+                memberId = memberId,
                 pageInfo = OffsetPageInfo(
                     page = page,
                     size = size,
@@ -87,16 +87,16 @@ sealed class RetrospectiveApplicationQuery(
             )
         }
 
-        fun byUserIdAndPeriod(
-            userId: UserId,
+        fun byMemberIdAndPeriod(
+            memberId: MemberId,
             startDate: LocalDate,
             endDate: LocalDate,
             page: Int = 0,
             size: Int = 20,
             orderBy: String? = "startDate"
-        ): OffsetByUserIdAndPeriod {
-            return OffsetByUserIdAndPeriod(
-                userId = userId,
+        ): OffsetByMemberIdAndPeriod {
+            return OffsetByMemberIdAndPeriod(
+                memberId = memberId,
                 startDate = startDate,
                 endDate = endDate,
                 pageInfo = OffsetPageInfo(
@@ -107,16 +107,16 @@ sealed class RetrospectiveApplicationQuery(
             )
         }
 
-        fun byUserIdAndMonth(
-            userId: UserId,
+        fun byMemberIdAndMonth(
+            memberId: MemberId,
             year: Int,
             month: Int,
             page: Int = 0,
             size: Int = 20,
             orderBy: String? = "startDate"
-        ): OffsetByUserIdAndMonth {
-            return OffsetByUserIdAndMonth(
-                userId = userId,
+        ): OffsetByMemberIdAndMonth {
+            return OffsetByMemberIdAndMonth(
+                memberId = memberId,
                 year = year,
                 month = month,
                 pageInfo = OffsetPageInfo(
@@ -131,44 +131,44 @@ sealed class RetrospectiveApplicationQuery(
     // 단건 조회
     data class ByRetrospectiveId(
         val retrospectiveId: RetrospectiveId,
-        val userId: UserId
+        val memberId: MemberId
     ) : RetrospectiveApplicationQuery(OffsetPageInfo(page = 0, size = 1))
 
     // Cursor 기반 쿼리
-    data class CursorByUserId(
-        val userId: UserId,
+    data class CursorByMemberId(
+        val memberId: MemberId,
         override val pageInfo: CursorPageInfo
     ) : RetrospectiveApplicationQuery(pageInfo)
 
-    data class CursorByUserIdAndPeriod(
-        val userId: UserId,
+    data class CursorByMemberIdAndPeriod(
+        val memberId: MemberId,
         val startDate: LocalDate,
         val endDate: LocalDate,
         override val pageInfo: CursorPageInfo
     ) : RetrospectiveApplicationQuery(pageInfo)
 
-    data class CursorByUserIdAndMonth(
-        val userId: UserId,
+    data class CursorByMemberIdAndMonth(
+        val memberId: MemberId,
         val year: Int,
         val month: Int,
         override val pageInfo: CursorPageInfo
     ) : RetrospectiveApplicationQuery(pageInfo)
 
     // Offset 기반 쿼리
-    data class OffsetByUserId(
-        val userId: UserId,
+    data class OffsetByMemberId(
+        val memberId: MemberId,
         override val pageInfo: OffsetPageInfo
     ) : RetrospectiveApplicationQuery(pageInfo)
 
-    data class OffsetByUserIdAndPeriod(
-        val userId: UserId,
+    data class OffsetByMemberIdAndPeriod(
+        val memberId: MemberId,
         val startDate: LocalDate,
         val endDate: LocalDate,
         override val pageInfo: OffsetPageInfo
     ) : RetrospectiveApplicationQuery(pageInfo)
 
-    data class OffsetByUserIdAndMonth(
-        val userId: UserId,
+    data class OffsetByMemberIdAndMonth(
+        val memberId: MemberId,
         val year: Int,
         val month: Int,
         override val pageInfo: OffsetPageInfo

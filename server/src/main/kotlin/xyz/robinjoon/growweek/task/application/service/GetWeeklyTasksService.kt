@@ -17,10 +17,10 @@ class GetWeeklyTasksService(
 ) : GetWeeklyTasksUseCase {
 
     @Transactional(readOnly = true)
-    override fun execute(query: TaskApplicationQuery.OffsetByUserIdAndWeek): WeeklyTaskDto {
+    override fun execute(query: TaskApplicationQuery.OffsetByMemberIdAndWeek): WeeklyTaskDto {
         // Application Query를 Domain Query로 변환
-        val domainQuery = TaskQuery.OffsetByUserIdAndWeek(
-            userId = query.userId,
+        val domainQuery = TaskQuery.OffsetByMemberIdAndWeek(
+            memberId = query.memberId,
             weekStart = query.weekStart,
             weekEnd = query.weekEnd,
             pageInfo = query.pageInfo
@@ -30,10 +30,10 @@ class GetWeeklyTasksService(
     }
 
     @Transactional(readOnly = true)
-    override fun execute(query: TaskApplicationQuery.CursorByUserIdAndWeek): WeeklyTaskDto {
+    override fun execute(query: TaskApplicationQuery.CursorByMemberIdAndWeek): WeeklyTaskDto {
         // Application Query를 Domain Query로 변환
-        val domainQuery = TaskQuery.CursorByUserIdAndWeek(
-            userId = query.userId,
+        val domainQuery = TaskQuery.CursorByMemberIdAndWeek(
+            memberId = query.memberId,
             weekStart = query.weekStart,
             weekEnd = query.weekEnd,
             pageInfo = query.pageInfo
