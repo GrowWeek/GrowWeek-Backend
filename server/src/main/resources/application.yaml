@@ -21,6 +21,12 @@ jwt:
   secret: ${JWT_SECRET:growweek-dev-secret-key-for-jwt-token-generation-256-bits-minimum}
   expiration: 3600000
 
+gemini:
+  api-key: ${GEMINI_API_KEY}
+  base-url: https://generativelanguage.googleapis.com
+  model: gemini-3-flash-preview
+  thinking-level: low
+
 management:
   endpoint:
     health:
