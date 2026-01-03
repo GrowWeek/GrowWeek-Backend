@@ -9,11 +9,14 @@ import io.kotest.matchers.string.shouldNotBeBlank
  * Gemini API 통합 테스트
  *
  * 실제 Gemini API를 호출하여 연동이 정상적으로 동작하는지 확인합니다.
- * 환경변수 GEMINI_API_KEY가 설정되어 있어야 실행됩니다.
+ *
+ * 실행 조건:
+ * - 환경변수 RUN_INTEGRATION_TEST=true 설정 필요
+ * - 환경변수 GEMINI_API_KEY에 유효한 API 키 설정 필요
  *
  * 주의: thinkingLevel은 gemini-3-flash-preview, gemini-3-pro-preview 모델에서만 지원됩니다.
  */
-@EnabledIf(GeminiApiKeyCondition::class)
+@EnabledIf(GeminiIntegrationTestCondition::class)
 class GeminiClientIntegrationTest : BehaviorSpec({
 
     val apiKey = System.getenv("GEMINI_API_KEY") ?: ""
@@ -79,11 +82,13 @@ class GeminiClientIntegrationTest : BehaviorSpec({
 })
 
 /**
- * GEMINI_API_KEY 환경변수가 설정되어 있는지 확인하는 조건
+ * Gemini 통합 테스트 실행 조건
+ *
+ * RUN_INTEGRATION_TEST=true 환경변수가 설정된 경우에만 테스트 실행
  */
-class GeminiApiKeyCondition : io.kotest.core.annotation.Condition {
+class GeminiIntegrationTestCondition : io.kotest.core.annotation.Condition {
     override fun evaluate(kclass: kotlin.reflect.KClass<out io.kotest.core.spec.Spec>): Boolean {
-        val apiKey = System.getenv("GEMINI_API_KEY")
-        return !apiKey.isNullOrBlank()
+        val runIntegrationTest = System.getenv("RUN_INTEGRATION_TEST")
+        return runIntegrationTest == "true"
     }
 }
