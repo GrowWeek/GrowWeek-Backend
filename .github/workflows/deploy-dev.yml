@@ -6,6 +6,7 @@ on:
       - develop
     paths:
       - 'server/**'
+  workflow_dispatch:
 
 env:
   HARBOR_REGISTRY: harbor.homelab.robinjoon.xyz
