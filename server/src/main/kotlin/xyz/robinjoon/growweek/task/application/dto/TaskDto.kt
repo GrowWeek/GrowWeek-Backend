@@ -19,11 +19,11 @@ data class TaskDto(
     val dueDate: LocalDate,
     val hasRetrospective: Boolean,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
 ) {
     companion object {
-        fun from(task: Task): TaskDto {
-            return TaskDto(
+        fun from(task: Task): TaskDto =
+            TaskDto(
                 id = task.id,
                 memberId = task.memberId,
                 title = task.title,
@@ -35,9 +35,8 @@ data class TaskDto(
                 dueDate = task.period.dueDate,
                 hasRetrospective = task.retrospectiveId != null,
                 createdAt = task.createdAt,
-                updatedAt = task.updatedAt
+                updatedAt = task.updatedAt,
             )
-        }
     }
 }
 
@@ -45,7 +44,7 @@ data class WeeklyTaskDto(
     val weekStart: LocalDate,
     val weekEnd: LocalDate,
     val tasks: List<TaskDto>,
-    val statistics: TaskStatisticsDto
+    val statistics: TaskStatisticsDto,
 )
 
 data class TaskStatisticsDto(
@@ -53,5 +52,5 @@ data class TaskStatisticsDto(
     val todo: Int,
     val inProgress: Int,
     val done: Int,
-    val cancel: Int
+    val cancel: Int,
 )

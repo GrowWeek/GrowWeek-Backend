@@ -5,5 +5,5 @@ package xyz.robinjoon.growweek.task.presentation.rest.request
  */
 data class UpdateTaskStatusRequest(
     /** 변경할 할일 상태 (TODO, IN_PROGRESS, DONE, CANCEL) */
-    val status: String
+    val status: String,
 )

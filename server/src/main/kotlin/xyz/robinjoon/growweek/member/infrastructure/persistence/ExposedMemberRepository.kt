@@ -18,7 +18,6 @@ import java.time.LocalDateTime
 
 @Repository
 class ExposedMemberRepository : MemberRepository {
-
     @Transactional
     override fun saveAll(commands: List<MemberCommand>): List<Member> {
         val savedMembers = mutableListOf<Member>()
@@ -27,28 +26,33 @@ class ExposedMemberRepository : MemberRepository {
             when (command) {
                 is MemberCommand.CreateMember -> {
                     val now = LocalDateTime.now()
-                    val insertedId = MemberTable.insert {
-                        it[email] = command.email.value
-                        it[password] = command.password.value
-                        it[nickname] = command.nickname.value
-                        it[status] = MemberStatus.ACTIVE.name
-                        it[createdAt] = now
-                        it[updatedAt] = now
-                    } get MemberTable.id
+                    val insertedId =
+                        MemberTable.insert {
+                            it[email] = command.email.value
+                            it[password] = command.password.value
+                            it[nickname] = command.nickname.value
+                            it[status] = MemberStatus.ACTIVE.name
+                            it[createdAt] = now
+                            it[updatedAt] = now
+                        } get MemberTable.id
 
-                    val createdMember = MemberTable.selectAll()
-                        .where { MemberTable.id eq insertedId }
-                        .map { it.toMember() }
-                        .single()
+                    val createdMember =
+                        MemberTable
+                            .selectAll()
+                            .where { MemberTable.id eq insertedId }
+                            .map { it.toMember() }
+                            .single()
                     savedMembers.add(createdMember)
                 }
 
                 is MemberCommand.UpdateMember -> {
-                    val existingMember = MemberTable.selectAll()
-                        .where { MemberTable.id eq command.memberId.value }
-                        .map { it.toMember() }
-                        .singleOrNull()
-                        ?: throw IllegalArgumentException("Member not found: ${command.memberId.value}")
+                    val existingMember =
+                        MemberTable
+                            .selectAll()
+                            .where { MemberTable.id eq command.memberId.value }
+                            .map { it.toMember() }
+                            .singleOrNull()
+                            ?: throw IllegalArgumentException("Member not found: ${command.memberId.value}")
 
                     var updatedMember = existingMember
                     command.nickname?.let { updatedMember = updatedMember.updateNickname(it) }
@@ -58,10 +62,12 @@ class ExposedMemberRepository : MemberRepository {
                         it[updatedAt] = LocalDateTime.now()
                     }
 
-                    val refreshedMember = MemberTable.selectAll()
-                        .where { MemberTable.id eq command.memberId.value }
-                        .map { it.toMember() }
-                        .single()
+                    val refreshedMember =
+                        MemberTable
+                            .selectAll()
+                            .where { MemberTable.id eq command.memberId.value }
+                            .map { it.toMember() }
+                            .single()
                     savedMembers.add(refreshedMember)
                 }
 
@@ -71,10 +77,12 @@ class ExposedMemberRepository : MemberRepository {
                         it[updatedAt] = LocalDateTime.now()
                     }
 
-                    val deactivatedMember = MemberTable.selectAll()
-                        .where { MemberTable.id eq command.memberId.value }
-                        .map { it.toMember() }
-                        .single()
+                    val deactivatedMember =
+                        MemberTable
+                            .selectAll()
+                            .where { MemberTable.id eq command.memberId.value }
+                            .map { it.toMember() }
+                            .single()
                     savedMembers.add(deactivatedMember)
                 }
             }
@@ -85,37 +93,39 @@ class ExposedMemberRepository : MemberRepository {
 
     @Transactional(readOnly = true)
     override fun findAll(query: MemberQuery): Page<Member> {
-        val members = when (query) {
-            is MemberQuery.ById -> {
-                MemberTable.selectAll()
-                    .where { MemberTable.id eq query.memberId.value }
-                    .map { it.toMember() }
-            }
+        val members =
+            when (query) {
+                is MemberQuery.ById -> {
+                    MemberTable
+                        .selectAll()
+                        .where { MemberTable.id eq query.memberId.value }
+                        .map { it.toMember() }
+                }
 
-            is MemberQuery.ByEmail -> {
-                MemberTable.selectAll()
-                    .where { MemberTable.email eq query.email.value }
-                    .map { it.toMember() }
+                is MemberQuery.ByEmail -> {
+                    MemberTable
+                        .selectAll()
+                        .where { MemberTable.email eq query.email.value }
+                        .map { it.toMember() }
+                }
             }
-        }
 
         return OffsetPage(
             items = members,
             page = 0,
             size = members.size.coerceAtLeast(1),
-            totalPage = if (members.isEmpty()) 0 else 1
+            totalPage = if (members.isEmpty()) 0 else 1,
         )
     }
 
-    private fun ResultRow.toMember(): Member {
-        return Member.load(
+    private fun ResultRow.toMember(): Member =
+        Member.load(
             id = MemberId(this[MemberTable.id].value),
             email = Email(this[MemberTable.email]),
             password = Password(this[MemberTable.password]),
             nickname = Nickname(this[MemberTable.nickname]),
             status = MemberStatus.valueOf(this[MemberTable.status]),
             createdAt = this[MemberTable.createdAt],
-            updatedAt = this[MemberTable.updatedAt]
+            updatedAt = this[MemberTable.updatedAt],
         )
-    }
 }

@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 data class RetrospectivePeriod(
     val startDate: LocalDate,
-    val endDate: LocalDate
+    val endDate: LocalDate,
 ) {
     init {
         require(!startDate.isAfter(endDate)) {

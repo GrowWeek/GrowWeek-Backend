@@ -12,16 +12,16 @@ import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepos
 
 @Service
 class CreateRetrospectiveService(
-    private val retrospectiveRepository: RetrospectiveRepository
+    private val retrospectiveRepository: RetrospectiveRepository,
 ) : CreateRetrospectiveUseCase {
-
     @Transactional
     override fun execute(command: RetrospectiveApplicationCommand.CreateRetrospective): RetrospectiveDto {
-        val domainCommand = RetrospectiveCommand.CreateRetrospective(
-            memberId = command.memberId,
-            period = RetrospectivePeriod(command.startDate, command.endDate),
-            questionCount = QuestionCount(command.questionCount)
-        )
+        val domainCommand =
+            RetrospectiveCommand.CreateRetrospective(
+                memberId = command.memberId,
+                period = RetrospectivePeriod(command.startDate, command.endDate),
+                questionCount = QuestionCount(command.questionCount),
+            )
 
         val savedRetrospectives = retrospectiveRepository.saveAll(listOf(domainCommand))
         val created = savedRetrospectives.first()

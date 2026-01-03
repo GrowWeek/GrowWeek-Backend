@@ -9,15 +9,15 @@ sealed interface MemberCommand {
     data class CreateMember(
         val email: Email,
         val password: Password,
-        val nickname: Nickname
+        val nickname: Nickname,
     ) : MemberCommand
 
     data class UpdateMember(
         val memberId: MemberId,
-        val nickname: Nickname?
+        val nickname: Nickname?,
     ) : MemberCommand
 
     data class DeactivateMember(
-        val memberId: MemberId
+        val memberId: MemberId,
     ) : MemberCommand
 }

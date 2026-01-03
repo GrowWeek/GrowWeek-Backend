@@ -4,7 +4,6 @@ import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
 import org.jetbrains.exposed.v1.javatime.date
 import org.jetbrains.exposed.v1.javatime.datetime
 
-
 object TaskTable : LongIdTable("tasks") {
     // 기본 필드
     val userId = long("user_id")

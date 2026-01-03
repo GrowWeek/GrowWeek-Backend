@@ -17,11 +17,11 @@ data class RetrospectiveDto(
     val answers: List<AnswerDto>,
     val additionalNotes: String?,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
 ) {
     companion object {
-        fun from(retrospective: Retrospective): RetrospectiveDto {
-            return RetrospectiveDto(
+        fun from(retrospective: Retrospective): RetrospectiveDto =
+            RetrospectiveDto(
                 id = retrospective.id,
                 memberId = retrospective.memberId,
                 startDate = retrospective.period.startDate,
@@ -32,9 +32,8 @@ data class RetrospectiveDto(
                 answers = retrospective.answers.values.map { AnswerDto.from(it) },
                 additionalNotes = retrospective.additionalNotes?.value,
                 createdAt = retrospective.createdAt,
-                updatedAt = retrospective.updatedAt
+                updatedAt = retrospective.updatedAt,
             )
-        }
     }
 }
 
@@ -43,18 +42,17 @@ data class QuestionDto(
     val retrospectiveId: RetrospectiveId,
     val content: String,
     val order: Int,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
 ) {
     companion object {
-        fun from(question: Question): QuestionDto {
-            return QuestionDto(
+        fun from(question: Question): QuestionDto =
+            QuestionDto(
                 id = question.id,
                 retrospectiveId = question.retrospectiveId,
                 content = question.content,
                 order = question.order,
-                createdAt = question.createdAt
+                createdAt = question.createdAt,
             )
-        }
     }
 }
 
@@ -63,18 +61,17 @@ data class AnswerDto(
     val questionId: QuestionId,
     val content: String?,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
 ) {
     companion object {
-        fun from(answer: Answer): AnswerDto {
-            return AnswerDto(
+        fun from(answer: Answer): AnswerDto =
+            AnswerDto(
                 id = answer.id,
                 questionId = answer.questionId,
                 content = answer.content,
                 createdAt = answer.createdAt,
-                updatedAt = answer.updatedAt
+                updatedAt = answer.updatedAt,
             )
-        }
     }
 }
 
@@ -85,20 +82,19 @@ data class RetrospectiveSummaryDto(
     val status: RetrospectiveStatus,
     val questionCount: Int,
     val answeredCount: Int,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
 ) {
     companion object {
-        fun from(retrospective: Retrospective): RetrospectiveSummaryDto {
-            return RetrospectiveSummaryDto(
+        fun from(retrospective: Retrospective): RetrospectiveSummaryDto =
+            RetrospectiveSummaryDto(
                 id = retrospective.id,
                 startDate = retrospective.period.startDate,
                 endDate = retrospective.period.endDate,
                 status = retrospective.status,
                 questionCount = retrospective.questionCount.value,
                 answeredCount = retrospective.answers.count { it.value.content != null },
-                createdAt = retrospective.createdAt
+                createdAt = retrospective.createdAt,
             )
-        }
     }
 }
 
@@ -106,12 +102,12 @@ data class MonthlyRetrospectiveDto(
     val year: Int,
     val month: Int,
     val retrospectives: List<RetrospectiveSummaryDto>,
-    val statistics: RetrospectiveStatisticsDto
+    val statistics: RetrospectiveStatisticsDto,
 )
 
 data class RetrospectiveStatisticsDto(
     val total: Int,
     val completed: Int,
     val inProgress: Int,
-    val notStarted: Int
+    val notStarted: Int,
 )

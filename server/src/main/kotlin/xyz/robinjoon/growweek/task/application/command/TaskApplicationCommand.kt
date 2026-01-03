@@ -17,7 +17,7 @@ sealed interface TaskApplicationCommand {
         val priority: Int,
         val startDate: LocalDate,
         val dueDate: LocalDate,
-        val sensitivityLevel: SensitivityLevel = SensitivityLevel.NONE
+        val sensitivityLevel: SensitivityLevel = SensitivityLevel.NONE,
     ) : TaskApplicationCommand
 
     /**
@@ -31,7 +31,7 @@ sealed interface TaskApplicationCommand {
         val status: TaskStatus?,
         val priority: Int?,
         val dueDate: LocalDate?,
-        val sensitivityLevel: SensitivityLevel?
+        val sensitivityLevel: SensitivityLevel?,
     ) : TaskApplicationCommand
 
     /**
@@ -40,7 +40,7 @@ sealed interface TaskApplicationCommand {
     data class UpdateTaskStatus(
         val taskId: TaskId,
         val memberId: MemberId,
-        val status: TaskStatus
+        val status: TaskStatus,
     ) : TaskApplicationCommand
 
     /**
@@ -48,6 +48,6 @@ sealed interface TaskApplicationCommand {
      */
     data class DeleteTask(
         val taskId: TaskId,
-        val memberId: MemberId
+        val memberId: MemberId,
     ) : TaskApplicationCommand
 }

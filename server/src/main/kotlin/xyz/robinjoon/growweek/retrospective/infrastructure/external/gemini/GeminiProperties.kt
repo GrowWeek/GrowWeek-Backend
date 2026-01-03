@@ -9,9 +9,11 @@ import org.springframework.boot.context.properties.bind.ConstructorBinding
  * application.yaml의 gemini 설정을 바인딩합니다.
  */
 @ConfigurationProperties(prefix = "gemini")
-data class GeminiProperties @ConstructorBinding constructor(
-    val apiKey: String,
-    val baseUrl: String = "https://generativelanguage.googleapis.com",
-    val model: String = "gemini-2.0-flash",
-    val thinkingLevel: String = "low"
-)
+data class GeminiProperties
+    @ConstructorBinding
+    constructor(
+        val apiKey: String,
+        val baseUrl: String = "https://generativelanguage.googleapis.com",
+        val model: String = "gemini-2.0-flash",
+        val thinkingLevel: String = "low",
+    )

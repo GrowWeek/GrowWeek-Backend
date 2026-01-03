@@ -13,15 +13,15 @@ import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepos
 @Service
 class CompleteRetrospectiveService(
     private val retrospectiveRepository: RetrospectiveRepository,
-    private val eventPublisher: DomainEventPublisher
+    private val eventPublisher: DomainEventPublisher,
 ) : CompleteRetrospectiveUseCase {
-
     @Transactional
     override fun execute(command: RetrospectiveApplicationCommand.CompleteRetrospective): RetrospectiveDto {
-        val domainCommand = RetrospectiveCommand.CompleteRetrospective(
-            retrospectiveId = command.retrospectiveId,
-            memberId = command.memberId
-        )
+        val domainCommand =
+            RetrospectiveCommand.CompleteRetrospective(
+                retrospectiveId = command.retrospectiveId,
+                memberId = command.memberId,
+            )
 
         val savedRetrospectives = retrospectiveRepository.saveAll(listOf(domainCommand))
         val completed = savedRetrospectives.first()
@@ -32,8 +32,8 @@ class CompleteRetrospectiveService(
                 retrospectiveId = completed.id,
                 memberId = completed.memberId,
                 startDate = completed.period.startDate,
-                endDate = completed.period.endDate
-            )
+                endDate = completed.period.endDate,
+            ),
         )
 
         return RetrospectiveDto.from(completed)

@@ -25,9 +25,9 @@ import java.util.regex.Pattern
  */
 open class DatabaseInitializer(
     private val applicationContext: ApplicationContext,
-    private val excludedPackages: List<String>
-) :
-    ApplicationRunner, Ordered {
+    private val excludedPackages: List<String>,
+) : ApplicationRunner,
+    Ordered {
     override fun getOrder(): Int = DATABASE_INITIALIZER_ORDER
 
     companion object {
@@ -50,7 +50,10 @@ open class DatabaseInitializer(
  * Returns a list of identified tables that extend Exposed's base [Table] class, without searching any packages
  * in [excludedPackages].
  */
-fun discoverExposedTables(applicationContext: ApplicationContext, excludedPackages: List<String>): List<Table> {
+fun discoverExposedTables(
+    applicationContext: ApplicationContext,
+    excludedPackages: List<String>,
+): List<Table> {
     val provider = ClassPathScanningCandidateComponentProvider(false)
     provider.addIncludeFilter(AssignableTypeFilter(Table::class.java))
     excludedPackages.forEach {
@@ -59,10 +62,10 @@ fun discoverExposedTables(applicationContext: ApplicationContext, excludedPackag
                 Pattern.compile(
                     it.replace(
                         ".",
-                        "\\."
-                    ) + ".*"
-                )
-            )
+                        "\\.",
+                    ) + ".*",
+                ),
+            ),
         )
     }
     val packages = AutoConfigurationPackages.get(applicationContext)

@@ -7,5 +7,6 @@ import xyz.robinjoon.growweek.retrospective.application.query.RetrospectiveAppli
 
 interface GetRetrospectiveUseCase {
     fun getById(query: RetrospectiveApplicationQuery.ByRetrospectiveId): RetrospectiveDto
+
     fun getList(query: RetrospectiveApplicationQuery): Page<RetrospectiveSummaryDto>
 }

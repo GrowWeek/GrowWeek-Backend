@@ -7,12 +7,11 @@ data class Answer(
     val questionId: QuestionId,
     val content: String?,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
 ) {
-    fun updateContent(newContent: String?): Answer {
-        return copy(
+    fun updateContent(newContent: String?): Answer =
+        copy(
             content = newContent,
-            updatedAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now(),
         )
-    }
 }

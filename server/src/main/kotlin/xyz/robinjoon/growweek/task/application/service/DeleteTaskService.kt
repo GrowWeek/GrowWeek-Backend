@@ -9,16 +9,16 @@ import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
 
 @Service
 class DeleteTaskService(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
 ) : DeleteTaskUseCase {
-
     @Transactional
     override fun execute(command: TaskApplicationCommand.DeleteTask) {
         // Application Command를 Domain Command로 변환
-        val domainCommand = TaskCommand.DeleteTask(
-            taskId = command.taskId,
-            memberId = command.memberId
-        )
+        val domainCommand =
+            TaskCommand.DeleteTask(
+                taskId = command.taskId,
+                memberId = command.memberId,
+            )
 
         // Repository를 통해 삭제
         taskRepository.saveAll(listOf(domainCommand))

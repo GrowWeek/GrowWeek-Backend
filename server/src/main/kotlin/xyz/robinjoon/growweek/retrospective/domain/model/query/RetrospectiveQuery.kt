@@ -9,9 +9,8 @@ import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import java.time.LocalDate
 
 sealed class RetrospectiveQuery(
-    override val pageInfo: PageInfo
+    override val pageInfo: PageInfo,
 ) : PageQuery {
-
     /**
      * Cursor 기반 쿼리 팩토리
      */
@@ -20,17 +19,17 @@ sealed class RetrospectiveQuery(
             memberId: MemberId,
             cursor: String? = null,
             size: Int = 20,
-            orderBy: String? = "createdAt"
-        ): CursorByMemberId {
-            return CursorByMemberId(
+            orderBy: String? = "createdAt",
+        ): CursorByMemberId =
+            CursorByMemberId(
                 memberId = memberId,
-                pageInfo = CursorPageInfo(
-                    cursor = cursor,
-                    size = size,
-                    orderBy = orderBy
-                )
+                pageInfo =
+                    CursorPageInfo(
+                        cursor = cursor,
+                        size = size,
+                        orderBy = orderBy,
+                    ),
             )
-        }
 
         fun byMemberIdAndPeriod(
             memberId: MemberId,
@@ -38,35 +37,35 @@ sealed class RetrospectiveQuery(
             endDate: LocalDate,
             cursor: String? = null,
             size: Int = 20,
-            orderBy: String? = "startDate"
-        ): CursorByMemberIdAndPeriod {
-            return CursorByMemberIdAndPeriod(
+            orderBy: String? = "startDate",
+        ): CursorByMemberIdAndPeriod =
+            CursorByMemberIdAndPeriod(
                 memberId = memberId,
                 startDate = startDate,
                 endDate = endDate,
-                pageInfo = CursorPageInfo(
-                    cursor = cursor,
-                    size = size,
-                    orderBy = orderBy
-                )
+                pageInfo =
+                    CursorPageInfo(
+                        cursor = cursor,
+                        size = size,
+                        orderBy = orderBy,
+                    ),
             )
-        }
 
         fun byRetrospectiveId(
             retrospectiveId: RetrospectiveId,
             cursor: String? = null,
             size: Int = 1,
-            orderBy: String? = null
-        ): CursorByRetrospectiveId {
-            return CursorByRetrospectiveId(
+            orderBy: String? = null,
+        ): CursorByRetrospectiveId =
+            CursorByRetrospectiveId(
                 retrospectiveId = retrospectiveId,
-                pageInfo = CursorPageInfo(
-                    cursor = cursor,
-                    size = size,
-                    orderBy = orderBy
-                )
+                pageInfo =
+                    CursorPageInfo(
+                        cursor = cursor,
+                        size = size,
+                        orderBy = orderBy,
+                    ),
             )
-        }
 
         fun byMemberIdAndMonth(
             memberId: MemberId,
@@ -74,19 +73,19 @@ sealed class RetrospectiveQuery(
             month: Int,
             cursor: String? = null,
             size: Int = 20,
-            orderBy: String? = "startDate"
-        ): CursorByMemberIdAndMonth {
-            return CursorByMemberIdAndMonth(
+            orderBy: String? = "startDate",
+        ): CursorByMemberIdAndMonth =
+            CursorByMemberIdAndMonth(
                 memberId = memberId,
                 year = year,
                 month = month,
-                pageInfo = CursorPageInfo(
-                    cursor = cursor,
-                    size = size,
-                    orderBy = orderBy
-                )
+                pageInfo =
+                    CursorPageInfo(
+                        cursor = cursor,
+                        size = size,
+                        orderBy = orderBy,
+                    ),
             )
-        }
     }
 
     /**
@@ -97,17 +96,17 @@ sealed class RetrospectiveQuery(
             memberId: MemberId,
             page: Int = 0,
             size: Int = 20,
-            orderBy: String? = "createdAt"
-        ): OffsetByMemberId {
-            return OffsetByMemberId(
+            orderBy: String? = "createdAt",
+        ): OffsetByMemberId =
+            OffsetByMemberId(
                 memberId = memberId,
-                pageInfo = OffsetPageInfo(
-                    page = page,
-                    size = size,
-                    orderBy = orderBy
-                )
+                pageInfo =
+                    OffsetPageInfo(
+                        page = page,
+                        size = size,
+                        orderBy = orderBy,
+                    ),
             )
-        }
 
         fun byMemberIdAndPeriod(
             memberId: MemberId,
@@ -115,35 +114,35 @@ sealed class RetrospectiveQuery(
             endDate: LocalDate,
             page: Int = 0,
             size: Int = 20,
-            orderBy: String? = "startDate"
-        ): OffsetByMemberIdAndPeriod {
-            return OffsetByMemberIdAndPeriod(
+            orderBy: String? = "startDate",
+        ): OffsetByMemberIdAndPeriod =
+            OffsetByMemberIdAndPeriod(
                 memberId = memberId,
                 startDate = startDate,
                 endDate = endDate,
-                pageInfo = OffsetPageInfo(
-                    page = page,
-                    size = size,
-                    orderBy = orderBy
-                )
+                pageInfo =
+                    OffsetPageInfo(
+                        page = page,
+                        size = size,
+                        orderBy = orderBy,
+                    ),
             )
-        }
 
         fun byRetrospectiveId(
             retrospectiveId: RetrospectiveId,
             page: Int = 0,
             size: Int = 1,
-            orderBy: String? = null
-        ): OffsetByRetrospectiveId {
-            return OffsetByRetrospectiveId(
+            orderBy: String? = null,
+        ): OffsetByRetrospectiveId =
+            OffsetByRetrospectiveId(
                 retrospectiveId = retrospectiveId,
-                pageInfo = OffsetPageInfo(
-                    page = page,
-                    size = size,
-                    orderBy = orderBy
-                )
+                pageInfo =
+                    OffsetPageInfo(
+                        page = page,
+                        size = size,
+                        orderBy = orderBy,
+                    ),
             )
-        }
 
         fun byMemberIdAndMonth(
             memberId: MemberId,
@@ -151,26 +150,26 @@ sealed class RetrospectiveQuery(
             month: Int,
             page: Int = 0,
             size: Int = 20,
-            orderBy: String? = "startDate"
-        ): OffsetByMemberIdAndMonth {
-            return OffsetByMemberIdAndMonth(
+            orderBy: String? = "startDate",
+        ): OffsetByMemberIdAndMonth =
+            OffsetByMemberIdAndMonth(
                 memberId = memberId,
                 year = year,
                 month = month,
-                pageInfo = OffsetPageInfo(
-                    page = page,
-                    size = size,
-                    orderBy = orderBy
-                )
+                pageInfo =
+                    OffsetPageInfo(
+                        page = page,
+                        size = size,
+                        orderBy = orderBy,
+                    ),
             )
-        }
     }
 
     // Cursor 기반 쿼리 구현체들
 
     data class CursorByMemberId(
         val memberId: MemberId,
-        override val pageInfo: CursorPageInfo
+        override val pageInfo: CursorPageInfo,
     ) : RetrospectiveQuery(pageInfo) {
         val cursor get() = pageInfo.cursor
         val size get() = pageInfo.size
@@ -181,7 +180,7 @@ sealed class RetrospectiveQuery(
         val memberId: MemberId,
         val startDate: LocalDate,
         val endDate: LocalDate,
-        override val pageInfo: CursorPageInfo
+        override val pageInfo: CursorPageInfo,
     ) : RetrospectiveQuery(pageInfo) {
         val cursor get() = pageInfo.cursor
         val size get() = pageInfo.size
@@ -190,7 +189,7 @@ sealed class RetrospectiveQuery(
 
     data class CursorByRetrospectiveId(
         val retrospectiveId: RetrospectiveId,
-        override val pageInfo: CursorPageInfo
+        override val pageInfo: CursorPageInfo,
     ) : RetrospectiveQuery(pageInfo) {
         val cursor get() = pageInfo.cursor
         val size get() = pageInfo.size
@@ -201,7 +200,7 @@ sealed class RetrospectiveQuery(
         val memberId: MemberId,
         val year: Int,
         val month: Int,
-        override val pageInfo: CursorPageInfo
+        override val pageInfo: CursorPageInfo,
     ) : RetrospectiveQuery(pageInfo) {
         val cursor get() = pageInfo.cursor
         val size get() = pageInfo.size
@@ -212,7 +211,7 @@ sealed class RetrospectiveQuery(
 
     data class OffsetByMemberId(
         val memberId: MemberId,
-        override val pageInfo: OffsetPageInfo
+        override val pageInfo: OffsetPageInfo,
     ) : RetrospectiveQuery(pageInfo) {
         val page get() = pageInfo.page
         val size get() = pageInfo.size
@@ -223,7 +222,7 @@ sealed class RetrospectiveQuery(
         val memberId: MemberId,
         val startDate: LocalDate,
         val endDate: LocalDate,
-        override val pageInfo: OffsetPageInfo
+        override val pageInfo: OffsetPageInfo,
     ) : RetrospectiveQuery(pageInfo) {
         val page get() = pageInfo.page
         val size get() = pageInfo.size
@@ -232,7 +231,7 @@ sealed class RetrospectiveQuery(
 
     data class OffsetByRetrospectiveId(
         val retrospectiveId: RetrospectiveId,
-        override val pageInfo: OffsetPageInfo
+        override val pageInfo: OffsetPageInfo,
     ) : RetrospectiveQuery(pageInfo) {
         val page get() = pageInfo.page
         val size get() = pageInfo.size
@@ -243,7 +242,7 @@ sealed class RetrospectiveQuery(
         val memberId: MemberId,
         val year: Int,
         val month: Int,
-        override val pageInfo: OffsetPageInfo
+        override val pageInfo: OffsetPageInfo,
     ) : RetrospectiveQuery(pageInfo) {
         val page get() = pageInfo.page
         val size get() = pageInfo.size

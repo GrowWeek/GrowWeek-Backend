@@ -19,5 +19,5 @@ interface DomainEvent<T> {
 data class DefaultDomainEvent<T>(
     override val eventId: UUID = UUID.randomUUID(),
     override val occurredAt: LocalDateTime = LocalDateTime.now(),
-    override val payload: T
+    override val payload: T,
 ) : DomainEvent<T>

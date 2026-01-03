@@ -16,9 +16,8 @@ import xyz.robinjoon.growweek.member.domain.repository.MemberRepository
 @Service
 class SignUpService(
     private val memberRepository: MemberRepository,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
 ) : SignUpUseCase {
-
     @Transactional
     override fun signUp(command: MemberApplicationCommand.SignUp): MemberDto {
         val email = Email(command.email)
@@ -36,11 +35,12 @@ class SignUpService(
         val encodedPassword = passwordEncoder.encode(command.password)!!
 
         // 회원 생성
-        val createCommand = MemberCommand.CreateMember(
-            email = email,
-            password = Password(encodedPassword),
-            nickname = Nickname(command.nickname)
-        )
+        val createCommand =
+            MemberCommand.CreateMember(
+                email = email,
+                password = Password(encodedPassword),
+                nickname = Nickname(command.nickname),
+            )
 
         val savedMembers = memberRepository.saveAll(listOf(createCommand))
         val member = savedMembers.first()

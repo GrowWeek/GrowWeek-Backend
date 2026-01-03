@@ -9,9 +9,8 @@ import xyz.robinjoon.growweek.common.domain.TaskId
 import java.time.LocalDate
 
 sealed class TaskQuery(
-    override val pageInfo: PageInfo
+    override val pageInfo: PageInfo,
 ) : PageQuery {
-
     /**
      * Cursor 기반 쿼리 팩토리
      */
@@ -20,17 +19,17 @@ sealed class TaskQuery(
             memberId: MemberId,
             cursor: String? = null,
             size: Int = 20,
-            orderBy: String? = "updatedAt"
-        ): CursorByMemberId {
-            return CursorByMemberId(
+            orderBy: String? = "updatedAt",
+        ): CursorByMemberId =
+            CursorByMemberId(
                 memberId = memberId,
-                pageInfo = CursorPageInfo(
-                    cursor = cursor,
-                    size = size,
-                    orderBy = orderBy
-                )
+                pageInfo =
+                    CursorPageInfo(
+                        cursor = cursor,
+                        size = size,
+                        orderBy = orderBy,
+                    ),
             )
-        }
 
         fun byMemberIdAndWeek(
             memberId: MemberId,
@@ -38,35 +37,35 @@ sealed class TaskQuery(
             weekEnd: LocalDate,
             cursor: String? = null,
             size: Int = 20,
-            orderBy: String? = "priority"
-        ): CursorByMemberIdAndWeek {
-            return CursorByMemberIdAndWeek(
+            orderBy: String? = "priority",
+        ): CursorByMemberIdAndWeek =
+            CursorByMemberIdAndWeek(
                 memberId = memberId,
                 weekStart = weekStart,
                 weekEnd = weekEnd,
-                pageInfo = CursorPageInfo(
-                    cursor = cursor,
-                    size = size,
-                    orderBy = orderBy
-                )
+                pageInfo =
+                    CursorPageInfo(
+                        cursor = cursor,
+                        size = size,
+                        orderBy = orderBy,
+                    ),
             )
-        }
 
         fun byTaskId(
             taskId: TaskId,
             cursor: String? = null,
             size: Int = 1,
-            orderBy: String? = null
-        ): CursorByTaskId {
-            return CursorByTaskId(
+            orderBy: String? = null,
+        ): CursorByTaskId =
+            CursorByTaskId(
                 taskId = taskId,
-                pageInfo = CursorPageInfo(
-                    cursor = cursor,
-                    size = size,
-                    orderBy = orderBy
-                )
+                pageInfo =
+                    CursorPageInfo(
+                        cursor = cursor,
+                        size = size,
+                        orderBy = orderBy,
+                    ),
             )
-        }
     }
 
     /**
@@ -77,17 +76,17 @@ sealed class TaskQuery(
             memberId: MemberId,
             page: Int = 0,
             size: Int = 20,
-            orderBy: String? = "updatedAt"
-        ): OffsetByMemberId {
-            return OffsetByMemberId(
+            orderBy: String? = "updatedAt",
+        ): OffsetByMemberId =
+            OffsetByMemberId(
                 memberId = memberId,
-                pageInfo = OffsetPageInfo(
-                    page = page,
-                    size = size,
-                    orderBy = orderBy
-                )
+                pageInfo =
+                    OffsetPageInfo(
+                        page = page,
+                        size = size,
+                        orderBy = orderBy,
+                    ),
             )
-        }
 
         fun byMemberIdAndWeek(
             memberId: MemberId,
@@ -95,42 +94,42 @@ sealed class TaskQuery(
             weekEnd: LocalDate,
             page: Int = 0,
             size: Int = 20,
-            orderBy: String? = "priority"
-        ): OffsetByMemberIdAndWeek {
-            return OffsetByMemberIdAndWeek(
+            orderBy: String? = "priority",
+        ): OffsetByMemberIdAndWeek =
+            OffsetByMemberIdAndWeek(
                 memberId = memberId,
                 weekStart = weekStart,
                 weekEnd = weekEnd,
-                pageInfo = OffsetPageInfo(
-                    page = page,
-                    size = size,
-                    orderBy = orderBy
-                )
+                pageInfo =
+                    OffsetPageInfo(
+                        page = page,
+                        size = size,
+                        orderBy = orderBy,
+                    ),
             )
-        }
 
         fun byTaskId(
             taskId: TaskId,
             page: Int = 0,
             size: Int = 1,
-            orderBy: String? = null
-        ): OffsetByTaskId {
-            return OffsetByTaskId(
+            orderBy: String? = null,
+        ): OffsetByTaskId =
+            OffsetByTaskId(
                 taskId = taskId,
-                pageInfo = OffsetPageInfo(
-                    page = page,
-                    size = size,
-                    orderBy = orderBy
-                )
+                pageInfo =
+                    OffsetPageInfo(
+                        page = page,
+                        size = size,
+                        orderBy = orderBy,
+                    ),
             )
-        }
     }
 
     // Cursor 기반 쿼리 구현체들
 
     data class CursorByMemberId(
         val memberId: MemberId,
-        override val pageInfo: CursorPageInfo
+        override val pageInfo: CursorPageInfo,
     ) : TaskQuery(pageInfo) {
         val cursor get() = pageInfo.cursor
         val size get() = pageInfo.size
@@ -141,7 +140,7 @@ sealed class TaskQuery(
         val memberId: MemberId,
         val weekStart: LocalDate,
         val weekEnd: LocalDate,
-        override val pageInfo: CursorPageInfo
+        override val pageInfo: CursorPageInfo,
     ) : TaskQuery(pageInfo) {
         val cursor get() = pageInfo.cursor
         val size get() = pageInfo.size
@@ -150,7 +149,7 @@ sealed class TaskQuery(
 
     data class CursorByTaskId(
         val taskId: TaskId,
-        override val pageInfo: CursorPageInfo
+        override val pageInfo: CursorPageInfo,
     ) : TaskQuery(pageInfo) {
         val cursor get() = pageInfo.cursor
         val size get() = pageInfo.size
@@ -161,7 +160,7 @@ sealed class TaskQuery(
 
     data class OffsetByMemberId(
         val memberId: MemberId,
-        override val pageInfo: OffsetPageInfo
+        override val pageInfo: OffsetPageInfo,
     ) : TaskQuery(pageInfo) {
         val page get() = pageInfo.page
         val size get() = pageInfo.size
@@ -172,7 +171,7 @@ sealed class TaskQuery(
         val memberId: MemberId,
         val weekStart: LocalDate,
         val weekEnd: LocalDate,
-        override val pageInfo: OffsetPageInfo
+        override val pageInfo: OffsetPageInfo,
     ) : TaskQuery(pageInfo) {
         val page get() = pageInfo.page
         val size get() = pageInfo.size
@@ -181,7 +180,7 @@ sealed class TaskQuery(
 
     data class OffsetByTaskId(
         val taskId: TaskId,
-        override val pageInfo: OffsetPageInfo
+        override val pageInfo: OffsetPageInfo,
     ) : TaskQuery(pageInfo) {
         val page get() = pageInfo.page
         val size get() = pageInfo.size

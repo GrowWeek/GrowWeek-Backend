@@ -18,9 +18,8 @@ import kotlin.reflect.KClass
  */
 @Component
 class RetrospectiveCompletedHandler(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
 ) : DomainEventHandler<RetrospectiveEventPayload.Completed> {
-
     private val log = LoggerFactory.getLogger(RetrospectiveCompletedHandler::class.java)
 
     override fun handle(event: DomainEvent<RetrospectiveEventPayload.Completed>) {
@@ -28,28 +27,28 @@ class RetrospectiveCompletedHandler(
         val payload = event.payload
 
         // 해당 기간의 Task 조회
-        val query = TaskQuery.Offset.byMemberIdAndWeek(
-            memberId = payload.memberId,
-            weekStart = payload.startDate,
-            weekEnd = payload.endDate,
-            size = Int.MAX_VALUE
-        )
+        val query =
+            TaskQuery.Offset.byMemberIdAndWeek(
+                memberId = payload.memberId,
+                weekStart = payload.startDate,
+                weekEnd = payload.endDate,
+                size = Int.MAX_VALUE,
+            )
         val tasks = taskRepository.findAll(query).items
 
         // 각 Task에 회고 연결
-        val linkCommands = tasks.map { task ->
-            TaskCommand.LinkRetrospective(
-                taskId = task.id,
-                retrospectiveId = payload.retrospectiveId
-            )
-        }
+        val linkCommands =
+            tasks.map { task ->
+                TaskCommand.LinkRetrospective(
+                    taskId = task.id,
+                    retrospectiveId = payload.retrospectiveId,
+                )
+            }
 
         if (linkCommands.isNotEmpty()) {
             taskRepository.saveAll(linkCommands)
         }
     }
 
-    override fun supports(payloadType: KClass<*>): Boolean {
-        return payloadType == RetrospectiveEventPayload.Completed::class
-    }
+    override fun supports(payloadType: KClass<*>): Boolean = payloadType == RetrospectiveEventPayload.Completed::class
 }

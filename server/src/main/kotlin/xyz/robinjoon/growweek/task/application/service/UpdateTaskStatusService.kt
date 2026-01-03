@@ -10,17 +10,17 @@ import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
 
 @Service
 class UpdateTaskStatusService(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
 ) : UpdateTaskStatusUseCase {
-
     @Transactional
     override fun execute(command: TaskApplicationCommand.UpdateTaskStatus): TaskDto {
         // Application Command를 Domain Command로 변환
-        val domainCommand = TaskCommand.UpdateTaskStatus(
-            taskId = command.taskId,
-            memberId = command.memberId,
-            status = command.status
-        )
+        val domainCommand =
+            TaskCommand.UpdateTaskStatus(
+                taskId = command.taskId,
+                memberId = command.memberId,
+                status = command.status,
+            )
 
         // Repository를 통해 업데이트
         val savedTasks = taskRepository.saveAll(listOf(domainCommand))

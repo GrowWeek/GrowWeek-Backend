@@ -13,15 +13,17 @@ import org.springframework.web.client.RestClientException
  */
 @Component
 class GeminiClient(
-    private val geminiProperties: GeminiProperties
+    private val geminiProperties: GeminiProperties,
 ) {
     private val logger = LoggerFactory.getLogger(GeminiClient::class.java)
 
-    private val restClient: RestClient = RestClient.builder()
-        .baseUrl(geminiProperties.baseUrl)
-        .defaultHeader("x-goog-api-key", geminiProperties.apiKey)
-        .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-        .build()
+    private val restClient: RestClient =
+        RestClient
+            .builder()
+            .baseUrl(geminiProperties.baseUrl)
+            .defaultHeader("x-goog-api-key", geminiProperties.apiKey)
+            .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .build()
 
     /**
      * Gemini API에 텍스트 생성 요청
@@ -31,17 +33,20 @@ class GeminiClient(
      * @throws GeminiApiException API 호출 실패 시
      */
     fun generateContent(prompt: String): String {
-        val request = GeminiRequest.createTextRequest(
-            prompt = prompt,
-            thinkingLevel = geminiProperties.thinkingLevel
-        )
+        val request =
+            GeminiRequest.createTextRequest(
+                prompt = prompt,
+                thinkingLevel = geminiProperties.thinkingLevel,
+            )
 
         return try {
-            val response = restClient.post()
-                .uri("/v1beta/models/${geminiProperties.model}:generateContent")
-                .body(request)
-                .retrieve()
-                .body(GeminiResponse::class.java)
+            val response =
+                restClient
+                    .post()
+                    .uri("/v1beta/models/${geminiProperties.model}:generateContent")
+                    .body(request)
+                    .retrieve()
+                    .body(GeminiResponse::class.java)
 
             response?.let { geminiResponse ->
                 geminiResponse.error?.let { error ->
@@ -65,5 +70,5 @@ class GeminiClient(
 class GeminiApiException(
     message: String,
     val errorCode: Int? = null,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : RuntimeException(message, cause)

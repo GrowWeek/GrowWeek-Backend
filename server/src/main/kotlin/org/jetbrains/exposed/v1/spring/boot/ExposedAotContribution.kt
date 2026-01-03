@@ -29,10 +29,8 @@ import org.springframework.core.type.filter.AssignableTypeFilter
  */
 @Suppress("SpreadOperator")
 class ExposedAotContribution : BeanFactoryInitializationAotProcessor {
-    override fun processAheadOfTime(
-        beanFactory: ConfigurableListableBeanFactory
-    ): BeanFactoryInitializationAotContribution {
-        return BeanFactoryInitializationAotContribution { generationContext, _ ->
+    override fun processAheadOfTime(beanFactory: ConfigurableListableBeanFactory): BeanFactoryInitializationAotContribution =
+        BeanFactoryInitializationAotContribution { generationContext, _ ->
             val hints = generationContext.runtimeHints
             val memberCategories = MemberCategory.entries.toTypedArray()
 
@@ -51,13 +49,12 @@ class ExposedAotContribution : BeanFactoryInitializationAotProcessor {
                     }
                 }
         }
-    }
 
     private fun RuntimeHints.registerResourceHints() {
         listOf(
             "META-INF/services/org.jetbrains.exposed.v1.core.dao.id.EntityIDFactory",
             "META-INF/services/org.jetbrains.exposed.v1.jdbc.DatabaseConnectionAutoRegistration",
-            "META-INF/services/org.jetbrains.exposed.v1.core.statements.GlobalStatementInterceptor"
+            "META-INF/services/org.jetbrains.exposed.v1.core.statements.GlobalStatementInterceptor",
         ).forEach { resource ->
             resources().registerResource(ClassPathResource(resource))
         }
@@ -119,7 +116,7 @@ class ExposedAotContribution : BeanFactoryInitializationAotProcessor {
             kotlin.jvm.functions.Function20::class,
             kotlin.jvm.functions.Function21::class,
             kotlin.jvm.functions.Function22::class,
-            kotlin.jvm.functions.FunctionN::class
+            kotlin.jvm.functions.FunctionN::class,
         ).forEach { typeClass ->
             reflection().registerType(typeClass.java, *memberCategories)
         }
@@ -130,7 +127,10 @@ class ExposedAotContribution : BeanFactoryInitializationAotProcessor {
      *
      * @return A set of detected classes referenced by type abstraction as [TypeReference].
      */
-    private fun findSubClassesInPackage(baseClass: Class<*>, packageName: String): Set<TypeReference> {
+    private fun findSubClassesInPackage(
+        baseClass: Class<*>,
+        packageName: String,
+    ): Set<TypeReference> {
         val typeFilter = AssignableTypeFilter(baseClass)
         val classPathScanner = ClassPathScanningCandidateComponentProvider(false).apply { addIncludeFilter(typeFilter) }
         return classPathScanner

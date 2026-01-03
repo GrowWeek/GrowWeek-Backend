@@ -18,7 +18,7 @@ data class Task(
     val period: TaskPeriod,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
-    val retrospectiveId: RetrospectiveId? = null
+    val retrospectiveId: RetrospectiveId? = null,
 ) {
     /**
      * 할일 수정 가능 여부 확인
@@ -33,7 +33,10 @@ data class Task(
     /**
      * 제목 수정
      */
-    fun updateTitle(newTitle: TaskTitle, retrospectiveDate: LocalDate?): Task {
+    fun updateTitle(
+        newTitle: TaskTitle,
+        retrospectiveDate: LocalDate?,
+    ): Task {
         validateModification(retrospectiveDate)
         return copy(title = newTitle, updatedAt = LocalDateTime.now())
     }
@@ -41,7 +44,10 @@ data class Task(
     /**
      * 설명 수정
      */
-    fun updateDescription(newDescription: TaskDescription?, retrospectiveDate: LocalDate?): Task {
+    fun updateDescription(
+        newDescription: TaskDescription?,
+        retrospectiveDate: LocalDate?,
+    ): Task {
         validateModification(retrospectiveDate)
         return copy(description = newDescription, updatedAt = LocalDateTime.now())
     }
@@ -49,7 +55,10 @@ data class Task(
     /**
      * 상태 수정
      */
-    fun updateStatus(newStatus: TaskStatus, retrospectiveDate: LocalDate?): Task {
+    fun updateStatus(
+        newStatus: TaskStatus,
+        retrospectiveDate: LocalDate?,
+    ): Task {
         validateModification(retrospectiveDate)
         return copy(status = newStatus, updatedAt = LocalDateTime.now())
     }
@@ -57,7 +66,10 @@ data class Task(
     /**
      * 중요도 수정
      */
-    fun updatePriority(newPriority: Priority, retrospectiveDate: LocalDate?): Task {
+    fun updatePriority(
+        newPriority: Priority,
+        retrospectiveDate: LocalDate?,
+    ): Task {
         validateModification(retrospectiveDate)
         return copy(priority = newPriority, updatedAt = LocalDateTime.now())
     }
@@ -65,7 +77,10 @@ data class Task(
     /**
      * 민감도 수정
      */
-    fun updateSensitivityLevel(newLevel: SensitivityLevel, retrospectiveDate: LocalDate?): Task {
+    fun updateSensitivityLevel(
+        newLevel: SensitivityLevel,
+        retrospectiveDate: LocalDate?,
+    ): Task {
         validateModification(retrospectiveDate)
         return copy(sensitivityLevel = newLevel, updatedAt = LocalDateTime.now())
     }
@@ -73,7 +88,10 @@ data class Task(
     /**
      * 마감일 수정
      */
-    fun updateDueDate(newDueDate: LocalDate, retrospectiveDate: LocalDate?): Task {
+    fun updateDueDate(
+        newDueDate: LocalDate,
+        retrospectiveDate: LocalDate?,
+    ): Task {
         if (retrospectiveId != null && retrospectiveDate != null) {
             require(newDueDate.isAfter(retrospectiveDate)) {
                 "회고 시점 이전으로 마감일을 수정할 수 없습니다"
@@ -86,14 +104,15 @@ data class Task(
     /**
      * 회고 연결
      */
-    fun linkRetrospective(retrospectiveId: RetrospectiveId): Task {
-        return copy(retrospectiveId = retrospectiveId, updatedAt = LocalDateTime.now())
-    }
+    fun linkRetrospective(retrospectiveId: RetrospectiveId): Task = copy(retrospectiveId = retrospectiveId, updatedAt = LocalDateTime.now())
 
     /**
      * 특정 주에 속하는지 확인
      */
-    fun belongsToWeek(weekStart: LocalDate, weekEnd: LocalDate): Boolean {
+    fun belongsToWeek(
+        weekStart: LocalDate,
+        weekEnd: LocalDate,
+    ): Boolean {
         // 시작일~마감일 범위가 해당 주와 겹치는지 확인
         if (!period.overlaps(weekStart, weekEnd)) return false
 

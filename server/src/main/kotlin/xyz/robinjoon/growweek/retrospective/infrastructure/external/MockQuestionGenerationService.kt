@@ -13,20 +13,20 @@ import xyz.robinjoon.growweek.task.domain.model.Task
  */
 @Service
 class MockQuestionGenerationService : QuestionGenerationService {
-
-    private val defaultQuestions = listOf(
-        "이번 주 가장 잘한 일은 무엇인가요?",
-        "이번 주 가장 어려웠던 점은 무엇인가요?",
-        "다음 주에 개선하고 싶은 점은 무엇인가요?",
-        "이번 주 배운 점이 있다면 무엇인가요?",
-        "팀원들에게 공유하고 싶은 인사이트가 있나요?",
-        "이번 주 목표 달성도는 어떠했나요?",
-        "자신에게 칭찬해주고 싶은 점이 있나요?"
-    )
+    private val defaultQuestions =
+        listOf(
+            "이번 주 가장 잘한 일은 무엇인가요?",
+            "이번 주 가장 어려웠던 점은 무엇인가요?",
+            "다음 주에 개선하고 싶은 점은 무엇인가요?",
+            "이번 주 배운 점이 있다면 무엇인가요?",
+            "팀원들에게 공유하고 싶은 인사이트가 있나요?",
+            "이번 주 목표 달성도는 어떠했나요?",
+            "자신에게 칭찬해주고 싶은 점이 있나요?",
+        )
 
     override suspend fun generateQuestions(
         tasks: List<Task>,
-        questionCount: QuestionCount
+        questionCount: QuestionCount,
     ): List<String> {
         val questions = mutableListOf<String>()
 

@@ -11,7 +11,7 @@ import javax.crypto.SecretKey
 @Component
 class JwtTokenProvider(
     @Value("\${jwt.secret}") private val secret: String,
-    @Value("\${jwt.expiration}") private val expirationMs: Long
+    @Value("\${jwt.expiration}") private val expirationMs: Long,
 ) {
     private val secretKey: SecretKey by lazy {
         Keys.hmacShaKeyFor(secret.toByteArray())
@@ -21,7 +21,8 @@ class JwtTokenProvider(
         val now = Date()
         val expiration = Date(now.time + expirationMs)
 
-        return Jwts.builder()
+        return Jwts
+            .builder()
             .subject(memberId.value.toString())
             .issuedAt(now)
             .expiration(expiration)
@@ -30,18 +31,21 @@ class JwtTokenProvider(
     }
 
     fun getMemberIdFromToken(token: String): MemberId {
-        val claims = Jwts.parser()
-            .verifyWith(secretKey)
-            .build()
-            .parseSignedClaims(token)
-            .payload
+        val claims =
+            Jwts
+                .parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .payload
 
         return MemberId(claims.subject.toLong())
     }
 
-    fun validateToken(token: String): Boolean {
-        return try {
-            Jwts.parser()
+    fun validateToken(token: String): Boolean =
+        try {
+            Jwts
+                .parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
@@ -49,7 +53,6 @@ class JwtTokenProvider(
         } catch (e: Exception) {
             false
         }
-    }
 
     fun getExpirationInSeconds(): Long = expirationMs / 1000
 }

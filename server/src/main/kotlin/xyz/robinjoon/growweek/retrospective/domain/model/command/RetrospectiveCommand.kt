@@ -14,7 +14,7 @@ sealed interface RetrospectiveCommand {
     data class CreateRetrospective(
         val memberId: MemberId,
         val period: RetrospectivePeriod,
-        val questionCount: QuestionCount = QuestionCount.DEFAULT
+        val questionCount: QuestionCount = QuestionCount.DEFAULT,
     ) : RetrospectiveCommand
 
     /**
@@ -22,7 +22,7 @@ sealed interface RetrospectiveCommand {
      */
     data class GenerateQuestions(
         val retrospectiveId: RetrospectiveId,
-        val memberId: MemberId
+        val memberId: MemberId,
     ) : RetrospectiveCommand
 
     /**
@@ -30,7 +30,7 @@ sealed interface RetrospectiveCommand {
      */
     data class CompleteQuestionGeneration(
         val retrospectiveId: RetrospectiveId,
-        val generatedQuestionContents: List<String>
+        val generatedQuestionContents: List<String>,
     ) : RetrospectiveCommand
 
     /**
@@ -40,7 +40,7 @@ sealed interface RetrospectiveCommand {
         val retrospectiveId: RetrospectiveId,
         val memberId: MemberId,
         val questionId: QuestionId,
-        val content: String?
+        val content: String?,
     ) : RetrospectiveCommand
 
     /**
@@ -49,7 +49,7 @@ sealed interface RetrospectiveCommand {
     data class WriteAdditionalNotes(
         val retrospectiveId: RetrospectiveId,
         val memberId: MemberId,
-        val notes: AdditionalNotes
+        val notes: AdditionalNotes,
     ) : RetrospectiveCommand
 
     /**
@@ -57,7 +57,7 @@ sealed interface RetrospectiveCommand {
      */
     data class CompleteRetrospective(
         val retrospectiveId: RetrospectiveId,
-        val memberId: MemberId
+        val memberId: MemberId,
     ) : RetrospectiveCommand
 
     /**
@@ -65,6 +65,6 @@ sealed interface RetrospectiveCommand {
      */
     data class DeleteRetrospective(
         val retrospectiveId: RetrospectiveId,
-        val memberId: MemberId
+        val memberId: MemberId,
     ) : RetrospectiveCommand
 }

@@ -16,17 +16,20 @@ import java.sql.SQLException
  */
 class ExposedSpringTransactionAttributeSource(
     private val delegate: TransactionAttributeSource = AnnotationTransactionAttributeSource(),
-    private val rollbackExceptions: List<Class<out Throwable>> = listOf(SQLException::class.java)
+    private val rollbackExceptions: List<Class<out Throwable>> = listOf(SQLException::class.java),
 ) : TransactionAttributeSource {
-
-    override fun getTransactionAttribute(method: Method, targetClass: Class<*>?): TransactionAttribute? {
+    override fun getTransactionAttribute(
+        method: Method,
+        targetClass: Class<*>?,
+    ): TransactionAttribute? {
         val attr = delegate.getTransactionAttribute(method, targetClass)
         if (attr is RuleBasedTransactionAttribute) {
             val rules = attr.rollbackRules.toMutableList()
             rollbackExceptions.forEach { exception ->
-                val containsException = rules.any {
-                    it is RollbackRuleAttribute && it.exceptionName == exception.name
-                }
+                val containsException =
+                    rules.any {
+                        it is RollbackRuleAttribute && it.exceptionName == exception.name
+                    }
                 if (!containsException) {
                     rules.add(RollbackRuleAttribute(exception))
                 }

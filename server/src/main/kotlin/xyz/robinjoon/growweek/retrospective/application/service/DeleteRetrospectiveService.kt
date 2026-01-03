@@ -9,15 +9,15 @@ import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepos
 
 @Service
 class DeleteRetrospectiveService(
-    private val retrospectiveRepository: RetrospectiveRepository
+    private val retrospectiveRepository: RetrospectiveRepository,
 ) : DeleteRetrospectiveUseCase {
-
     @Transactional
     override fun execute(command: RetrospectiveApplicationCommand.DeleteRetrospective) {
-        val domainCommand = RetrospectiveCommand.DeleteRetrospective(
-            retrospectiveId = command.retrospectiveId,
-            memberId = command.memberId
-        )
+        val domainCommand =
+            RetrospectiveCommand.DeleteRetrospective(
+                retrospectiveId = command.retrospectiveId,
+                memberId = command.memberId,
+            )
 
         retrospectiveRepository.saveAll(listOf(domainCommand))
     }

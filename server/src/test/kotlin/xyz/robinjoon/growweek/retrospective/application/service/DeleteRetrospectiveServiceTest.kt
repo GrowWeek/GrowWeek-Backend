@@ -13,37 +13,39 @@ import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApp
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
 import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepository
 
-class DeleteRetrospectiveServiceTest : BehaviorSpec({
+class DeleteRetrospectiveServiceTest :
+    BehaviorSpec({
 
-    isolationMode = IsolationMode.InstancePerLeaf
+        isolationMode = IsolationMode.InstancePerLeaf
 
-    val retrospectiveRepository = mockk<RetrospectiveRepository>()
-    val service = DeleteRetrospectiveService(retrospectiveRepository)
+        val retrospectiveRepository = mockk<RetrospectiveRepository>()
+        val service = DeleteRetrospectiveService(retrospectiveRepository)
 
-    Given("회고 삭제 요청이 왔을 때") {
-        val retrospectiveId = RetrospectiveId(1L)
-        val memberId = MemberId(1L)
+        Given("회고 삭제 요청이 왔을 때") {
+            val retrospectiveId = RetrospectiveId(1L)
+            val memberId = MemberId(1L)
 
-        val command = RetrospectiveApplicationCommand.DeleteRetrospective(
-            retrospectiveId = retrospectiveId,
-            memberId = memberId
-        )
+            val command =
+                RetrospectiveApplicationCommand.DeleteRetrospective(
+                    retrospectiveId = retrospectiveId,
+                    memberId = memberId,
+                )
 
-        val commandSlot = slot<List<RetrospectiveCommand>>()
-        every { retrospectiveRepository.saveAll(capture(commandSlot)) } returns emptyList()
+            val commandSlot = slot<List<RetrospectiveCommand>>()
+            every { retrospectiveRepository.saveAll(capture(commandSlot)) } returns emptyList()
 
-        When("서비스를 실행하면") {
-            service.execute(command)
+            When("서비스를 실행하면") {
+                service.execute(command)
 
-            Then("Repository에 삭제 요청을 해야 한다") {
-                verify(exactly = 1) { retrospectiveRepository.saveAll(any()) }
-            }
+                Then("Repository에 삭제 요청을 해야 한다") {
+                    verify(exactly = 1) { retrospectiveRepository.saveAll(any()) }
+                }
 
-            Then("Application Command가 Domain Command로 변환되어야 한다") {
-                val capturedCommand = commandSlot.captured.first() as RetrospectiveCommand.DeleteRetrospective
-                capturedCommand.retrospectiveId shouldBe retrospectiveId
-                capturedCommand.memberId shouldBe memberId
+                Then("Application Command가 Domain Command로 변환되어야 한다") {
+                    val capturedCommand = commandSlot.captured.first() as RetrospectiveCommand.DeleteRetrospective
+                    capturedCommand.retrospectiveId shouldBe retrospectiveId
+                    capturedCommand.memberId shouldBe memberId
+                }
             }
         }
-    }
-})
+    })
