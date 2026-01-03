@@ -20,15 +20,14 @@ import xyz.robinjoon.growweek.task.domain.model.Task
 @Primary
 @ConditionalOnProperty(prefix = "gemini", name = ["api-key"])
 class GeminiQuestionGenerationService(
-    private val geminiClient: GeminiClient
+    private val geminiClient: GeminiClient,
 ) : QuestionGenerationService {
-
     private val logger = LoggerFactory.getLogger(GeminiQuestionGenerationService::class.java)
     private val objectMapper = jacksonObjectMapper()
 
     override suspend fun generateQuestions(
         tasks: List<Task>,
-        questionCount: QuestionCount
+        questionCount: QuestionCount,
     ): List<String> {
         val prompt = buildPrompt(tasks, questionCount)
 
@@ -44,12 +43,16 @@ class GeminiQuestionGenerationService(
         }
     }
 
-    private fun buildPrompt(tasks: List<Task>, questionCount: QuestionCount): String {
-        val taskSummary = if (tasks.isEmpty()) {
-            "이번 주에 등록된 할일이 없습니다."
-        } else {
-            buildTaskSummary(tasks)
-        }
+    private fun buildPrompt(
+        tasks: List<Task>,
+        questionCount: QuestionCount,
+    ): String {
+        val taskSummary =
+            if (tasks.isEmpty()) {
+                "이번 주에 등록된 할일이 없습니다."
+            } else {
+                buildTaskSummary(tasks)
+            }
 
         return """
             당신은 개인 성장과 업무 효율성 향상을 돕는 회고 코치입니다.
@@ -68,7 +71,7 @@ class GeminiQuestionGenerationService(
             6. 각 질문은 명확하고 구체적이어야 합니다
 
             JSON 배열 형식으로만 응답하세요.
-        """.trimIndent()
+            """.trimIndent()
     }
 
     private fun buildTaskSummary(tasks: List<Task>): String {
@@ -102,35 +105,46 @@ class GeminiQuestionGenerationService(
         }
     }
 
-    private fun parseQuestionsFromResponse(response: String, expectedCount: Int): List<String> {
-        return try {
-            val questions: List<String> = objectMapper.readValue(
-                response,
-                object : TypeReference<List<String>>() {}
-            )
+    private fun parseQuestionsFromResponse(
+        response: String,
+        expectedCount: Int,
+    ): List<String> =
+        try {
+            val questions: List<String> =
+                objectMapper.readValue(
+                    response,
+                    object : TypeReference<List<String>>() {},
+                )
             questions.take(expectedCount)
         } catch (e: Exception) {
             logger.warn("JSON 파싱 실패, 텍스트 파싱 시도: ${e.message}")
             parseQuestionsFromText(response, expectedCount)
         }
-    }
 
-    private fun parseQuestionsFromText(response: String, expectedCount: Int): List<String> {
-        val lines = response.lines()
-            .map { it.trim() }
-            .filter { it.isNotBlank() }
-            .map { line ->
-                line.removePrefix("-")
-                    .removePrefix("•")
-                    .trim()
-                    .let { if (it.matches(Regex("^\\d+\\..*"))) it.substringAfter(".").trim() else it }
-            }
-            .filter { it.endsWith("?") || it.endsWith("?") }
+    private fun parseQuestionsFromText(
+        response: String,
+        expectedCount: Int,
+    ): List<String> {
+        val lines =
+            response
+                .lines()
+                .map { it.trim() }
+                .filter { it.isNotBlank() }
+                .map { line ->
+                    line
+                        .removePrefix("-")
+                        .removePrefix("•")
+                        .trim()
+                        .let { if (it.matches(Regex("^\\d+\\..*"))) it.substringAfter(".").trim() else it }
+                }.filter { it.endsWith("?") || it.endsWith("?") }
 
         return lines.take(expectedCount)
     }
 
-    private fun generateFallbackQuestions(tasks: List<Task>, questionCount: QuestionCount): List<String> {
+    private fun generateFallbackQuestions(
+        tasks: List<Task>,
+        questionCount: QuestionCount,
+    ): List<String> {
         val fallbackQuestions = mutableListOf<String>()
 
         if (tasks.isNotEmpty()) {
@@ -145,13 +159,14 @@ class GeminiQuestionGenerationService(
             }
         }
 
-        val defaultQuestions = listOf(
-            "이번 주 가장 잘한 일은 무엇인가요?",
-            "이번 주 가장 어려웠던 점은 무엇인가요?",
-            "다음 주에 개선하고 싶은 점은 무엇인가요?",
-            "이번 주 배운 점이 있다면 무엇인가요?",
-            "자신에게 칭찬해주고 싶은 점이 있나요?"
-        )
+        val defaultQuestions =
+            listOf(
+                "이번 주 가장 잘한 일은 무엇인가요?",
+                "이번 주 가장 어려웠던 점은 무엇인가요?",
+                "다음 주에 개선하고 싶은 점은 무엇인가요?",
+                "이번 주 배운 점이 있다면 무엇인가요?",
+                "자신에게 칭찬해주고 싶은 점이 있나요?",
+            )
 
         val remaining = questionCount.value - fallbackQuestions.size
         if (remaining > 0) {

@@ -15,7 +15,7 @@ import xyz.robinjoon.growweek.common.event.DomainEventHandler
  */
 @Component
 class DomainEventDispatcher(
-    private val handlers: List<DomainEventHandler<*>>
+    private val handlers: List<DomainEventHandler<*>>,
 ) {
     private val log = LoggerFactory.getLogger(DomainEventDispatcher::class.java)
 

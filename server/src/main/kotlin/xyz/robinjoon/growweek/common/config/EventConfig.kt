@@ -8,11 +8,7 @@ import xyz.robinjoon.growweek.common.infrastructure.SpringDomainEventPublisher
 
 @Configuration
 class EventConfig {
-
     @Bean
-    fun domainEventPublisher(
-        applicationEventPublisher: ApplicationEventPublisher
-    ): DomainEventPublisher {
-        return SpringDomainEventPublisher(applicationEventPublisher)
-    }
+    fun domainEventPublisher(applicationEventPublisher: ApplicationEventPublisher): DomainEventPublisher =
+        SpringDomainEventPublisher(applicationEventPublisher)
 }

@@ -11,16 +11,16 @@ import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepos
 
 @Service
 class WriteAdditionalNotesService(
-    private val retrospectiveRepository: RetrospectiveRepository
+    private val retrospectiveRepository: RetrospectiveRepository,
 ) : WriteAdditionalNotesUseCase {
-
     @Transactional
     override fun execute(command: RetrospectiveApplicationCommand.WriteAdditionalNotes): RetrospectiveDto {
-        val domainCommand = RetrospectiveCommand.WriteAdditionalNotes(
-            retrospectiveId = command.retrospectiveId,
-            memberId = command.memberId,
-            notes = AdditionalNotes(command.notes)
-        )
+        val domainCommand =
+            RetrospectiveCommand.WriteAdditionalNotes(
+                retrospectiveId = command.retrospectiveId,
+                memberId = command.memberId,
+                notes = AdditionalNotes(command.notes),
+            )
 
         val savedRetrospectives = retrospectiveRepository.saveAll(listOf(domainCommand))
         return RetrospectiveDto.from(savedRetrospectives.first())

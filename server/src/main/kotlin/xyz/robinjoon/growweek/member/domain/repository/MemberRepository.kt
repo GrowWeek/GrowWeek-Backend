@@ -7,5 +7,6 @@ import xyz.robinjoon.growweek.member.domain.model.query.MemberQuery
 
 interface MemberRepository {
     fun saveAll(commands: List<MemberCommand>): List<Member>
+
     fun findAll(query: MemberQuery): Page<Member>
 }

@@ -15,15 +15,15 @@ import xyz.robinjoon.growweek.member.domain.repository.MemberRepository
 class LoginService(
     private val memberRepository: MemberRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val jwtTokenProvider: JwtTokenProvider
+    private val jwtTokenProvider: JwtTokenProvider,
 ) : LoginUseCase {
-
     @Transactional(readOnly = true)
     override fun login(command: MemberApplicationCommand.Login): TokenDto {
         val email = Email(command.email)
 
-        val member = memberRepository.findAll(MemberQuery.byEmail(email)).items.firstOrNull()
-            ?: throw IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다")
+        val member =
+            memberRepository.findAll(MemberQuery.byEmail(email)).items.firstOrNull()
+                ?: throw IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다")
 
         if (!member.isActive()) {
             throw IllegalStateException("비활성화된 계정입니다")
@@ -37,7 +37,7 @@ class LoginService(
 
         return TokenDto(
             accessToken = accessToken,
-            expiresIn = jwtTokenProvider.getExpirationInSeconds()
+            expiresIn = jwtTokenProvider.getExpirationInSeconds(),
         )
     }
 }

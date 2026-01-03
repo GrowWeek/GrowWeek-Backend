@@ -10,13 +10,13 @@ data class Member(
     val nickname: Nickname,
     val status: MemberStatus,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
 ) {
     companion object {
         fun create(
             email: Email,
             password: Password,
-            nickname: Nickname
+            nickname: Nickname,
         ): Member {
             val now = LocalDateTime.now()
             return Member(
@@ -26,7 +26,7 @@ data class Member(
                 nickname = nickname,
                 status = MemberStatus.ACTIVE,
                 createdAt = now,
-                updatedAt = now
+                updatedAt = now,
             )
         }
 
@@ -37,37 +37,32 @@ data class Member(
             nickname: Nickname,
             status: MemberStatus,
             createdAt: LocalDateTime,
-            updatedAt: LocalDateTime
-        ): Member {
-            return Member(
+            updatedAt: LocalDateTime,
+        ): Member =
+            Member(
                 id = id,
                 email = email,
                 password = password,
                 nickname = nickname,
                 status = status,
                 createdAt = createdAt,
-                updatedAt = updatedAt
+                updatedAt = updatedAt,
             )
-        }
     }
 
     fun isActive(): Boolean = status == MemberStatus.ACTIVE
 
-    fun deactivate(): Member {
-        return copy(
+    fun deactivate(): Member =
+        copy(
             status = MemberStatus.INACTIVE,
-            updatedAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now(),
         )
-    }
 
-    fun updateNickname(newNickname: Nickname): Member {
-        return copy(
+    fun updateNickname(newNickname: Nickname): Member =
+        copy(
             nickname = newNickname,
-            updatedAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now(),
         )
-    }
 
-    fun withId(newId: MemberId): Member {
-        return copy(id = newId)
-    }
+    fun withId(newId: MemberId): Member = copy(id = newId)
 }

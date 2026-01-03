@@ -11,7 +11,6 @@ import java.time.LocalDate
  * 다른 BC를 직접 참조하지 않고 common의 공유 계약을 통해 통신합니다.
  */
 sealed interface RetrospectiveEventPayload {
-
     /**
      * 회고 완료 시 발행되는 이벤트
      */
@@ -19,7 +18,7 @@ sealed interface RetrospectiveEventPayload {
         val retrospectiveId: RetrospectiveId,
         val memberId: MemberId,
         val startDate: LocalDate,
-        val endDate: LocalDate
+        val endDate: LocalDate,
     ) : RetrospectiveEventPayload
 
     /**
@@ -27,6 +26,6 @@ sealed interface RetrospectiveEventPayload {
      */
     data class Deleted(
         val retrospectiveId: RetrospectiveId,
-        val memberId: MemberId
+        val memberId: MemberId,
     ) : RetrospectiveEventPayload
 }

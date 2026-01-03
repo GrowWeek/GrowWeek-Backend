@@ -1,7 +1,7 @@
 package xyz.robinjoon.growweek.common.event
 
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 /**
  * 모든 도메인 이벤트의 기반 인터페이스
@@ -19,5 +19,5 @@ interface DomainEvent<T> {
 data class DefaultDomainEvent<T>(
     override val eventId: UUID = UUID.randomUUID(),
     override val occurredAt: LocalDateTime = LocalDateTime.now(),
-    override val payload: T
+    override val payload: T,
 ) : DomainEvent<T>

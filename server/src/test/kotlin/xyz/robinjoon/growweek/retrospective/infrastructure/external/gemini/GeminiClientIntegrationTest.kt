@@ -17,69 +17,74 @@ import io.kotest.matchers.string.shouldNotBeBlank
  * 주의: thinkingLevel은 gemini-3-flash-preview, gemini-3-pro-preview 모델에서만 지원됩니다.
  */
 @EnabledIf(GeminiIntegrationTestCondition::class)
-class GeminiClientIntegrationTest : BehaviorSpec({
+class GeminiClientIntegrationTest :
+    BehaviorSpec({
 
-    val apiKey = System.getenv("GEMINI_API_KEY") ?: ""
+        val apiKey = System.getenv("GEMINI_API_KEY") ?: ""
 
-    Given("Gemini API 키가 설정되어 있을 때") {
+        Given("Gemini API 키가 설정되어 있을 때") {
 
-        When("gemini-3-flash-preview 모델로 텍스트 생성을 요청하면") {
-            val properties = GeminiProperties(
-                apiKey = apiKey,
-                model = "gemini-3-flash-preview",
-                thinkingLevel = "low"
-            )
-            val client = GeminiClient(properties)
+            When("gemini-3-flash-preview 모델로 텍스트 생성을 요청하면") {
+                val properties =
+                    GeminiProperties(
+                        apiKey = apiKey,
+                        model = "gemini-3-flash-preview",
+                        thinkingLevel = "low",
+                    )
+                val client = GeminiClient(properties)
 
-            val result = client.generateContent("1 + 1 = ? 숫자만 답해주세요.")
+                val result = client.generateContent("1 + 1 = ? 숫자만 답해주세요.")
 
-            Then("응답이 반환되어야 한다") {
-                result.shouldNotBeBlank()
-                println("gemini-3-flash-preview 응답: $result")
+                Then("응답이 반환되어야 한다") {
+                    result.shouldNotBeBlank()
+                    println("gemini-3-flash-preview 응답: $result")
+                }
+            }
+
+            When("gemini-3-pro-preview 모델로 텍스트 생성을 요청하면") {
+                val properties =
+                    GeminiProperties(
+                        apiKey = apiKey,
+                        model = "gemini-3-pro-preview",
+                        thinkingLevel = "low",
+                    )
+                val client = GeminiClient(properties)
+
+                val result = client.generateContent("대한민국의 수도는? 도시 이름만 답해주세요.")
+
+                Then("응답이 반환되어야 한다") {
+                    result.shouldNotBeBlank()
+                    println("gemini-3-pro-preview 응답: $result")
+                }
+            }
+
+            When("JSON 배열 형식으로 질문 생성을 요청하면") {
+                val properties =
+                    GeminiProperties(
+                        apiKey = apiKey,
+                        model = "gemini-3-flash-preview",
+                        thinkingLevel = "low",
+                    )
+                val client = GeminiClient(properties)
+
+                val prompt =
+                    """
+                    회고 질문 3개를 생성해주세요.
+                    JSON 배열 형식으로만 응답하세요.
+                    예시: ["질문1", "질문2", "질문3"]
+                    """.trimIndent()
+
+                val result = client.generateContent(prompt)
+
+                Then("JSON 배열 형식의 응답이 반환되어야 한다") {
+                    result.shouldNotBeBlank()
+                    result.contains("[") shouldBe true
+                    result.contains("]") shouldBe true
+                    println("질문 생성 응답: $result")
+                }
             }
         }
-
-        When("gemini-3-pro-preview 모델로 텍스트 생성을 요청하면") {
-            val properties = GeminiProperties(
-                apiKey = apiKey,
-                model = "gemini-3-pro-preview",
-                thinkingLevel = "low"
-            )
-            val client = GeminiClient(properties)
-
-            val result = client.generateContent("대한민국의 수도는? 도시 이름만 답해주세요.")
-
-            Then("응답이 반환되어야 한다") {
-                result.shouldNotBeBlank()
-                println("gemini-3-pro-preview 응답: $result")
-            }
-        }
-
-        When("JSON 배열 형식으로 질문 생성을 요청하면") {
-            val properties = GeminiProperties(
-                apiKey = apiKey,
-                model = "gemini-3-flash-preview",
-                thinkingLevel = "low"
-            )
-            val client = GeminiClient(properties)
-
-            val prompt = """
-                회고 질문 3개를 생성해주세요.
-                JSON 배열 형식으로만 응답하세요.
-                예시: ["질문1", "질문2", "질문3"]
-            """.trimIndent()
-
-            val result = client.generateContent(prompt)
-
-            Then("JSON 배열 형식의 응답이 반환되어야 한다") {
-                result.shouldNotBeBlank()
-                result.contains("[") shouldBe true
-                result.contains("]") shouldBe true
-                println("질문 생성 응답: $result")
-            }
-        }
-    }
-})
+    })
 
 /**
  * Gemini 통합 테스트 실행 조건

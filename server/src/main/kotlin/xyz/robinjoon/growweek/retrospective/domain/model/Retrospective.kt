@@ -1,7 +1,7 @@
 package xyz.robinjoon.growweek.retrospective.domain.model
 
-import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.MemberId
+import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import java.time.LocalDateTime
 
 data class Retrospective(
@@ -14,14 +14,12 @@ data class Retrospective(
     val answers: Map<QuestionId, Answer>,
     val additionalNotes: AdditionalNotes?,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
 ) {
     /**
      * 회고 작성 가능 여부 확인
      */
-    fun canWrite(): Boolean {
-        return period.isWritable() && status != RetrospectiveStatus.DONE
-    }
+    fun canWrite(): Boolean = period.isWritable() && status != RetrospectiveStatus.DONE
 
     /**
      * 질문 생성 시작
@@ -32,7 +30,7 @@ data class Retrospective(
         }
         return copy(
             status = RetrospectiveStatus.BEFORE_GENERATE_QUESTION,
-            updatedAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now(),
         )
     }
 
@@ -49,14 +47,17 @@ data class Retrospective(
         return copy(
             status = RetrospectiveStatus.AFTER_GENERATE_QUESTION,
             questions = generatedQuestions,
-            updatedAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now(),
         )
     }
 
     /**
      * 답변 작성/수정
      */
-    fun writeAnswer(questionId: QuestionId, content: String?): Retrospective {
+    fun writeAnswer(
+        questionId: QuestionId,
+        content: String?,
+    ): Retrospective {
         require(canWrite()) {
             "회고 작성 기간이 지났거나 이미 완료된 회고입니다"
         }
@@ -66,24 +67,26 @@ data class Retrospective(
 
         val existingAnswer = answers[questionId]
         val now = LocalDateTime.now()
-        val newAnswer = Answer(
-            id = existingAnswer?.id,
-            questionId = questionId,
-            content = content,
-            createdAt = existingAnswer?.createdAt ?: now,
-            updatedAt = now
-        )
+        val newAnswer =
+            Answer(
+                id = existingAnswer?.id,
+                questionId = questionId,
+                content = content,
+                createdAt = existingAnswer?.createdAt ?: now,
+                updatedAt = now,
+            )
 
-        val newStatus = if (status == RetrospectiveStatus.AFTER_GENERATE_QUESTION) {
-            RetrospectiveStatus.IN_PROGRESS
-        } else {
-            status
-        }
+        val newStatus =
+            if (status == RetrospectiveStatus.AFTER_GENERATE_QUESTION) {
+                RetrospectiveStatus.IN_PROGRESS
+            } else {
+                status
+            }
 
         return copy(
             status = newStatus,
             answers = answers + (questionId to newAnswer),
-            updatedAt = now
+            updatedAt = now,
         )
     }
 
@@ -96,7 +99,7 @@ data class Retrospective(
         }
         return copy(
             additionalNotes = notes,
-            updatedAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now(),
         )
     }
 
@@ -109,7 +112,7 @@ data class Retrospective(
         }
         return copy(
             status = RetrospectiveStatus.DONE,
-            updatedAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now(),
         )
     }
 }

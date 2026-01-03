@@ -13,41 +13,44 @@ import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepos
 
 @Service
 class GetMonthlyRetrospectivesService(
-    private val retrospectiveRepository: RetrospectiveRepository
+    private val retrospectiveRepository: RetrospectiveRepository,
 ) : GetMonthlyRetrospectivesUseCase {
-
     @Transactional(readOnly = true)
     override fun execute(query: RetrospectiveApplicationQuery.OffsetByMemberIdAndMonth): MonthlyRetrospectiveDto {
-        val domainQuery = RetrospectiveQuery.Offset.byMemberIdAndMonth(
-            memberId = query.memberId,
-            year = query.year,
-            month = query.month,
-            page = query.pageInfo.page,
-            size = query.pageInfo.size,
-            orderBy = query.pageInfo.orderBy
-        )
+        val domainQuery =
+            RetrospectiveQuery.Offset.byMemberIdAndMonth(
+                memberId = query.memberId,
+                year = query.year,
+                month = query.month,
+                page = query.pageInfo.page,
+                size = query.pageInfo.size,
+                orderBy = query.pageInfo.orderBy,
+            )
 
         val result = retrospectiveRepository.findAll(domainQuery)
         val retrospectives = result.items
 
-        val statistics = RetrospectiveStatisticsDto(
-            total = retrospectives.size,
-            completed = retrospectives.count { it.status == RetrospectiveStatus.DONE },
-            inProgress = retrospectives.count { it.status == RetrospectiveStatus.IN_PROGRESS },
-            notStarted = retrospectives.count {
-                it.status in listOf(
-                    RetrospectiveStatus.TODO,
-                    RetrospectiveStatus.BEFORE_GENERATE_QUESTION,
-                    RetrospectiveStatus.AFTER_GENERATE_QUESTION
-                )
-            }
-        )
+        val statistics =
+            RetrospectiveStatisticsDto(
+                total = retrospectives.size,
+                completed = retrospectives.count { it.status == RetrospectiveStatus.DONE },
+                inProgress = retrospectives.count { it.status == RetrospectiveStatus.IN_PROGRESS },
+                notStarted =
+                    retrospectives.count {
+                        it.status in
+                            listOf(
+                                RetrospectiveStatus.TODO,
+                                RetrospectiveStatus.BEFORE_GENERATE_QUESTION,
+                                RetrospectiveStatus.AFTER_GENERATE_QUESTION,
+                            )
+                    },
+            )
 
         return MonthlyRetrospectiveDto(
             year = query.year,
             month = query.month,
             retrospectives = retrospectives.map { RetrospectiveSummaryDto.from(it) },
-            statistics = statistics
+            statistics = statistics,
         )
     }
 }

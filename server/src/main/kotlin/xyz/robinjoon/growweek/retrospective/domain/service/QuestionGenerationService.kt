@@ -19,6 +19,6 @@ interface QuestionGenerationService {
      */
     suspend fun generateQuestions(
         tasks: List<Task>,
-        questionCount: QuestionCount
+        questionCount: QuestionCount,
     ): List<String>
 }

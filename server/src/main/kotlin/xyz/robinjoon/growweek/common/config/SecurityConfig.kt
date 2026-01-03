@@ -17,9 +17,8 @@ import xyz.robinjoon.growweek.common.infrastructure.security.JwtAuthenticationFi
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val jwtAuthenticationFilter: JwtAuthenticationFilter
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
 ) {
-
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
@@ -35,16 +34,17 @@ class SecurityConfig(
                         "/actuator/**",
                     ).permitAll()
                     // H2 Console 허용
-                    .requestMatchers("/h2-console/**").permitAll()
+                    .requestMatchers("/h2-console/**")
+                    .permitAll()
                     // 인증 없이 접근 가능한 API
                     .requestMatchers(
                         "/api/v1/members/signup",
-                        "/api/v1/members/login"
+                        "/api/v1/members/login",
                     ).permitAll()
                     // 나머지 API는 인증 필요
-                    .anyRequest().authenticated()
-            }
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+                    .anyRequest()
+                    .authenticated()
+            }.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .cors { it.configurationSource(corsConfigurationSource()) }
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
@@ -54,9 +54,7 @@ class SecurityConfig(
     }
 
     @Bean
-    fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder()
-    }
+    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {

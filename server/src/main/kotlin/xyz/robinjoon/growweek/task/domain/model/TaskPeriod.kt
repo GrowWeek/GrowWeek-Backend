@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 data class TaskPeriod(
     val startDate: LocalDate,
-    val dueDate: LocalDate
+    val dueDate: LocalDate,
 ) {
     init {
         require(!dueDate.isBefore(startDate)) {
@@ -12,7 +12,8 @@ data class TaskPeriod(
         }
     }
 
-    fun overlaps(weekStart: LocalDate, weekEnd: LocalDate): Boolean {
-        return !(dueDate.isBefore(weekStart) || startDate.isAfter(weekEnd))
-    }
+    fun overlaps(
+        weekStart: LocalDate,
+        weekEnd: LocalDate,
+    ): Boolean = !(dueDate.isBefore(weekStart) || startDate.isAfter(weekEnd))
 }

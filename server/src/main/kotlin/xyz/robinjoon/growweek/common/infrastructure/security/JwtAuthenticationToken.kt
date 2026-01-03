@@ -4,9 +4,8 @@ import org.springframework.security.authentication.AbstractAuthenticationToken
 import xyz.robinjoon.growweek.common.domain.MemberId
 
 class JwtAuthenticationToken(
-    val memberId: MemberId
+    val memberId: MemberId,
 ) : AbstractAuthenticationToken(emptyList()) {
-
     init {
         isAuthenticated = true
     }

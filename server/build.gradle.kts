@@ -5,6 +5,8 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     jacoco
     kotlin("kapt") version "2.2.21"
+    id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
+    id("co.uzzu.dotenv.gradle") version "4.0.0"
 }
 
 group = "xyz.robinjoon"
@@ -25,7 +27,7 @@ extra["springCloudVersion"] = "2025.1.0"
 
 val kotestVersion = "6.0.7"
 val mockkVersion = "1.14.6"
-val jjwtVersion = "0.12.6"  // JJWT 최신 안정 버전
+val jjwtVersion = "0.12.6" // JJWT 최신 안정 버전
 val exposedVersion = "1.0.0-rc-4"
 
 dependencies {
@@ -33,7 +35,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
-    implementation("org.springframework.boot:spring-boot-starter-security")  // Spring Security 7.x (Boot 4.0 호환)
+    implementation("org.springframework.boot:spring-boot-starter-security") // Spring Security 7.x (Boot 4.0 호환)
 
     // Kotlin
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -69,7 +71,7 @@ dependencies {
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-data-redis-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-    testImplementation("org.springframework.security:spring-security-test")  // Spring Security 테스트 지원
+    testImplementation("org.springframework.security:spring-security-test") // Spring Security 테스트 지원
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
@@ -94,6 +96,10 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    // .env 파일의 환경변수를 테스트에 전달
+    env.allVariables().forEach { (key, value) ->
+        environment(key, value)
+    }
 }
 
 // JaCoCo 설정

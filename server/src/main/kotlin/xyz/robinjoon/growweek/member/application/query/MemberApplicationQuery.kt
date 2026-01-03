@@ -6,17 +6,16 @@ import xyz.robinjoon.growweek.common.PageQuery
 import xyz.robinjoon.growweek.common.domain.MemberId
 
 sealed class MemberApplicationQuery(
-    override val pageInfo: PageInfo
+    override val pageInfo: PageInfo,
 ) : PageQuery {
-
     data class ById(
         val memberId: MemberId,
-        override val pageInfo: PageInfo = DEFAULT_PAGE_INFO
+        override val pageInfo: PageInfo = DEFAULT_PAGE_INFO,
     ) : MemberApplicationQuery(pageInfo)
 
     data class ByEmail(
         val email: String,
-        override val pageInfo: PageInfo = DEFAULT_PAGE_INFO
+        override val pageInfo: PageInfo = DEFAULT_PAGE_INFO,
     ) : MemberApplicationQuery(pageInfo)
 
     companion object {

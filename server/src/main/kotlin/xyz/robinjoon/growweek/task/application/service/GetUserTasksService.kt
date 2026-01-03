@@ -13,42 +13,46 @@ import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
 
 @Service
 class GetUserTasksService(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
 ) : GetUserTasksUseCase {
-
     @Transactional(readOnly = true)
     override fun execute(query: TaskApplicationQuery): Page<TaskDto> {
         // Application Query를 Domain Query로 변환
-        val domainQuery = when (query) {
-            is TaskApplicationQuery.CursorByMemberId -> TaskQuery.CursorByMemberId(
-                memberId = query.memberId,
-                pageInfo = query.pageInfo
-            )
-            is TaskApplicationQuery.OffsetByMemberId -> TaskQuery.OffsetByMemberId(
-                memberId = query.memberId,
-                pageInfo = query.pageInfo
-            )
-            else -> throw IllegalArgumentException("Unsupported query type for GetUserTasks: ${query::class.simpleName}")
-        }
+        val domainQuery =
+            when (query) {
+                is TaskApplicationQuery.CursorByMemberId ->
+                    TaskQuery.CursorByMemberId(
+                        memberId = query.memberId,
+                        pageInfo = query.pageInfo,
+                    )
+                is TaskApplicationQuery.OffsetByMemberId ->
+                    TaskQuery.OffsetByMemberId(
+                        memberId = query.memberId,
+                        pageInfo = query.pageInfo,
+                    )
+                else -> throw IllegalArgumentException("Unsupported query type for GetUserTasks: ${query::class.simpleName}")
+            }
 
         // Repository를 통해 조회
         val page = taskRepository.findAll(domainQuery)
 
         // Domain 모델을 DTO로 변환
         return when (page) {
-            is CursorPage -> CursorPage(
-                items = page.items.map { TaskDto.from(it) },
-                cursor = page.cursor,
-                size = page.size,
-                nextCursor = page.nextCursor,
-                hasNext = page.hasNext
-            )
-            is OffsetPage -> OffsetPage(
-                items = page.items.map { TaskDto.from(it) },
-                page = page.page,
-                size = page.size,
-                totalPage = page.totalPage
-            )
+            is CursorPage ->
+                CursorPage(
+                    items = page.items.map { TaskDto.from(it) },
+                    cursor = page.cursor,
+                    size = page.size,
+                    nextCursor = page.nextCursor,
+                    hasNext = page.hasNext,
+                )
+            is OffsetPage ->
+                OffsetPage(
+                    items = page.items.map { TaskDto.from(it) },
+                    page = page.page,
+                    size = page.size,
+                    totalPage = page.totalPage,
+                )
         }
     }
 }

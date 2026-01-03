@@ -8,7 +8,7 @@ data class Question(
     val retrospectiveId: RetrospectiveId,
     val content: String,
     val order: Int,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
 ) {
     init {
         require(content.isNotBlank()) { "질문 내용은 비어있을 수 없습니다" }

@@ -10,13 +10,13 @@ import xyz.robinjoon.growweek.member.domain.repository.MemberRepository
 
 @Service
 class GetMemberService(
-    private val memberRepository: MemberRepository
+    private val memberRepository: MemberRepository,
 ) : GetMemberUseCase {
-
     @Transactional(readOnly = true)
     override fun getMember(memberId: MemberId): MemberDto? {
-        val member = memberRepository.findAll(MemberQuery.byId(memberId)).items.firstOrNull()
-            ?: return null
+        val member =
+            memberRepository.findAll(MemberQuery.byId(memberId)).items.firstOrNull()
+                ?: return null
 
         return MemberDto.from(member)
     }

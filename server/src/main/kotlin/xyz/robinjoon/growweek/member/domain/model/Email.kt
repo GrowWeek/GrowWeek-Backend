@@ -1,7 +1,9 @@
 package xyz.robinjoon.growweek.member.domain.model
 
 @JvmInline
-value class Email(val value: String) {
+value class Email(
+    val value: String,
+) {
     init {
         require(value.isNotBlank()) { "이메일은 비어있을 수 없습니다" }
         require(value.length <= 100) { "이메일은 100자 이하여야 합니다" }

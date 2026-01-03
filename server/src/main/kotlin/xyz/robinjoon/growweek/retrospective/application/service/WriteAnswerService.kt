@@ -10,17 +10,17 @@ import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepos
 
 @Service
 class WriteAnswerService(
-    private val retrospectiveRepository: RetrospectiveRepository
+    private val retrospectiveRepository: RetrospectiveRepository,
 ) : WriteAnswerUseCase {
-
     @Transactional
     override fun execute(command: RetrospectiveApplicationCommand.WriteAnswer): RetrospectiveDto {
-        val domainCommand = RetrospectiveCommand.WriteAnswer(
-            retrospectiveId = command.retrospectiveId,
-            memberId = command.memberId,
-            questionId = command.questionId,
-            content = command.content
-        )
+        val domainCommand =
+            RetrospectiveCommand.WriteAnswer(
+                retrospectiveId = command.retrospectiveId,
+                memberId = command.memberId,
+                questionId = command.questionId,
+                content = command.content,
+            )
 
         val savedRetrospectives = retrospectiveRepository.saveAll(listOf(domainCommand))
         return RetrospectiveDto.from(savedRetrospectives.first())

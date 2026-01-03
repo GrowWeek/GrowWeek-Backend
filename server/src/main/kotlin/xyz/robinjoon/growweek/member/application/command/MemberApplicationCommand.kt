@@ -4,11 +4,11 @@ sealed interface MemberApplicationCommand {
     data class SignUp(
         val email: String,
         val password: String,
-        val nickname: String
+        val nickname: String,
     ) : MemberApplicationCommand
 
     data class Login(
         val email: String,
-        val password: String
+        val password: String,
     ) : MemberApplicationCommand
 }

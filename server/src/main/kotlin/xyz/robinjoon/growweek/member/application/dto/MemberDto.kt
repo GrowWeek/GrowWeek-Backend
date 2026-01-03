@@ -9,17 +9,16 @@ data class MemberDto(
     val email: String,
     val nickname: String,
     val status: String,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
 ) {
     companion object {
-        fun from(member: Member): MemberDto {
-            return MemberDto(
+        fun from(member: Member): MemberDto =
+            MemberDto(
                 id = member.id,
                 email = member.email.value,
                 nickname = member.nickname.value,
                 status = member.status.name,
-                createdAt = member.createdAt
+                createdAt = member.createdAt,
             )
-        }
     }
 }

@@ -1,0 +1,5 @@
+root = true
+
+[*.{kt,kts}]
+# Wildcard import 허용
+ktlint_standard_no-wildcard-imports = disabled

@@ -4,8 +4,8 @@ import kotlinx.coroutines.runBlocking
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.MemberId
+import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.application.query.RetrospectiveApplicationQuery
 import xyz.robinjoon.growweek.retrospective.application.usecase.*
@@ -29,9 +29,8 @@ class RetrospectiveController(
     private val completeRetrospectiveUseCase: CompleteRetrospectiveUseCase,
     private val deleteRetrospectiveUseCase: DeleteRetrospectiveUseCase,
     private val getRetrospectiveUseCase: GetRetrospectiveUseCase,
-    private val getMonthlyRetrospectivesUseCase: GetMonthlyRetrospectivesUseCase
+    private val getMonthlyRetrospectivesUseCase: GetMonthlyRetrospectivesUseCase,
 ) {
-
     /**
      * 새로운 회고를 생성한다.
      *
@@ -42,14 +41,15 @@ class RetrospectiveController(
     @PostMapping
     fun createRetrospective(
         @RequestBody request: CreateRetrospectiveRequest,
-        @RequestHeader("X-User-Id") userId: Long
+        @RequestHeader("X-User-Id") userId: Long,
     ): ResponseEntity<RetrospectiveResponse> {
-        val command = RetrospectiveApplicationCommand.CreateRetrospective(
-            memberId = MemberId(userId),
-            startDate = LocalDate.parse(request.startDate),
-            endDate = LocalDate.parse(request.endDate),
-            questionCount = request.questionCount
-        )
+        val command =
+            RetrospectiveApplicationCommand.CreateRetrospective(
+                memberId = MemberId(userId),
+                startDate = LocalDate.parse(request.startDate),
+                endDate = LocalDate.parse(request.endDate),
+                questionCount = request.questionCount,
+            )
 
         val dto = createRetrospectiveUseCase.execute(command)
         val response = RetrospectiveResponse.from(dto)
@@ -67,16 +67,18 @@ class RetrospectiveController(
     @PostMapping("/{retrospectiveId}/generate-questions")
     fun generateQuestions(
         @PathVariable retrospectiveId: Long,
-        @RequestHeader("X-User-Id") userId: Long
+        @RequestHeader("X-User-Id") userId: Long,
     ): ResponseEntity<RetrospectiveResponse> {
-        val command = RetrospectiveApplicationCommand.GenerateQuestions(
-            retrospectiveId = RetrospectiveId(retrospectiveId),
-            memberId = MemberId(userId)
-        )
+        val command =
+            RetrospectiveApplicationCommand.GenerateQuestions(
+                retrospectiveId = RetrospectiveId(retrospectiveId),
+                memberId = MemberId(userId),
+            )
 
-        val dto = runBlocking {
-            generateQuestionsUseCase.execute(command)
-        }
+        val dto =
+            runBlocking {
+                generateQuestionsUseCase.execute(command)
+            }
         val response = RetrospectiveResponse.from(dto)
 
         return ResponseEntity.ok(response)
@@ -94,14 +96,15 @@ class RetrospectiveController(
     fun writeAnswer(
         @PathVariable retrospectiveId: Long,
         @RequestBody request: WriteAnswerRequest,
-        @RequestHeader("X-User-Id") userId: Long
+        @RequestHeader("X-User-Id") userId: Long,
     ): ResponseEntity<RetrospectiveResponse> {
-        val command = RetrospectiveApplicationCommand.WriteAnswer(
-            retrospectiveId = RetrospectiveId(retrospectiveId),
-            memberId = MemberId(userId),
-            questionId = QuestionId(request.questionId),
-            content = request.content
-        )
+        val command =
+            RetrospectiveApplicationCommand.WriteAnswer(
+                retrospectiveId = RetrospectiveId(retrospectiveId),
+                memberId = MemberId(userId),
+                questionId = QuestionId(request.questionId),
+                content = request.content,
+            )
 
         val dto = writeAnswerUseCase.execute(command)
         val response = RetrospectiveResponse.from(dto)
@@ -121,13 +124,14 @@ class RetrospectiveController(
     fun writeAdditionalNotes(
         @PathVariable retrospectiveId: Long,
         @RequestBody request: WriteAdditionalNotesRequest,
-        @RequestHeader("X-User-Id") userId: Long
+        @RequestHeader("X-User-Id") userId: Long,
     ): ResponseEntity<RetrospectiveResponse> {
-        val command = RetrospectiveApplicationCommand.WriteAdditionalNotes(
-            retrospectiveId = RetrospectiveId(retrospectiveId),
-            memberId = MemberId(userId),
-            notes = request.notes
-        )
+        val command =
+            RetrospectiveApplicationCommand.WriteAdditionalNotes(
+                retrospectiveId = RetrospectiveId(retrospectiveId),
+                memberId = MemberId(userId),
+                notes = request.notes,
+            )
 
         val dto = writeAdditionalNotesUseCase.execute(command)
         val response = RetrospectiveResponse.from(dto)
@@ -145,12 +149,13 @@ class RetrospectiveController(
     @PostMapping("/{retrospectiveId}/complete")
     fun completeRetrospective(
         @PathVariable retrospectiveId: Long,
-        @RequestHeader("X-User-Id") userId: Long
+        @RequestHeader("X-User-Id") userId: Long,
     ): ResponseEntity<RetrospectiveResponse> {
-        val command = RetrospectiveApplicationCommand.CompleteRetrospective(
-            retrospectiveId = RetrospectiveId(retrospectiveId),
-            memberId = MemberId(userId)
-        )
+        val command =
+            RetrospectiveApplicationCommand.CompleteRetrospective(
+                retrospectiveId = RetrospectiveId(retrospectiveId),
+                memberId = MemberId(userId),
+            )
 
         val dto = completeRetrospectiveUseCase.execute(command)
         val response = RetrospectiveResponse.from(dto)
@@ -168,12 +173,13 @@ class RetrospectiveController(
     @DeleteMapping("/{retrospectiveId}")
     fun deleteRetrospective(
         @PathVariable retrospectiveId: Long,
-        @RequestHeader("X-User-Id") userId: Long
+        @RequestHeader("X-User-Id") userId: Long,
     ): ResponseEntity<Void> {
-        val command = RetrospectiveApplicationCommand.DeleteRetrospective(
-            retrospectiveId = RetrospectiveId(retrospectiveId),
-            memberId = MemberId(userId)
-        )
+        val command =
+            RetrospectiveApplicationCommand.DeleteRetrospective(
+                retrospectiveId = RetrospectiveId(retrospectiveId),
+                memberId = MemberId(userId),
+            )
 
         deleteRetrospectiveUseCase.execute(command)
 
@@ -190,12 +196,13 @@ class RetrospectiveController(
     @GetMapping("/{retrospectiveId}")
     fun getRetrospective(
         @PathVariable retrospectiveId: Long,
-        @RequestHeader("X-User-Id") userId: Long
+        @RequestHeader("X-User-Id") userId: Long,
     ): ResponseEntity<RetrospectiveResponse> {
-        val query = RetrospectiveApplicationQuery.ByRetrospectiveId(
-            retrospectiveId = RetrospectiveId(retrospectiveId),
-            memberId = MemberId(userId)
-        )
+        val query =
+            RetrospectiveApplicationQuery.ByRetrospectiveId(
+                retrospectiveId = RetrospectiveId(retrospectiveId),
+                memberId = MemberId(userId),
+            )
 
         val dto = getRetrospectiveUseCase.getById(query)
         val response = RetrospectiveResponse.from(dto)
@@ -217,23 +224,26 @@ class RetrospectiveController(
         @RequestHeader("X-User-Id") userId: Long,
         @RequestParam(required = false) page: Int?,
         @RequestParam(required = false) size: Int?,
-        @RequestParam(required = false) cursor: String?
+        @RequestParam(required = false) cursor: String?,
     ): ResponseEntity<PageResponse<RetrospectiveSummaryResponse>> {
-        val pageDto = if (cursor != null) {
-            val query = RetrospectiveApplicationQuery.Cursor.byMemberId(
-                memberId = MemberId(userId),
-                cursor = cursor,
-                size = size ?: 20
-            )
-            getRetrospectiveUseCase.getList(query)
-        } else {
-            val query = RetrospectiveApplicationQuery.Offset.byMemberId(
-                memberId = MemberId(userId),
-                page = page ?: 0,
-                size = size ?: 20
-            )
-            getRetrospectiveUseCase.getList(query)
-        }
+        val pageDto =
+            if (cursor != null) {
+                val query =
+                    RetrospectiveApplicationQuery.Cursor.byMemberId(
+                        memberId = MemberId(userId),
+                        cursor = cursor,
+                        size = size ?: 20,
+                    )
+                getRetrospectiveUseCase.getList(query)
+            } else {
+                val query =
+                    RetrospectiveApplicationQuery.Offset.byMemberId(
+                        memberId = MemberId(userId),
+                        page = page ?: 0,
+                        size = size ?: 20,
+                    )
+                getRetrospectiveUseCase.getList(query)
+            }
 
         val response = pageDto.toResponse { RetrospectiveSummaryResponse.from(it) }
 
@@ -252,14 +262,15 @@ class RetrospectiveController(
     fun getMonthlyRetrospectives(
         @RequestHeader("X-User-Id") userId: Long,
         @RequestParam year: Int,
-        @RequestParam month: Int
+        @RequestParam month: Int,
     ): ResponseEntity<MonthlyRetrospectiveResponse> {
-        val query = RetrospectiveApplicationQuery.Offset.byMemberIdAndMonth(
-            memberId = MemberId(userId),
-            year = year,
-            month = month,
-            size = 31
-        )
+        val query =
+            RetrospectiveApplicationQuery.Offset.byMemberIdAndMonth(
+                memberId = MemberId(userId),
+                year = year,
+                month = month,
+                size = 31,
+            )
 
         val dto = getMonthlyRetrospectivesUseCase.execute(query)
         val response = MonthlyRetrospectiveResponse.from(dto)

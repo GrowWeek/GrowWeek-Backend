@@ -1,9 +1,9 @@
 package xyz.robinjoon.growweek.task.domain.model.command
 
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.task.domain.model.*
 import java.time.LocalDate
 
@@ -17,7 +17,7 @@ sealed interface TaskCommand {
         val description: TaskDescription?,
         val priority: Priority,
         val period: TaskPeriod,
-        val sensitivityLevel: SensitivityLevel = SensitivityLevel.NONE
+        val sensitivityLevel: SensitivityLevel = SensitivityLevel.NONE,
     ) : TaskCommand
 
     /**
@@ -31,7 +31,7 @@ sealed interface TaskCommand {
         val status: TaskStatus?,
         val priority: Priority?,
         val dueDate: LocalDate?,
-        val sensitivityLevel: SensitivityLevel?
+        val sensitivityLevel: SensitivityLevel?,
     ) : TaskCommand
 
     /**
@@ -40,7 +40,7 @@ sealed interface TaskCommand {
     data class UpdateTaskStatus(
         val taskId: TaskId,
         val memberId: MemberId,
-        val status: TaskStatus
+        val status: TaskStatus,
     ) : TaskCommand
 
     /**
@@ -48,7 +48,7 @@ sealed interface TaskCommand {
      */
     data class DeleteTask(
         val taskId: TaskId,
-        val memberId: MemberId
+        val memberId: MemberId,
     ) : TaskCommand
 
     /**
@@ -56,6 +56,6 @@ sealed interface TaskCommand {
      */
     data class LinkRetrospective(
         val taskId: TaskId,
-        val retrospectiveId: RetrospectiveId
+        val retrospectiveId: RetrospectiveId,
     ) : TaskCommand
 }

@@ -4,11 +4,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import xyz.robinjoon.growweek.common.domain.MemberId
+import xyz.robinjoon.growweek.common.domain.SensitivityLevel
+import xyz.robinjoon.growweek.common.domain.TaskId
 import xyz.robinjoon.growweek.task.application.command.TaskApplicationCommand
 import xyz.robinjoon.growweek.task.application.query.TaskApplicationQuery
 import xyz.robinjoon.growweek.task.application.usecase.*
-import xyz.robinjoon.growweek.common.domain.SensitivityLevel
-import xyz.robinjoon.growweek.common.domain.TaskId
 import xyz.robinjoon.growweek.task.domain.model.TaskStatus
 import xyz.robinjoon.growweek.task.presentation.rest.request.CreateTaskRequest
 import xyz.robinjoon.growweek.task.presentation.rest.request.UpdateTaskRequest
@@ -31,9 +31,8 @@ class TaskController(
     private val deleteTaskUseCase: DeleteTaskUseCase,
     private val getTaskUseCase: GetTaskUseCase,
     private val getWeeklyTasksUseCase: GetWeeklyTasksUseCase,
-    private val getUserTasksUseCase: GetUserTasksUseCase
+    private val getUserTasksUseCase: GetUserTasksUseCase,
 ) {
-
     /**
      * 새로운 할일을 생성한다.
      *
@@ -44,18 +43,20 @@ class TaskController(
     @PostMapping
     fun createTask(
         @RequestBody request: CreateTaskRequest,
-        @RequestHeader("X-User-Id") userId: Long
+        @RequestHeader("X-User-Id") userId: Long,
     ): ResponseEntity<TaskResponse> {
-        val command = TaskApplicationCommand.CreateTask(
-            memberId = MemberId(userId),
-            title = request.title,
-            description = request.description,
-            priority = request.priority,
-            startDate = LocalDate.parse(request.startDate),
-            dueDate = LocalDate.parse(request.dueDate),
-            sensitivityLevel = request.sensitivityLevel?.let { SensitivityLevel.valueOf(it) }
-                ?: SensitivityLevel.NONE
-        )
+        val command =
+            TaskApplicationCommand.CreateTask(
+                memberId = MemberId(userId),
+                title = request.title,
+                description = request.description,
+                priority = request.priority,
+                startDate = LocalDate.parse(request.startDate),
+                dueDate = LocalDate.parse(request.dueDate),
+                sensitivityLevel =
+                    request.sensitivityLevel?.let { SensitivityLevel.valueOf(it) }
+                        ?: SensitivityLevel.NONE,
+            )
 
         val taskDto = createTaskUseCase.execute(command)
         val response = TaskResponse.from(taskDto)
@@ -75,18 +76,19 @@ class TaskController(
     fun updateTask(
         @PathVariable taskId: Long,
         @RequestBody request: UpdateTaskRequest,
-        @RequestHeader("X-User-Id") userId: Long
+        @RequestHeader("X-User-Id") userId: Long,
     ): ResponseEntity<TaskResponse> {
-        val command = TaskApplicationCommand.UpdateTask(
-            taskId = TaskId(taskId),
-            memberId = MemberId(userId),
-            title = request.title,
-            description = request.description,
-            status = request.status?.let { TaskStatus.valueOf(it) },
-            priority = request.priority,
-            dueDate = request.dueDate?.let { LocalDate.parse(it) },
-            sensitivityLevel = request.sensitivityLevel?.let { SensitivityLevel.valueOf(it) }
-        )
+        val command =
+            TaskApplicationCommand.UpdateTask(
+                taskId = TaskId(taskId),
+                memberId = MemberId(userId),
+                title = request.title,
+                description = request.description,
+                status = request.status?.let { TaskStatus.valueOf(it) },
+                priority = request.priority,
+                dueDate = request.dueDate?.let { LocalDate.parse(it) },
+                sensitivityLevel = request.sensitivityLevel?.let { SensitivityLevel.valueOf(it) },
+            )
 
         val taskDto = updateTaskUseCase.execute(command)
         val response = TaskResponse.from(taskDto)
@@ -106,13 +108,14 @@ class TaskController(
     fun updateTaskStatus(
         @PathVariable taskId: Long,
         @RequestBody request: UpdateTaskStatusRequest,
-        @RequestHeader("X-User-Id") userId: Long
+        @RequestHeader("X-User-Id") userId: Long,
     ): ResponseEntity<TaskResponse> {
-        val command = TaskApplicationCommand.UpdateTaskStatus(
-            taskId = TaskId(taskId),
-            memberId = MemberId(userId),
-            status = TaskStatus.valueOf(request.status)
-        )
+        val command =
+            TaskApplicationCommand.UpdateTaskStatus(
+                taskId = TaskId(taskId),
+                memberId = MemberId(userId),
+                status = TaskStatus.valueOf(request.status),
+            )
 
         val taskDto = updateTaskStatusUseCase.execute(command)
         val response = TaskResponse.from(taskDto)
@@ -130,12 +133,13 @@ class TaskController(
     @DeleteMapping("/{taskId}")
     fun deleteTask(
         @PathVariable taskId: Long,
-        @RequestHeader("X-User-Id") userId: Long
+        @RequestHeader("X-User-Id") userId: Long,
     ): ResponseEntity<Void> {
-        val command = TaskApplicationCommand.DeleteTask(
-            taskId = TaskId(taskId),
-            memberId = MemberId(userId)
-        )
+        val command =
+            TaskApplicationCommand.DeleteTask(
+                taskId = TaskId(taskId),
+                memberId = MemberId(userId),
+            )
 
         deleteTaskUseCase.execute(command)
 
@@ -152,15 +156,17 @@ class TaskController(
     @GetMapping("/{taskId}")
     fun getTask(
         @PathVariable taskId: Long,
-        @RequestHeader("X-User-Id") userId: Long
+        @RequestHeader("X-User-Id") userId: Long,
     ): ResponseEntity<TaskResponse> {
-        val query = TaskApplicationQuery.Offset.byTaskId(
-            taskId = TaskId(taskId),
-            memberId = MemberId(userId)
-        )
+        val query =
+            TaskApplicationQuery.Offset.byTaskId(
+                taskId = TaskId(taskId),
+                memberId = MemberId(userId),
+            )
 
-        val taskDto = getTaskUseCase.execute(query)
-            ?: return ResponseEntity.notFound().build()
+        val taskDto =
+            getTaskUseCase.execute(query)
+                ?: return ResponseEntity.notFound().build()
 
         val response = TaskResponse.from(taskDto)
 
@@ -183,32 +189,35 @@ class TaskController(
         @RequestHeader("X-User-Id") userId: Long,
         @RequestParam(required = false) page: Int?,
         @RequestParam(required = false) size: Int?,
-        @RequestParam(required = false) cursor: String?
+        @RequestParam(required = false) cursor: String?,
     ): ResponseEntity<WeeklyTaskResponse> {
         val startDate = LocalDate.parse(weekStart)
         val endDate = startDate.plusDays(6)
 
-        val weeklyDto = if (cursor != null) {
-            // Cursor 기반 페이징
-            val query = TaskApplicationQuery.Cursor.byMemberIdAndWeek(
-                memberId = MemberId(userId),
-                weekStart = startDate,
-                weekEnd = endDate,
-                cursor = cursor,
-                size = size ?: 20
-            )
-            getWeeklyTasksUseCase.execute(query)
-        } else {
-            // Offset 기반 페이징
-            val query = TaskApplicationQuery.Offset.byMemberIdAndWeek(
-                memberId = MemberId(userId),
-                weekStart = startDate,
-                weekEnd = endDate,
-                page = page ?: 0,
-                size = size ?: 20
-            )
-            getWeeklyTasksUseCase.execute(query)
-        }
+        val weeklyDto =
+            if (cursor != null) {
+                // Cursor 기반 페이징
+                val query =
+                    TaskApplicationQuery.Cursor.byMemberIdAndWeek(
+                        memberId = MemberId(userId),
+                        weekStart = startDate,
+                        weekEnd = endDate,
+                        cursor = cursor,
+                        size = size ?: 20,
+                    )
+                getWeeklyTasksUseCase.execute(query)
+            } else {
+                // Offset 기반 페이징
+                val query =
+                    TaskApplicationQuery.Offset.byMemberIdAndWeek(
+                        memberId = MemberId(userId),
+                        weekStart = startDate,
+                        weekEnd = endDate,
+                        page = page ?: 0,
+                        size = size ?: 20,
+                    )
+                getWeeklyTasksUseCase.execute(query)
+            }
 
         val response = WeeklyTaskResponse.from(weeklyDto)
 
@@ -229,25 +238,28 @@ class TaskController(
         @RequestHeader("X-User-Id") userId: Long,
         @RequestParam(required = false) page: Int?,
         @RequestParam(required = false) size: Int?,
-        @RequestParam(required = false) cursor: String?
+        @RequestParam(required = false) cursor: String?,
     ): ResponseEntity<PageResponse<TaskResponse>> {
-        val pageDto = if (cursor != null) {
-            // Cursor 기반 페이징
-            val query = TaskApplicationQuery.Cursor.byMemberId(
-                memberId = MemberId(userId),
-                cursor = cursor,
-                size = size ?: 20
-            )
-            getUserTasksUseCase.execute(query)
-        } else {
-            // Offset 기반 페이징
-            val query = TaskApplicationQuery.Offset.byMemberId(
-                memberId = MemberId(userId),
-                page = page ?: 0,
-                size = size ?: 20
-            )
-            getUserTasksUseCase.execute(query)
-        }
+        val pageDto =
+            if (cursor != null) {
+                // Cursor 기반 페이징
+                val query =
+                    TaskApplicationQuery.Cursor.byMemberId(
+                        memberId = MemberId(userId),
+                        cursor = cursor,
+                        size = size ?: 20,
+                    )
+                getUserTasksUseCase.execute(query)
+            } else {
+                // Offset 기반 페이징
+                val query =
+                    TaskApplicationQuery.Offset.byMemberId(
+                        memberId = MemberId(userId),
+                        page = page ?: 0,
+                        size = size ?: 20,
+                    )
+                getUserTasksUseCase.execute(query)
+            }
 
         val response = pageDto.toResponse { TaskResponse.from(it) }
 
