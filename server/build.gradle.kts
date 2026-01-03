@@ -6,6 +6,7 @@ plugins {
     jacoco
     kotlin("kapt") version "2.2.21"
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
+    id("co.uzzu.dotenv.gradle") version "4.0.0"
 }
 
 group = "xyz.robinjoon"
@@ -95,6 +96,10 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    // .env 파일의 환경변수를 테스트에 전달
+    env.allVariables().forEach { (key, value) ->
+        environment(key, value)
+    }
 }
 
 // JaCoCo 설정
