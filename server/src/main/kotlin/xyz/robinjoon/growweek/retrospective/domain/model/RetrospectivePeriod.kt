@@ -15,11 +15,12 @@ data class RetrospectivePeriod(
 
     /**
      * 회고 작성 가능 여부 확인
-     * 다음 주 월요일 0시까지 작성 가능
+     * 종료일 2일 전(금요일)부터 다음 주 월요일 0시 전까지 작성 가능
      */
     fun isWritable(currentDate: LocalDate = LocalDate.now()): Boolean {
-        val nextMonday = calculateNextMonday(endDate)
-        return !currentDate.isAfter(nextMonday)
+        val writableStartDate = endDate.minusDays(DAYS_BEFORE_END_DATE_TO_START_WRITING)
+        val writableEndDate = calculateNextMonday(endDate)
+        return !currentDate.isBefore(writableStartDate) && currentDate.isBefore(writableEndDate)
     }
 
     private fun calculateNextMonday(date: LocalDate): LocalDate {
@@ -29,5 +30,9 @@ data class RetrospectivePeriod(
         } else {
             date.plusDays(daysUntilMonday.toLong())
         }
+    }
+
+    companion object {
+        private const val DAYS_BEFORE_END_DATE_TO_START_WRITING = 2L
     }
 }
