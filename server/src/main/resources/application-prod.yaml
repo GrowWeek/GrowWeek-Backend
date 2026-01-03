@@ -1,0 +1,25 @@
+# Production Server Environment Configuration
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+      idle-timeout: 300000
+      connection-timeout: 20000
+
+  h2:
+    console:
+      enabled: false
+
+  exposed:
+    generate-ddl: false
+    show-sql: false
+
+logging:
+  level:
+    root: WARN
+    xyz.robinjoon: INFO

@@ -1,28 +1,15 @@
 spring:
   application:
     name: server
-
-  datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-
-  exposed:
-    generate-ddl: true
-    show-sql: true
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
 
 jwt:
-  secret: ${JWT_SECRET:growweek-dev-secret-key-for-jwt-token-generation-256-bits-minimum}
-  expiration: 3600000
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
 
 gemini:
-  api-key: ${GEMINI_API_KEY:mock-gemini-api-key-for-development}
+  api-key: ${GEMINI_API_KEY}
   base-url: https://generativelanguage.googleapis.com
   model: gemini-3-flash-preview
   thinking-level: low
