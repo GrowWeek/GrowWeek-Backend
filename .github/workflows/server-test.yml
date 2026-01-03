@@ -38,6 +38,10 @@ jobs:
 
       - name: Run tests
         run: ./gradlew test
+        env:
+          JWT_SECRET: test-secret-key-for-jwt-token-generation-256-bits-minimum
+          JWT_EXPIRATION: 3600000
+          GEMINI_API_KEY: mock-gemini-api-key-for-test
 
       - name: Upload test results
         uses: actions/upload-artifact@v4

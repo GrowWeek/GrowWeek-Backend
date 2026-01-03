@@ -1,0 +1,22 @@
+# Local Development Environment Configuration
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  exposed:
+    generate-ddl: true
+    show-sql: true
+
+jwt:
+  secret: growweek-dev-secret-key-for-jwt-token-generation-256-bits-minimum
+
+gemini:
+  api-key: ${GEMINI_API_KEY}

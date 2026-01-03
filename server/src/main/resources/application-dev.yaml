@@ -1,0 +1,26 @@
+# Development Server Environment Configuration
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+
+  h2:
+    console:
+      enabled: false
+
+  exposed:
+    generate-ddl: true
+    show-sql: true
+
+logging:
+  level:
+    root: INFO
+    xyz.robinjoon: DEBUG
+    org.springframework.web: DEBUG
