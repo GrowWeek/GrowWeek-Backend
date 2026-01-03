@@ -1,7 +1,7 @@
 package xyz.robinjoon.growweek.retrospective.domain.model
 
-import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.MemberId
+import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import java.time.LocalDateTime
 
 data class Retrospective(

@@ -2,7 +2,6 @@ package xyz.robinjoon.growweek.retrospective.infrastructure.external.gemini
 
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.BehaviorSpec
-import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
@@ -33,7 +32,8 @@ class GeminiQuestionGenerationServiceTest : BehaviorSpec({
         val questionCount = QuestionCount(3)
 
         When("Gemini API가 정상 응답을 반환하면") {
-            val apiResponse = """["이번 주 프로젝트 기획서 작성에서 가장 중요하게 고려한 점은 무엇인가요?", "코드 리뷰를 진행하면서 발견한 개선점이 있나요?", "다음 주 계획을 세울 때 이번 주 경험을 어떻게 반영하시겠어요?"]"""
+            val apiResponse =
+                """["이번 주 프로젝트 기획서 작성에서 가장 중요하게 고려한 점은 무엇인가요?", "코드 리뷰를 진행하면서 발견한 개선점이 있나요?", "다음 주 계획을 세울 때 이번 주 경험을 어떻게 반영하시겠어요?"]"""
 
             every { geminiClient.generateContent(any()) } returns apiResponse
 

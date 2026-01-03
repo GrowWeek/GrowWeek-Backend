@@ -3,12 +3,14 @@ package xyz.robinjoon.growweek.retrospective.application.service
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import xyz.robinjoon.growweek.common.OffsetPage
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.*
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
@@ -106,20 +108,24 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
         )
 
         every { retrospectiveRepository.findAll(any<RetrospectiveQuery.OffsetByRetrospectiveId>()) } returns
-            OffsetPage(size = 1, page = 0, totalPage = 1, items = listOf(existingRetrospective))
+                OffsetPage(size = 1, page = 0, totalPage = 1, items = listOf(existingRetrospective))
 
-        every { retrospectiveRepository.saveAll(match { commands ->
-            commands.any { it is RetrospectiveCommand.GenerateQuestions }
-        }) } returns listOf(existingRetrospective.copy(status = RetrospectiveStatus.BEFORE_GENERATE_QUESTION))
+        every {
+            retrospectiveRepository.saveAll(match { commands ->
+                commands.any { it is RetrospectiveCommand.GenerateQuestions }
+            })
+        } returns listOf(existingRetrospective.copy(status = RetrospectiveStatus.BEFORE_GENERATE_QUESTION))
 
         every { taskRepository.findAll(any<TaskQuery.OffsetByMemberIdAndWeek>()) } returns
-            OffsetPage(size = 100, page = 0, totalPage = 1, items = tasks)
+                OffsetPage(size = 100, page = 0, totalPage = 1, items = tasks)
 
         fakeQuestionGenerationService.returnValue = generatedQuestionContents
 
-        every { retrospectiveRepository.saveAll(match { commands ->
-            commands.any { it is RetrospectiveCommand.CompleteQuestionGeneration }
-        }) } returns listOf(completedRetrospective)
+        every {
+            retrospectiveRepository.saveAll(match { commands ->
+                commands.any { it is RetrospectiveCommand.CompleteQuestionGeneration }
+            })
+        } returns listOf(completedRetrospective)
 
         When("서비스를 실행하면") {
             val result = runBlocking { service.execute(command) }
@@ -129,9 +135,11 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
             }
 
             Then("질문 생성 시작 상태로 변경해야 한다") {
-                verify { retrospectiveRepository.saveAll(match { commands ->
-                    commands.any { it is RetrospectiveCommand.GenerateQuestions }
-                }) }
+                verify {
+                    retrospectiveRepository.saveAll(match { commands ->
+                        commands.any { it is RetrospectiveCommand.GenerateQuestions }
+                    })
+                }
             }
 
             Then("해당 기간의 할일을 조회해야 한다") {
@@ -143,9 +151,11 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
             }
 
             Then("질문 생성 완료 상태로 변경해야 한다") {
-                verify { retrospectiveRepository.saveAll(match { commands ->
-                    commands.any { it is RetrospectiveCommand.CompleteQuestionGeneration }
-                }) }
+                verify {
+                    retrospectiveRepository.saveAll(match { commands ->
+                        commands.any { it is RetrospectiveCommand.CompleteQuestionGeneration }
+                    })
+                }
             }
 
             Then("질문이 생성된 회고 DTO를 반환해야 한다") {
@@ -204,12 +214,12 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
         )
 
         every { retrospectiveRepository.findAll(any<RetrospectiveQuery.OffsetByRetrospectiveId>()) } returns
-            OffsetPage(size = 1, page = 0, totalPage = 1, items = listOf(existingRetrospective))
+                OffsetPage(size = 1, page = 0, totalPage = 1, items = listOf(existingRetrospective))
 
         every { retrospectiveRepository.saveAll(any()) } returns listOf(completedRetrospective)
 
         every { taskRepository.findAll(any<TaskQuery.OffsetByMemberIdAndWeek>()) } returns
-            OffsetPage(size = 100, page = 0, totalPage = 1, items = tasks)
+                OffsetPage(size = 100, page = 0, totalPage = 1, items = tasks)
 
         fakeQuestionGenerationService.returnValue = generatedQuestionContents
 
@@ -271,12 +281,12 @@ class GenerateQuestionsServiceTest : BehaviorSpec({
         )
 
         every { retrospectiveRepository.findAll(any<RetrospectiveQuery.OffsetByRetrospectiveId>()) } returns
-            OffsetPage(size = 1, page = 0, totalPage = 1, items = listOf(existingRetrospective))
+                OffsetPage(size = 1, page = 0, totalPage = 1, items = listOf(existingRetrospective))
 
         every { retrospectiveRepository.saveAll(any()) } returns listOf(completedRetrospective)
 
         every { taskRepository.findAll(any<TaskQuery.OffsetByMemberIdAndWeek>()) } returns
-            OffsetPage(size = 100, page = 0, totalPage = 1, items = tasks)
+                OffsetPage(size = 100, page = 0, totalPage = 1, items = tasks)
 
         fakeQuestionGenerationService.returnValue = generatedQuestionContents
 

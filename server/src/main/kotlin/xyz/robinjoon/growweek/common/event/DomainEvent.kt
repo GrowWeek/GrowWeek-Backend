@@ -1,7 +1,7 @@
 package xyz.robinjoon.growweek.common.event
 
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 /**
  * 모든 도메인 이벤트의 기반 인터페이스

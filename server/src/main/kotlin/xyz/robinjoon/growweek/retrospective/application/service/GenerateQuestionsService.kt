@@ -6,7 +6,6 @@ import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.application.dto.RetrospectiveDto
 import xyz.robinjoon.growweek.retrospective.application.usecase.GenerateQuestionsUseCase
-import xyz.robinjoon.growweek.retrospective.domain.model.QuestionCount
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.query.RetrospectiveQuery
 import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepository
@@ -31,12 +30,14 @@ class GenerateQuestionsService(
             ?: throw IllegalArgumentException("Retrospective not found: ${command.retrospectiveId.value}")
 
         // 2. 질문 생성 시작 상태로 변경
-        retrospectiveRepository.saveAll(listOf(
-            RetrospectiveCommand.GenerateQuestions(
-                retrospectiveId = command.retrospectiveId,
-                memberId = command.memberId
+        retrospectiveRepository.saveAll(
+            listOf(
+                RetrospectiveCommand.GenerateQuestions(
+                    retrospectiveId = command.retrospectiveId,
+                    memberId = command.memberId
+                )
             )
-        ))
+        )
 
         // 3. 해당 기간의 할일 목록 조회
         val tasksPage = taskRepository.findAll(
@@ -58,12 +59,14 @@ class GenerateQuestionsService(
         )
 
         // 6. 질문 생성 완료
-        val savedRetrospectives = retrospectiveRepository.saveAll(listOf(
-            RetrospectiveCommand.CompleteQuestionGeneration(
-                retrospectiveId = command.retrospectiveId,
-                generatedQuestionContents = generatedQuestions
+        val savedRetrospectives = retrospectiveRepository.saveAll(
+            listOf(
+                RetrospectiveCommand.CompleteQuestionGeneration(
+                    retrospectiveId = command.retrospectiveId,
+                    generatedQuestionContents = generatedQuestions
+                )
             )
-        ))
+        )
 
         return RetrospectiveDto.from(savedRetrospectives.first())
     }

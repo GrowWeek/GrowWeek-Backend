@@ -3,23 +3,19 @@ package xyz.robinjoon.growweek.common.event
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
-import io.mockk.Runs
-import io.mockk.slot
-import io.mockk.verify
+import io.mockk.*
 import org.springframework.context.ApplicationEventPublisher
 import xyz.robinjoon.growweek.common.OffsetPage
+import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
 import xyz.robinjoon.growweek.common.infrastructure.SpringDomainEventPublisher
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.application.service.CompleteRetrospectiveService
 import xyz.robinjoon.growweek.retrospective.domain.model.*
+import xyz.robinjoon.growweek.retrospective.domain.model.Answer
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
 import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepository
 import xyz.robinjoon.growweek.task.domain.model.*
@@ -122,7 +118,9 @@ class RetrospectiveCompletedIntegrationTest : BehaviorSpec({
 
         And("해당 기간에 Task가 존재하는 경우") {
             val retrospectiveCommandSlot = slot<List<RetrospectiveCommand>>()
-            every { retrospectiveRepository.saveAll(capture(retrospectiveCommandSlot)) } returns listOf(completedRetrospective)
+            every { retrospectiveRepository.saveAll(capture(retrospectiveCommandSlot)) } returns listOf(
+                completedRetrospective
+            )
 
             every { taskRepository.findAll(any<TaskQuery>()) } returns OffsetPage(
                 items = listOf(task1, task2),

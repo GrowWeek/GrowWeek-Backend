@@ -1,7 +1,6 @@
 package xyz.robinjoon.growweek.member.infrastructure.persistence
 
 import org.jetbrains.exposed.v1.core.ResultRow
-import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
@@ -92,6 +91,7 @@ class ExposedMemberRepository : MemberRepository {
                     .where { MemberTable.id eq query.memberId.value }
                     .map { it.toMember() }
             }
+
             is MemberQuery.ByEmail -> {
                 MemberTable.selectAll()
                     .where { MemberTable.email eq query.email.value }

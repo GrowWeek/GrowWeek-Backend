@@ -5,7 +5,9 @@ import org.springframework.transaction.annotation.Transactional
 import xyz.robinjoon.growweek.task.application.command.TaskApplicationCommand
 import xyz.robinjoon.growweek.task.application.dto.TaskDto
 import xyz.robinjoon.growweek.task.application.usecase.UpdateTaskUseCase
-import xyz.robinjoon.growweek.task.domain.model.*
+import xyz.robinjoon.growweek.task.domain.model.Priority
+import xyz.robinjoon.growweek.task.domain.model.TaskDescription
+import xyz.robinjoon.growweek.task.domain.model.TaskTitle
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
 import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
 

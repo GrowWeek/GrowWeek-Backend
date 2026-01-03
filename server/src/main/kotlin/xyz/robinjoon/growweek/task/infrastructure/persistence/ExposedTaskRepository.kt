@@ -1,13 +1,7 @@
 package xyz.robinjoon.growweek.task.infrastructure.persistence
 
 import org.jetbrains.exposed.v1.core.*
-import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.core.lessEq
-import org.jetbrains.exposed.v1.jdbc.deleteWhere
-import org.jetbrains.exposed.v1.jdbc.insert
-import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.*
-import org.jetbrains.exposed.v1.jdbc.update
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import xyz.robinjoon.growweek.common.CursorPage
@@ -71,7 +65,9 @@ class ExposedTaskRepository : TaskRepository {
                     command.description?.let { updatedTask = updatedTask.updateDescription(it, retrospectiveDate) }
                     command.status?.let { updatedTask = updatedTask.updateStatus(it, retrospectiveDate) }
                     command.priority?.let { updatedTask = updatedTask.updatePriority(it, retrospectiveDate) }
-                    command.sensitivityLevel?.let { updatedTask = updatedTask.updateSensitivityLevel(it, retrospectiveDate) }
+                    command.sensitivityLevel?.let {
+                        updatedTask = updatedTask.updateSensitivityLevel(it, retrospectiveDate)
+                    }
                     command.dueDate?.let { updatedTask = updatedTask.updateDueDate(it, retrospectiveDate) }
 
                     // DB 업데이트
@@ -154,6 +150,7 @@ class ExposedTaskRepository : TaskRepository {
             is TaskQuery.CursorByMemberId -> {
                 baseQuery = baseQuery.andWhere { TaskTable.userId eq query.memberId.value }
             }
+
             is TaskQuery.CursorByMemberIdAndWeek -> {
                 baseQuery = baseQuery.andWhere {
                     (TaskTable.userId eq query.memberId.value) and
@@ -161,9 +158,11 @@ class ExposedTaskRepository : TaskRepository {
                             (TaskTable.dueDate greaterEq query.weekStart)
                 }
             }
+
             is TaskQuery.CursorByTaskId -> {
                 baseQuery = baseQuery.andWhere { TaskTable.id eq query.taskId.value }
             }
+
             else -> {}
         }
 
@@ -210,6 +209,7 @@ class ExposedTaskRepository : TaskRepository {
             is TaskQuery.OffsetByMemberId -> {
                 baseQuery = baseQuery.andWhere { TaskTable.userId eq query.memberId.value }
             }
+
             is TaskQuery.OffsetByMemberIdAndWeek -> {
                 baseQuery = baseQuery.andWhere {
                     (TaskTable.userId eq query.memberId.value) and
@@ -217,9 +217,11 @@ class ExposedTaskRepository : TaskRepository {
                             (TaskTable.dueDate greaterEq query.weekStart)
                 }
             }
+
             is TaskQuery.OffsetByTaskId -> {
                 baseQuery = baseQuery.andWhere { TaskTable.id eq query.taskId.value }
             }
+
             else -> {}
         }
 

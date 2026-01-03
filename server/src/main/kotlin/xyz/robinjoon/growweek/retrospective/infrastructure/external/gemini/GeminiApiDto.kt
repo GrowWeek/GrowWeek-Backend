@@ -1,7 +1,5 @@
 package xyz.robinjoon.growweek.retrospective.infrastructure.external.gemini
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
 /**
  * Gemini API 요청 DTO
  */
