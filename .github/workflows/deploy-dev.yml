@@ -19,6 +19,12 @@ jobs:
         working-directory: server
 
     steps:
+      - name: Configure DNS to use Google DNS
+        working-directory: /
+        run: |
+          sudo sed -i 's/nameserver.*/nameserver 8.8.8.8/' /etc/resolv.conf
+          echo "nameserver 8.8.4.4" | sudo tee -a /etc/resolv.conf
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -58,6 +64,12 @@ jobs:
       image-tag: ${{ steps.meta.outputs.tag }}
 
     steps:
+      - name: Configure DNS to use Google DNS
+        working-directory: /
+        run: |
+          sudo sed -i 's/nameserver.*/nameserver 8.8.8.8/' /etc/resolv.conf
+          echo "nameserver 8.8.4.4" | sudo tee -a /etc/resolv.conf
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -115,6 +127,11 @@ jobs:
     needs: build-and-push
 
     steps:
+      - name: Configure DNS to use Google DNS
+        run: |
+          sudo sed -i 's/nameserver.*/nameserver 8.8.8.8/' /etc/resolv.conf
+          echo "nameserver 8.8.4.4" | sudo tee -a /etc/resolv.conf
+
       - name: Checkout Helm repository
         uses: actions/checkout@v4
         with:
