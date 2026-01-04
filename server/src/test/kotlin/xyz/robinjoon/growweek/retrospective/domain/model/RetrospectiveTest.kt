@@ -18,7 +18,6 @@ class RetrospectiveTest :
                 val retrospective =
                     createRetrospective(
                         status = RetrospectiveStatus.TODO,
-                        endDate = LocalDate.now().plusDays(7),
                     )
 
                 Then("작성 가능해야 한다") {
@@ -30,7 +29,6 @@ class RetrospectiveTest :
                 val retrospective =
                     createRetrospective(
                         status = RetrospectiveStatus.IN_PROGRESS,
-                        endDate = LocalDate.now().plusDays(7),
                     )
 
                 Then("작성 가능해야 한다") {
@@ -42,7 +40,6 @@ class RetrospectiveTest :
                 val retrospective =
                     createRetrospective(
                         status = RetrospectiveStatus.AFTER_GENERATE_QUESTION,
-                        endDate = LocalDate.now().plusDays(7),
                     )
 
                 Then("작성 가능해야 한다") {
@@ -54,7 +51,6 @@ class RetrospectiveTest :
                 val retrospective =
                     createRetrospective(
                         status = RetrospectiveStatus.DONE,
-                        endDate = LocalDate.now().plusDays(7),
                     )
 
                 Then("작성 불가능해야 한다") {
@@ -172,7 +168,6 @@ class RetrospectiveTest :
                 val retrospective =
                     createRetrospective(
                         status = RetrospectiveStatus.AFTER_GENERATE_QUESTION,
-                        endDate = LocalDate.now().plusDays(7),
                         questions = questions,
                     )
 
@@ -188,7 +183,6 @@ class RetrospectiveTest :
                 val retrospective =
                     createRetrospective(
                         status = RetrospectiveStatus.IN_PROGRESS,
-                        endDate = LocalDate.now().plusDays(7),
                         questions = questions,
                         answers =
                             mapOf(
@@ -207,7 +201,6 @@ class RetrospectiveTest :
                 val retrospective =
                     createRetrospective(
                         status = RetrospectiveStatus.AFTER_GENERATE_QUESTION,
-                        endDate = LocalDate.now().plusDays(7),
                         questions = questions,
                     )
 
@@ -221,7 +214,6 @@ class RetrospectiveTest :
                 val retrospective =
                     createRetrospective(
                         status = RetrospectiveStatus.AFTER_GENERATE_QUESTION,
-                        endDate = LocalDate.now().plusDays(7),
                         questions = questions,
                     )
 
@@ -236,7 +228,6 @@ class RetrospectiveTest :
                 val retrospective =
                     createRetrospective(
                         status = RetrospectiveStatus.AFTER_GENERATE_QUESTION,
-                        endDate = LocalDate.now().plusDays(7),
                         questions = questions,
                     )
 
@@ -250,7 +241,6 @@ class RetrospectiveTest :
                 val retrospective =
                     createRetrospective(
                         status = RetrospectiveStatus.IN_PROGRESS,
-                        endDate = LocalDate.now().plusDays(7),
                         questions = questions,
                         answers =
                             mapOf(
@@ -268,7 +258,6 @@ class RetrospectiveTest :
                 val retrospective =
                     createRetrospective(
                         status = RetrospectiveStatus.AFTER_GENERATE_QUESTION,
-                        endDate = LocalDate.now().plusDays(7),
                         questions = questions,
                     )
 
@@ -298,7 +287,6 @@ class RetrospectiveTest :
                 val retrospective =
                     createRetrospective(
                         status = RetrospectiveStatus.DONE,
-                        endDate = LocalDate.now().plusDays(7),
                         questions = questions,
                     )
 
@@ -316,7 +304,6 @@ class RetrospectiveTest :
                 val retrospective =
                     createRetrospective(
                         status = RetrospectiveStatus.IN_PROGRESS,
-                        endDate = LocalDate.now().plusDays(7),
                     )
                 val notes = AdditionalNotes("이번 주는 정말 바빴습니다.")
 
@@ -345,7 +332,6 @@ class RetrospectiveTest :
                 val retrospective =
                     createRetrospective(
                         status = RetrospectiveStatus.DONE,
-                        endDate = LocalDate.now().plusDays(7),
                     )
                 val notes = AdditionalNotes("완료된 회고")
 
@@ -412,7 +398,7 @@ class RetrospectiveTest :
 
 private fun createRetrospective(
     status: RetrospectiveStatus = RetrospectiveStatus.TODO,
-    endDate: LocalDate = LocalDate.now().plusDays(7),
+    endDate: LocalDate = LocalDate.now(), // 종료일 2일 전부터 작성 가능하므로 현재 날짜로 설정
     questionCount: QuestionCount = QuestionCount.DEFAULT,
     questions: List<Question> = emptyList(),
     answers: Map<QuestionId, Answer> = emptyMap(),
