@@ -1,18 +1,23 @@
 package xyz.robinjoon.growweek.task.application.service
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import xyz.robinjoon.growweek.common.OffsetPage
 import xyz.robinjoon.growweek.common.domain.MemberId
+import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
 import xyz.robinjoon.growweek.task.application.command.TaskApplicationCommand
 import xyz.robinjoon.growweek.task.domain.model.*
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
+import xyz.robinjoon.growweek.task.domain.repository.CompletedRetrospectivePeriodRepository
 import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -23,7 +28,8 @@ class CreateTaskServiceTest :
         isolationMode = IsolationMode.InstancePerLeaf
 
         val taskRepository = mockk<TaskRepository>()
-        val service = CreateTaskService(taskRepository)
+        val completedRetrospectivePeriodRepository = mockk<CompletedRetrospectivePeriodRepository>()
+        val service = CreateTaskService(taskRepository, completedRetrospectivePeriodRepository)
 
         Given("할일 생성 요청이 왔을 때") {
             val memberId = MemberId(1L)
@@ -49,6 +55,7 @@ class CreateTaskServiceTest :
                 )
 
             val commandSlot = slot<List<TaskCommand>>()
+            every { completedRetrospectivePeriodRepository.findAll(any()) } returns emptyOffsetPage()
             every { taskRepository.saveAll(capture(commandSlot)) } returns listOf(savedTask)
 
             When("서비스를 실행하면") {
@@ -105,6 +112,7 @@ class CreateTaskServiceTest :
                     sensitivityLevel = command.sensitivityLevel,
                 )
 
+            every { completedRetrospectivePeriodRepository.findAll(any()) } returns emptyOffsetPage()
             every { taskRepository.saveAll(any()) } returns listOf(savedTask)
 
             When("서비스를 실행하면") {
@@ -116,6 +124,91 @@ class CreateTaskServiceTest :
 
                 Then("민감도가 TITLE_ONLY로 설정되어야 한다") {
                     result.sensitivityLevel shouldBe SensitivityLevel.TITLE_ONLY
+                }
+            }
+        }
+
+        Given("회고가 완료된 기간에 할일 생성 요청이 왔을 때") {
+            val memberId = MemberId(1L)
+            val retrospectiveStartDate = LocalDate.of(2025, 1, 6)
+            val retrospectiveEndDate = LocalDate.of(2025, 1, 12)
+
+            val command =
+                TaskApplicationCommand.CreateTask(
+                    memberId = memberId,
+                    title = "회고 완료 기간 할일",
+                    description = "테스트 설명",
+                    priority = 1,
+                    startDate = LocalDate.of(2025, 1, 8),
+                    dueDate = LocalDate.of(2025, 1, 10),
+                    sensitivityLevel = SensitivityLevel.NONE,
+                )
+
+            val completedPeriod =
+                createCompletedRetrospectivePeriod(
+                    retrospectiveId = RetrospectiveId(100L),
+                    memberId = memberId,
+                    startDate = retrospectiveStartDate,
+                    endDate = retrospectiveEndDate,
+                )
+
+            every {
+                completedRetrospectivePeriodRepository.findAll(any())
+            } returns OffsetPage(items = listOf(completedPeriod), page = 0, size = 100, totalPage = 1)
+
+            When("서비스를 실행하면") {
+                val exception =
+                    shouldThrow<IllegalArgumentException> {
+                        service.execute(command)
+                    }
+
+                Then("예외가 발생해야 한다") {
+                    exception.message shouldContain "회고가 완료된 기간"
+                    exception.message shouldContain retrospectiveStartDate.toString()
+                    exception.message shouldContain retrospectiveEndDate.toString()
+                }
+
+                Then("Repository에 저장 요청을 하지 않아야 한다") {
+                    verify(exactly = 0) { taskRepository.saveAll(any()) }
+                }
+            }
+        }
+
+        Given("회고가 완료되지 않은 기간에 할일 생성 요청이 왔을 때") {
+            val memberId = MemberId(1L)
+            val command =
+                TaskApplicationCommand.CreateTask(
+                    memberId = memberId,
+                    title = "회고 미완료 기간 할일",
+                    description = "테스트 설명",
+                    priority = 1,
+                    startDate = LocalDate.of(2025, 1, 13),
+                    dueDate = LocalDate.of(2025, 1, 19),
+                    sensitivityLevel = SensitivityLevel.NONE,
+                )
+
+            val savedTask =
+                createTask(
+                    title = command.title,
+                    description = command.description,
+                    priority = command.priority,
+                    startDate = command.startDate,
+                    dueDate = command.dueDate,
+                    sensitivityLevel = command.sensitivityLevel,
+                )
+
+            every { completedRetrospectivePeriodRepository.findAll(any()) } returns emptyOffsetPage()
+            every { taskRepository.saveAll(any()) } returns listOf(savedTask)
+
+            When("서비스를 실행하면") {
+                val result = service.execute(command)
+
+                Then("정상적으로 할일이 생성되어야 한다") {
+                    result.title.value shouldBe command.title
+                }
+
+                Then("Repository에 저장 요청을 해야 한다") {
+                    verify(exactly = 1) { taskRepository.saveAll(any()) }
                 }
             }
         }
@@ -144,3 +237,25 @@ private fun createTask(
         retrospectiveId = null,
     )
 }
+
+private fun createCompletedRetrospectivePeriod(
+    retrospectiveId: RetrospectiveId,
+    memberId: MemberId,
+    startDate: LocalDate,
+    endDate: LocalDate,
+): CompletedRetrospectivePeriod =
+    CompletedRetrospectivePeriod(
+        retrospectiveId = retrospectiveId,
+        memberId = memberId,
+        startDate = startDate,
+        endDate = endDate,
+        completedAt = LocalDateTime.now(),
+    )
+
+private fun emptyOffsetPage(): OffsetPage<CompletedRetrospectivePeriod> =
+    OffsetPage(
+        items = emptyList(),
+        page = 0,
+        size = 100,
+        totalPage = 0,
+    )
