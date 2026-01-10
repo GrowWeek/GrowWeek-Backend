@@ -3,7 +3,11 @@ package xyz.robinjoon.growweek.task.application.dto
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.task.domain.model.*
+import xyz.robinjoon.growweek.task.domain.model.Priority
+import xyz.robinjoon.growweek.task.domain.model.Task
+import xyz.robinjoon.growweek.task.domain.model.TaskDescription
+import xyz.robinjoon.growweek.task.domain.model.TaskStatus
+import xyz.robinjoon.growweek.task.domain.model.TaskTitle
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -31,8 +35,8 @@ data class TaskDto(
                 status = task.status,
                 sensitivityLevel = task.sensitivityLevel,
                 priority = task.priority,
-                startDate = task.period.startDate,
-                dueDate = task.period.dueDate,
+                startDate = task.weekId.startDate,
+                dueDate = task.dueDate,
                 hasRetrospective = task.retrospectiveId != null,
                 createdAt = task.createdAt,
                 updatedAt = task.updatedAt,

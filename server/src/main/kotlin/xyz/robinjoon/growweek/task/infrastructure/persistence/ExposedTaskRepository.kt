@@ -10,7 +10,12 @@ import xyz.robinjoon.growweek.common.Page
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.task.domain.model.*
+import xyz.robinjoon.growweek.common.domain.WeekId
+import xyz.robinjoon.growweek.task.domain.model.Priority
+import xyz.robinjoon.growweek.task.domain.model.Task
+import xyz.robinjoon.growweek.task.domain.model.TaskDescription
+import xyz.robinjoon.growweek.task.domain.model.TaskStatus
+import xyz.robinjoon.growweek.task.domain.model.TaskTitle
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
 import xyz.robinjoon.growweek.task.domain.model.query.TaskQuery
 import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
@@ -34,8 +39,8 @@ class ExposedTaskRepository : TaskRepository {
                             it[status] = TaskStatus.TODO.name
                             it[sensitivityLevel] = command.sensitivityLevel.name
                             it[priority] = command.priority.value
-                            it[startDate] = command.period.startDate
-                            it[dueDate] = command.period.dueDate
+                            it[weekId] = command.weekId.value
+                            it[dueDate] = command.dueDate
                             it[createdAt] = LocalDateTime.now()
                             it[updatedAt] = LocalDateTime.now()
                         } get TaskTable.id
@@ -85,7 +90,7 @@ class ExposedTaskRepository : TaskRepository {
                         it[status] = updatedTask.status.name
                         it[priority] = updatedTask.priority.value
                         it[sensitivityLevel] = updatedTask.sensitivityLevel.name
-                        it[dueDate] = updatedTask.period.dueDate
+                        it[dueDate] = updatedTask.dueDate
                         it[updatedAt] = LocalDateTime.now()
                     }
 
@@ -172,8 +177,7 @@ class ExposedTaskRepository : TaskRepository {
                 baseQuery =
                     baseQuery.andWhere {
                         (TaskTable.userId eq query.memberId.value) and
-                            (TaskTable.startDate lessEq query.weekEnd) and
-                            (TaskTable.dueDate greaterEq query.weekStart)
+                            (TaskTable.weekId eq query.weekId.value)
                     }
             }
 
@@ -243,8 +247,7 @@ class ExposedTaskRepository : TaskRepository {
                 baseQuery =
                     baseQuery.andWhere {
                         (TaskTable.userId eq query.memberId.value) and
-                            (TaskTable.startDate lessEq query.weekEnd) and
-                            (TaskTable.dueDate greaterEq query.weekStart)
+                            (TaskTable.weekId eq query.weekId.value)
                     }
             }
 
@@ -294,23 +297,26 @@ class ExposedTaskRepository : TaskRepository {
             status = TaskStatus.valueOf(this[TaskTable.status]),
             sensitivityLevel = SensitivityLevel.valueOf(this[TaskTable.sensitivityLevel]),
             priority = Priority(this[TaskTable.priority]),
-            period = TaskPeriod(this[TaskTable.startDate], this[TaskTable.dueDate]),
+            weekId = WeekId(this[TaskTable.weekId]),
+            dueDate = this[TaskTable.dueDate],
             createdAt = this[TaskTable.createdAt],
             updatedAt = this[TaskTable.updatedAt],
             retrospectiveId = this[TaskTable.retrospectiveId]?.let { RetrospectiveId(it) },
         )
 
     /**
-     * 회고 ID로 완료된 회고 기간의 종료일을 조회
+     * 회고 ID로 완료된 회고 주의 종료일을 조회
      *
      * @param retrospectiveId 회고 ID
-     * @return 회고 기간 종료일 (없으면 null)
+     * @return 회고 주 종료일 (없으면 null)
      */
     private fun findRetrospectiveEndDate(retrospectiveId: RetrospectiveId): LocalDate? =
-        CompletedRetrospectivePeriodTable
+        CompletedWeekTable
             .selectAll()
             .where {
-                CompletedRetrospectivePeriodTable.retrospectiveId eq retrospectiveId.value
+                CompletedWeekTable.retrospectiveId eq retrospectiveId.value
             }.singleOrNull()
-            ?.get(CompletedRetrospectivePeriodTable.endDate)
+            ?.let { row ->
+                WeekId(row[CompletedWeekTable.weekId]).endDate
+            }
 }

@@ -4,6 +4,7 @@ import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -15,7 +16,8 @@ data class Task(
     val status: TaskStatus,
     val sensitivityLevel: SensitivityLevel,
     val priority: Priority,
-    val period: TaskPeriod,
+    val weekId: WeekId,
+    val dueDate: LocalDate,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
     val retrospectiveId: RetrospectiveId? = null,
@@ -27,7 +29,7 @@ data class Task(
         // 회고가 없으면 수정 가능
         if (retrospectiveId == null) return true
         // 마감일이 현재 시점 이후면 제한적 수정 가능
-        return period.dueDate.isAfter(LocalDate.now())
+        return dueDate.isAfter(LocalDate.now())
     }
 
     /**
@@ -97,8 +99,7 @@ data class Task(
                 "회고 시점 이전으로 마감일을 수정할 수 없습니다"
             }
         }
-        val newPeriod = period.copy(dueDate = newDueDate)
-        return copy(period = newPeriod, updatedAt = LocalDateTime.now())
+        return copy(dueDate = newDueDate, updatedAt = LocalDateTime.now())
     }
 
     /**
@@ -109,15 +110,12 @@ data class Task(
     /**
      * 특정 주에 속하는지 확인
      */
-    fun belongsToWeek(
-        weekStart: LocalDate,
-        weekEnd: LocalDate,
-    ): Boolean {
-        // 시작일~마감일 범위가 해당 주와 겹치는지 확인
-        if (!period.overlaps(weekStart, weekEnd)) return false
+    fun belongsToWeek(targetWeekId: WeekId): Boolean {
+        // WeekId가 일치하는지 확인
+        if (weekId != targetWeekId) return false
 
         // 마감일 이전에 완료된 경우 제외
-        if (status == TaskStatus.DONE && updatedAt.toLocalDate().isBefore(period.dueDate)) {
+        if (status == TaskStatus.DONE && updatedAt.toLocalDate().isBefore(dueDate)) {
             return false
         }
 
@@ -126,7 +124,7 @@ data class Task(
 
     private fun validateModification(retrospectiveDate: LocalDate?) {
         if (retrospectiveId != null && retrospectiveDate != null) {
-            require(period.dueDate.isAfter(retrospectiveDate)) {
+            require(dueDate.isAfter(retrospectiveDate)) {
                 "회고가 작성된 할일은 수정할 수 없습니다"
             }
         }

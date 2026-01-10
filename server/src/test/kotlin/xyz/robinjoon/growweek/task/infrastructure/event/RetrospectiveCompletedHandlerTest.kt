@@ -13,13 +13,18 @@ import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.common.event.DefaultDomainEvent
 import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
-import xyz.robinjoon.growweek.task.domain.model.*
-import xyz.robinjoon.growweek.task.domain.model.command.CompletedRetrospectivePeriodCommand
+import xyz.robinjoon.growweek.task.domain.model.CompletedWeek
+import xyz.robinjoon.growweek.task.domain.model.Priority
+import xyz.robinjoon.growweek.task.domain.model.Task
+import xyz.robinjoon.growweek.task.domain.model.TaskStatus
+import xyz.robinjoon.growweek.task.domain.model.TaskTitle
+import xyz.robinjoon.growweek.task.domain.model.command.CompletedWeekCommand
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
 import xyz.robinjoon.growweek.task.domain.model.query.TaskQuery
-import xyz.robinjoon.growweek.task.domain.repository.CompletedRetrospectivePeriodRepository
+import xyz.robinjoon.growweek.task.domain.repository.CompletedWeekRepository
 import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -30,14 +35,15 @@ class RetrospectiveCompletedHandlerTest :
         isolationMode = IsolationMode.InstancePerLeaf
 
         val taskRepository = mockk<TaskRepository>()
-        val completedRetrospectivePeriodRepository = mockk<CompletedRetrospectivePeriodRepository>()
-        val handler = RetrospectiveCompletedHandler(taskRepository, completedRetrospectivePeriodRepository)
+        val completedWeekRepository = mockk<CompletedWeekRepository>()
+        val handler = RetrospectiveCompletedHandler(taskRepository, completedWeekRepository)
 
         Given("회고 완료 이벤트가 발행되었을 때") {
             val retrospectiveId = RetrospectiveId(1L)
             val memberId = MemberId(1L)
-            val startDate = LocalDate.of(2025, 1, 6)
+            val startDate = LocalDate.of(2025, 1, 6) // 2025-W02
             val endDate = LocalDate.of(2025, 1, 12)
+            val weekId = WeekId.of(startDate)
 
             val event =
                 DefaultDomainEvent(
@@ -52,16 +58,15 @@ class RetrospectiveCompletedHandlerTest :
 
             val now = LocalDateTime.now()
 
-            And("해당 기간에 Task가 있는 경우") {
+            And("해당 주에 Task가 있는 경우") {
                 every {
-                    completedRetrospectivePeriodRepository.saveAll(any<List<CompletedRetrospectivePeriodCommand>>())
+                    completedWeekRepository.saveAll(any<List<CompletedWeekCommand>>())
                 } returns
                     listOf(
-                        CompletedRetrospectivePeriod(
+                        CompletedWeek(
                             retrospectiveId = retrospectiveId,
                             memberId = memberId,
-                            startDate = startDate,
-                            endDate = endDate,
+                            weekId = weekId,
                             completedAt = now,
                         ),
                     )
@@ -75,7 +80,8 @@ class RetrospectiveCompletedHandlerTest :
                         status = TaskStatus.DONE,
                         sensitivityLevel = SensitivityLevel.NONE,
                         priority = Priority(1),
-                        period = TaskPeriod(startDate, endDate.minusDays(1)),
+                        weekId = weekId,
+                        dueDate = endDate.minusDays(1),
                         createdAt = now,
                         updatedAt = now,
                     )
@@ -88,7 +94,8 @@ class RetrospectiveCompletedHandlerTest :
                         status = TaskStatus.IN_PROGRESS,
                         sensitivityLevel = SensitivityLevel.NONE,
                         priority = Priority(2),
-                        period = TaskPeriod(startDate.plusDays(1), endDate),
+                        weekId = weekId,
+                        dueDate = endDate,
                         createdAt = now,
                         updatedAt = now,
                     )
@@ -108,13 +115,12 @@ class RetrospectiveCompletedHandlerTest :
                 When("핸들러가 이벤트를 처리하면") {
                     handler.handle(event)
 
-                    Then("해당 기간의 Task를 조회해야 한다") {
+                    Then("해당 주의 Task를 조회해야 한다") {
                         verify(exactly = 1) { taskRepository.findAll(any()) }
 
                         val capturedQuery = querySlot.captured as TaskQuery.OffsetByMemberIdAndWeek
                         capturedQuery.memberId shouldBe memberId
-                        capturedQuery.weekStart shouldBe startDate
-                        capturedQuery.weekEnd shouldBe endDate
+                        capturedQuery.weekId shouldBe weekId
                     }
 
                     Then("모든 Task에 회고를 연결해야 한다") {
@@ -134,16 +140,15 @@ class RetrospectiveCompletedHandlerTest :
                 }
             }
 
-            And("해당 기간에 Task가 없는 경우") {
+            And("해당 주에 Task가 없는 경우") {
                 every {
-                    completedRetrospectivePeriodRepository.saveAll(any<List<CompletedRetrospectivePeriodCommand>>())
+                    completedWeekRepository.saveAll(any<List<CompletedWeekCommand>>())
                 } returns
                     listOf(
-                        CompletedRetrospectivePeriod(
+                        CompletedWeek(
                             retrospectiveId = retrospectiveId,
                             memberId = memberId,
-                            startDate = startDate,
-                            endDate = endDate,
+                            weekId = weekId,
                             completedAt = now,
                         ),
                     )

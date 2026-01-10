@@ -3,6 +3,7 @@ package xyz.robinjoon.growweek.retrospective.application.service
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.application.dto.RetrospectiveDto
 import xyz.robinjoon.growweek.retrospective.application.usecase.GenerateQuestionsUseCase
@@ -41,13 +42,13 @@ class GenerateQuestionsService(
             ),
         )
 
-        // 3. 해당 기간의 할일 목록 조회
+        // 3. 해당 주의 할일 목록 조회
+        val weekId = WeekId.of(retrospective.period.startDate)
         val tasksPage =
             taskRepository.findAll(
                 TaskQuery.Offset.byMemberIdAndWeek(
                     memberId = command.memberId,
-                    weekStart = retrospective.period.startDate,
-                    weekEnd = retrospective.period.endDate,
+                    weekId = weekId,
                     size = 100,
                 ),
             )

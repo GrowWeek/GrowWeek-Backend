@@ -10,6 +10,7 @@ import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
 import xyz.robinjoon.growweek.common.infrastructure.SpringDomainEventPublisher
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
@@ -19,10 +20,10 @@ import xyz.robinjoon.growweek.retrospective.domain.model.Answer
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
 import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepository
 import xyz.robinjoon.growweek.task.domain.model.*
-import xyz.robinjoon.growweek.task.domain.model.command.CompletedRetrospectivePeriodCommand
+import xyz.robinjoon.growweek.task.domain.model.command.CompletedWeekCommand
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
 import xyz.robinjoon.growweek.task.domain.model.query.TaskQuery
-import xyz.robinjoon.growweek.task.domain.repository.CompletedRetrospectivePeriodRepository
+import xyz.robinjoon.growweek.task.domain.repository.CompletedWeekRepository
 import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
 import xyz.robinjoon.growweek.task.infrastructure.event.RetrospectiveCompletedHandler
 import java.time.LocalDate
@@ -44,10 +45,10 @@ class RetrospectiveCompletedIntegrationTest :
         Given("회고 완료 시 Task 연결 통합 테스트") {
             val retrospectiveRepository = mockk<RetrospectiveRepository>()
             val taskRepository = mockk<TaskRepository>()
-            val completedRetrospectivePeriodRepository = mockk<CompletedRetrospectivePeriodRepository>()
+            val completedWeekRepository = mockk<CompletedWeekRepository>()
 
             // Handler 생성
-            val handler = RetrospectiveCompletedHandler(taskRepository, completedRetrospectivePeriodRepository)
+            val handler = RetrospectiveCompletedHandler(taskRepository, completedWeekRepository)
 
             // 이벤트 캡처를 위한 slot
             val eventSlot = slot<Any>()
@@ -61,6 +62,7 @@ class RetrospectiveCompletedIntegrationTest :
             val retrospectiveId = RetrospectiveId(1L)
             val startDate = LocalDate.of(2025, 1, 6)
             val endDate = LocalDate.of(2025, 1, 12)
+            val weekId = WeekId.of(startDate)
             val now = LocalDateTime.now()
 
             // 회고 데이터 설정
@@ -107,7 +109,8 @@ class RetrospectiveCompletedIntegrationTest :
                     status = TaskStatus.DONE,
                     sensitivityLevel = SensitivityLevel.NONE,
                     priority = Priority(1),
-                    period = TaskPeriod(startDate, endDate.minusDays(1)),
+                    weekId = weekId,
+                    dueDate = endDate.minusDays(1),
                     createdAt = now,
                     updatedAt = now,
                 )
@@ -120,7 +123,8 @@ class RetrospectiveCompletedIntegrationTest :
                     status = TaskStatus.IN_PROGRESS,
                     sensitivityLevel = SensitivityLevel.NONE,
                     priority = Priority(2),
-                    period = TaskPeriod(startDate.plusDays(1), endDate),
+                    weekId = weekId,
+                    dueDate = endDate,
                     createdAt = now,
                     updatedAt = now,
                 )
@@ -133,14 +137,13 @@ class RetrospectiveCompletedIntegrationTest :
                     )
 
                 every {
-                    completedRetrospectivePeriodRepository.saveAll(any<List<CompletedRetrospectivePeriodCommand>>())
+                    completedWeekRepository.saveAll(any<List<CompletedWeekCommand>>())
                 } returns
                     listOf(
-                        CompletedRetrospectivePeriod(
+                        CompletedWeek(
                             retrospectiveId = retrospectiveId,
                             memberId = memberId,
-                            startDate = startDate,
-                            endDate = endDate,
+                            weekId = weekId,
                             completedAt = now,
                         ),
                     )
@@ -212,14 +215,13 @@ class RetrospectiveCompletedIntegrationTest :
                 every { retrospectiveRepository.saveAll(any()) } returns listOf(completedRetrospective)
 
                 every {
-                    completedRetrospectivePeriodRepository.saveAll(any<List<CompletedRetrospectivePeriodCommand>>())
+                    completedWeekRepository.saveAll(any<List<CompletedWeekCommand>>())
                 } returns
                     listOf(
-                        CompletedRetrospectivePeriod(
+                        CompletedWeek(
                             retrospectiveId = retrospectiveId,
                             memberId = memberId,
-                            startDate = startDate,
-                            endDate = endDate,
+                            weekId = weekId,
                             completedAt = now,
                         ),
                     )

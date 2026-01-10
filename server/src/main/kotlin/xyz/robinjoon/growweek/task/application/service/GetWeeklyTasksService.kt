@@ -2,6 +2,7 @@ package xyz.robinjoon.growweek.task.application.service
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.task.application.dto.TaskDto
 import xyz.robinjoon.growweek.task.application.dto.TaskStatisticsDto
 import xyz.robinjoon.growweek.task.application.dto.WeeklyTaskDto
@@ -17,36 +18,39 @@ class GetWeeklyTasksService(
 ) : GetWeeklyTasksUseCase {
     @Transactional(readOnly = true)
     override fun execute(query: TaskApplicationQuery.OffsetByMemberIdAndWeek): WeeklyTaskDto {
+        // weekStart를 WeekId로 변환
+        val weekId = WeekId.of(query.weekStart)
+
         // Application Query를 Domain Query로 변환
         val domainQuery =
             TaskQuery.OffsetByMemberIdAndWeek(
                 memberId = query.memberId,
-                weekStart = query.weekStart,
-                weekEnd = query.weekEnd,
+                weekId = weekId,
                 pageInfo = query.pageInfo,
             )
 
-        return executeInternal(domainQuery, query.weekStart, query.weekEnd)
+        return executeInternal(domainQuery, weekId)
     }
 
     @Transactional(readOnly = true)
     override fun execute(query: TaskApplicationQuery.CursorByMemberIdAndWeek): WeeklyTaskDto {
+        // weekStart를 WeekId로 변환
+        val weekId = WeekId.of(query.weekStart)
+
         // Application Query를 Domain Query로 변환
         val domainQuery =
             TaskQuery.CursorByMemberIdAndWeek(
                 memberId = query.memberId,
-                weekStart = query.weekStart,
-                weekEnd = query.weekEnd,
+                weekId = weekId,
                 pageInfo = query.pageInfo,
             )
 
-        return executeInternal(domainQuery, query.weekStart, query.weekEnd)
+        return executeInternal(domainQuery, weekId)
     }
 
     private fun executeInternal(
         domainQuery: TaskQuery,
-        weekStart: java.time.LocalDate,
-        weekEnd: java.time.LocalDate,
+        weekId: WeekId,
     ): WeeklyTaskDto {
         // Repository를 통해 조회
         val page = taskRepository.findAll(domainQuery)
@@ -56,8 +60,8 @@ class GetWeeklyTasksService(
         val statistics = calculateStatistics(tasks)
 
         return WeeklyTaskDto(
-            weekStart = weekStart,
-            weekEnd = weekEnd,
+            weekStart = weekId.startDate,
+            weekEnd = weekId.endDate,
             tasks = tasks,
             statistics = statistics,
         )

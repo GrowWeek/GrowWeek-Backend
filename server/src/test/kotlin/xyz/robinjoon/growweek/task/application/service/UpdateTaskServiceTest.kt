@@ -10,6 +10,7 @@ import io.mockk.verify
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.task.application.command.TaskApplicationCommand
 import xyz.robinjoon.growweek.task.domain.model.*
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
@@ -28,6 +29,7 @@ class UpdateTaskServiceTest :
         Given("할일 수정 요청이 왔을 때") {
             val taskId = TaskId(1L)
             val memberId = MemberId(1L)
+            val weekId = WeekId.of(LocalDate.of(2025, 1, 6))
             val command =
                 TaskApplicationCommand.UpdateTask(
                     taskId = taskId,
@@ -49,7 +51,8 @@ class UpdateTaskServiceTest :
                     status = command.status!!,
                     sensitivityLevel = command.sensitivityLevel!!,
                     priority = Priority(command.priority!!),
-                    period = TaskPeriod(LocalDate.of(2025, 1, 6), command.dueDate!!),
+                    weekId = weekId,
+                    dueDate = command.dueDate!!,
                     createdAt = LocalDateTime.now(),
                     updatedAt = LocalDateTime.now(),
                     retrospectiveId = null,
@@ -92,6 +95,7 @@ class UpdateTaskServiceTest :
         Given("일부 필드만 수정 요청이 왔을 때") {
             val taskId = TaskId(1L)
             val memberId = MemberId(1L)
+            val weekId = WeekId.of(LocalDate.of(2025, 1, 6))
             val command =
                 TaskApplicationCommand.UpdateTask(
                     taskId = taskId,
@@ -113,7 +117,8 @@ class UpdateTaskServiceTest :
                     status = TaskStatus.TODO,
                     sensitivityLevel = SensitivityLevel.NONE,
                     priority = Priority(1),
-                    period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 12)),
+                    weekId = weekId,
+                    dueDate = LocalDate.of(2025, 1, 12),
                     createdAt = LocalDateTime.now(),
                     updatedAt = LocalDateTime.now(),
                     retrospectiveId = null,

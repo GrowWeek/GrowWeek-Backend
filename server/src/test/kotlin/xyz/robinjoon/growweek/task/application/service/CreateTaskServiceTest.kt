@@ -14,10 +14,11 @@ import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.task.application.command.TaskApplicationCommand
 import xyz.robinjoon.growweek.task.domain.model.*
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
-import xyz.robinjoon.growweek.task.domain.repository.CompletedRetrospectivePeriodRepository
+import xyz.robinjoon.growweek.task.domain.repository.CompletedWeekRepository
 import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -28,8 +29,8 @@ class CreateTaskServiceTest :
         isolationMode = IsolationMode.InstancePerLeaf
 
         val taskRepository = mockk<TaskRepository>()
-        val completedRetrospectivePeriodRepository = mockk<CompletedRetrospectivePeriodRepository>()
-        val service = CreateTaskService(taskRepository, completedRetrospectivePeriodRepository)
+        val completedWeekRepository = mockk<CompletedWeekRepository>()
+        val service = CreateTaskService(taskRepository, completedWeekRepository)
 
         Given("할일 생성 요청이 왔을 때") {
             val memberId = MemberId(1L)
@@ -44,18 +45,20 @@ class CreateTaskServiceTest :
                     sensitivityLevel = SensitivityLevel.NONE,
                 )
 
+            val weekId = WeekId.of(command.startDate)
+
             val savedTask =
                 createTask(
                     title = command.title,
                     description = command.description,
                     priority = command.priority,
-                    startDate = command.startDate,
+                    weekId = weekId,
                     dueDate = command.dueDate,
                     sensitivityLevel = command.sensitivityLevel,
                 )
 
             val commandSlot = slot<List<TaskCommand>>()
-            every { completedRetrospectivePeriodRepository.findAll(any()) } returns emptyOffsetPage()
+            every { completedWeekRepository.findAll(any()) } returns emptyOffsetPage()
             every { taskRepository.saveAll(capture(commandSlot)) } returns listOf(savedTask)
 
             When("서비스를 실행하면") {
@@ -73,7 +76,8 @@ class CreateTaskServiceTest :
                             title = TaskTitle(command.title),
                             description = TaskDescription(command.description!!),
                             priority = Priority(command.priority),
-                            period = TaskPeriod(command.startDate, command.dueDate),
+                            weekId = weekId,
+                            dueDate = command.dueDate,
                             sensitivityLevel = command.sensitivityLevel,
                         )
                 }
@@ -102,17 +106,19 @@ class CreateTaskServiceTest :
                     sensitivityLevel = SensitivityLevel.TITLE_ONLY,
                 )
 
+            val weekId = WeekId.of(command.startDate)
+
             val savedTask =
                 createTask(
                     title = command.title,
                     description = null,
                     priority = command.priority,
-                    startDate = command.startDate,
+                    weekId = weekId,
                     dueDate = command.dueDate,
                     sensitivityLevel = command.sensitivityLevel,
                 )
 
-            every { completedRetrospectivePeriodRepository.findAll(any()) } returns emptyOffsetPage()
+            every { completedWeekRepository.findAll(any()) } returns emptyOffsetPage()
             every { taskRepository.saveAll(any()) } returns listOf(savedTask)
 
             When("서비스를 실행하면") {
@@ -132,6 +138,7 @@ class CreateTaskServiceTest :
             val memberId = MemberId(1L)
             val retrospectiveStartDate = LocalDate.of(2025, 1, 6)
             val retrospectiveEndDate = LocalDate.of(2025, 1, 12)
+            val weekId = WeekId.of(retrospectiveStartDate)
 
             val command =
                 TaskApplicationCommand.CreateTask(
@@ -144,17 +151,16 @@ class CreateTaskServiceTest :
                     sensitivityLevel = SensitivityLevel.NONE,
                 )
 
-            val completedPeriod =
-                createCompletedRetrospectivePeriod(
+            val completedWeek =
+                createCompletedWeek(
                     retrospectiveId = RetrospectiveId(100L),
                     memberId = memberId,
-                    startDate = retrospectiveStartDate,
-                    endDate = retrospectiveEndDate,
+                    weekId = weekId,
                 )
 
             every {
-                completedRetrospectivePeriodRepository.findAll(any())
-            } returns OffsetPage(items = listOf(completedPeriod), page = 0, size = 100, totalPage = 1)
+                completedWeekRepository.findAll(any())
+            } returns OffsetPage(items = listOf(completedWeek), page = 0, size = 100, totalPage = 1)
 
             When("서비스를 실행하면") {
                 val exception =
@@ -187,17 +193,19 @@ class CreateTaskServiceTest :
                     sensitivityLevel = SensitivityLevel.NONE,
                 )
 
+            val weekId = WeekId.of(command.startDate)
+
             val savedTask =
                 createTask(
                     title = command.title,
                     description = command.description,
                     priority = command.priority,
-                    startDate = command.startDate,
+                    weekId = weekId,
                     dueDate = command.dueDate,
                     sensitivityLevel = command.sensitivityLevel,
                 )
 
-            every { completedRetrospectivePeriodRepository.findAll(any()) } returns emptyOffsetPage()
+            every { completedWeekRepository.findAll(any()) } returns emptyOffsetPage()
             every { taskRepository.saveAll(any()) } returns listOf(savedTask)
 
             When("서비스를 실행하면") {
@@ -218,7 +226,7 @@ private fun createTask(
     title: String,
     description: String?,
     priority: Int,
-    startDate: LocalDate,
+    weekId: WeekId,
     dueDate: LocalDate,
     sensitivityLevel: SensitivityLevel,
 ): Task {
@@ -231,28 +239,27 @@ private fun createTask(
         status = TaskStatus.TODO,
         sensitivityLevel = sensitivityLevel,
         priority = Priority(priority),
-        period = TaskPeriod(startDate, dueDate),
+        weekId = weekId,
+        dueDate = dueDate,
         createdAt = now,
         updatedAt = now,
         retrospectiveId = null,
     )
 }
 
-private fun createCompletedRetrospectivePeriod(
+private fun createCompletedWeek(
     retrospectiveId: RetrospectiveId,
     memberId: MemberId,
-    startDate: LocalDate,
-    endDate: LocalDate,
-): CompletedRetrospectivePeriod =
-    CompletedRetrospectivePeriod(
+    weekId: WeekId,
+): CompletedWeek =
+    CompletedWeek(
         retrospectiveId = retrospectiveId,
         memberId = memberId,
-        startDate = startDate,
-        endDate = endDate,
+        weekId = weekId,
         completedAt = LocalDateTime.now(),
     )
 
-private fun emptyOffsetPage(): OffsetPage<CompletedRetrospectivePeriod> =
+private fun emptyOffsetPage(): OffsetPage<CompletedWeek> =
     OffsetPage(
         items = emptyList(),
         page = 0,

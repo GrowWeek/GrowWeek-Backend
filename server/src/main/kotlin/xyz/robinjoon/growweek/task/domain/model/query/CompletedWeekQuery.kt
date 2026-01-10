@@ -5,12 +5,12 @@ import xyz.robinjoon.growweek.common.PageInfo
 import xyz.robinjoon.growweek.common.PageQuery
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import java.time.LocalDate
+import xyz.robinjoon.growweek.common.domain.WeekId
 
 /**
- * 완료된 회고 기간 조회 Query
+ * 완료된 회고 주 조회 Query
  */
-sealed class CompletedRetrospectivePeriodQuery(
+sealed class CompletedWeekQuery(
     override val pageInfo: PageInfo,
 ) : PageQuery {
     /**
@@ -18,19 +18,17 @@ sealed class CompletedRetrospectivePeriodQuery(
      */
     object Offset {
         /**
-         * 특정 회원의 특정 기간과 겹치는 완료된 회고 조회
+         * 특정 회원의 특정 주에 완료된 회고 조회
          */
-        fun byMemberIdAndOverlappingPeriod(
+        fun byMemberIdAndWeekId(
             memberId: MemberId,
-            periodStart: LocalDate,
-            periodEnd: LocalDate,
+            weekId: WeekId,
             page: Int = 0,
             size: Int = 100,
-        ): OffsetByMemberIdAndOverlappingPeriod =
-            OffsetByMemberIdAndOverlappingPeriod(
+        ): OffsetByMemberIdAndWeekId =
+            OffsetByMemberIdAndWeekId(
                 memberId = memberId,
-                periodStart = periodStart,
-                periodEnd = periodEnd,
+                weekId = weekId,
                 pageInfo =
                     OffsetPageInfo(
                         page = page,
@@ -59,14 +57,13 @@ sealed class CompletedRetrospectivePeriodQuery(
     }
 
     /**
-     * 특정 회원의 특정 기간과 겹치는 완료된 회고 조회
+     * 특정 회원의 특정 주에 완료된 회고 조회
      */
-    data class OffsetByMemberIdAndOverlappingPeriod(
+    data class OffsetByMemberIdAndWeekId(
         val memberId: MemberId,
-        val periodStart: LocalDate,
-        val periodEnd: LocalDate,
+        val weekId: WeekId,
         override val pageInfo: OffsetPageInfo,
-    ) : CompletedRetrospectivePeriodQuery(pageInfo) {
+    ) : CompletedWeekQuery(pageInfo) {
         val page get() = pageInfo.page
         val size get() = pageInfo.size
     }
@@ -77,7 +74,7 @@ sealed class CompletedRetrospectivePeriodQuery(
     data class OffsetByRetrospectiveId(
         val retrospectiveId: RetrospectiveId,
         override val pageInfo: OffsetPageInfo,
-    ) : CompletedRetrospectivePeriodQuery(pageInfo) {
+    ) : CompletedWeekQuery(pageInfo) {
         val page get() = pageInfo.page
         val size get() = pageInfo.size
     }
