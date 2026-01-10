@@ -66,7 +66,7 @@ class ExposedTaskRepository : TaskRepository {
                             .singleOrNull()
                             ?: throw IllegalArgumentException("Task not found: ${command.taskId.value}")
 
-                    // 회고 날짜 확인 (회고가 있으면 CompletedRetrospectivePeriod에서 종료일 조회)
+                    // 회고 날짜 확인 (회고가 있으면 CompletedWeek에서 종료일 조회)
                     val retrospectiveDate =
                         existingTask.retrospectiveId?.let { retroId ->
                             findRetrospectiveEndDate(retroId)

@@ -1,28 +1,22 @@
 package xyz.robinjoon.growweek.task.presentation.rest.response
 
 import xyz.robinjoon.growweek.task.application.dto.WeeklyTaskDto
-import java.time.format.DateTimeFormatter
 
 /**
  * 주간 할일 응답 DTO
  */
 data class WeeklyTaskResponse(
-    /** 주 시작일 (yyyy-MM-dd) */
-    val weekStart: String,
-    /** 주 종료일 (yyyy-MM-dd) */
-    val weekEnd: String,
+    /** 주 식별자 (YYYY-Www 형식, 예: 2025-W02) */
+    val weekId: String,
     /** 해당 주의 할일 목록 */
     val tasks: List<TaskResponse>,
     /** 해당 주의 할일 통계 */
     val statistics: TaskStatisticsResponse,
 ) {
     companion object {
-        private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
-
         fun from(dto: WeeklyTaskDto): WeeklyTaskResponse =
             WeeklyTaskResponse(
-                weekStart = dto.weekStart.format(dateFormatter),
-                weekEnd = dto.weekEnd.format(dateFormatter),
+                weekId = dto.weekId.value,
                 tasks = dto.tasks.map { TaskResponse.from(it) },
                 statistics = TaskStatisticsResponse.from(dto.statistics),
             )

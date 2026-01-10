@@ -212,7 +212,7 @@ object TaskTable : Table("tasks") {
 
 ---
 
-## Phase 3: Retrospective BC 변경
+## Phase 3: Retrospective BC 변경 ✅ 완료
 
 ### 3.1 Retrospective 엔티티에 weekId 추가
 
@@ -348,7 +348,7 @@ SET week_id = CONCAT(
 
 ---
 
-## Phase 5: 제거 대상 코드
+## Phase 5: 제거 대상 코드 ✅ 완료
 
 ### 5.1 삭제할 파일
 

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.application.query.RetrospectiveApplicationQuery
 import xyz.robinjoon.growweek.retrospective.application.usecase.*
@@ -14,7 +15,6 @@ import xyz.robinjoon.growweek.retrospective.presentation.rest.request.CreateRetr
 import xyz.robinjoon.growweek.retrospective.presentation.rest.request.WriteAdditionalNotesRequest
 import xyz.robinjoon.growweek.retrospective.presentation.rest.request.WriteAnswerRequest
 import xyz.robinjoon.growweek.retrospective.presentation.rest.response.*
-import java.time.LocalDate
 
 /**
  * 회고 관리 API 컨트롤러
@@ -46,8 +46,7 @@ class RetrospectiveController(
         val command =
             RetrospectiveApplicationCommand.CreateRetrospective(
                 memberId = MemberId(userId),
-                startDate = LocalDate.parse(request.startDate),
-                endDate = LocalDate.parse(request.endDate),
+                weekId = WeekId(request.weekId),
                 questionCount = request.questionCount,
             )
 

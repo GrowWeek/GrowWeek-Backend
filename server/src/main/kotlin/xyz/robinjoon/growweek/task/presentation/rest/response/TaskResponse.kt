@@ -19,8 +19,8 @@ data class TaskResponse(
     val sensitivityLevel: String,
     /** 할일 우선순위 (1 이상의 정수, 값이 작을수록 높은 우선순위) */
     val priority: Int,
-    /** 할일 시작 날짜 (yyyy-MM-dd) */
-    val startDate: String,
+    /** 할일이 속한 주 식별자 (YYYY-Www 형식, 예: 2025-W02) */
+    val weekId: String,
     /** 할일 마감 날짜 (yyyy-MM-dd) */
     val dueDate: String,
     /** 회고 작성 여부 */
@@ -42,7 +42,7 @@ data class TaskResponse(
                 status = dto.status.name,
                 sensitivityLevel = dto.sensitivityLevel.name,
                 priority = dto.priority.value,
-                startDate = dto.startDate.format(dateFormatter),
+                weekId = dto.weekId.value,
                 dueDate = dto.dueDate.format(dateFormatter),
                 hasRetrospective = dto.hasRetrospective,
                 createdAt = dto.createdAt.format(dateTimeFormatter),

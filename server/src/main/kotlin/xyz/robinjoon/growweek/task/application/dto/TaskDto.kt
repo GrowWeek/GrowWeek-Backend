@@ -3,6 +3,7 @@ package xyz.robinjoon.growweek.task.application.dto
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.task.domain.model.Priority
 import xyz.robinjoon.growweek.task.domain.model.Task
 import xyz.robinjoon.growweek.task.domain.model.TaskDescription
@@ -19,7 +20,7 @@ data class TaskDto(
     val status: TaskStatus,
     val sensitivityLevel: SensitivityLevel,
     val priority: Priority,
-    val startDate: LocalDate,
+    val weekId: WeekId,
     val dueDate: LocalDate,
     val hasRetrospective: Boolean,
     val createdAt: LocalDateTime,
@@ -35,7 +36,7 @@ data class TaskDto(
                 status = task.status,
                 sensitivityLevel = task.sensitivityLevel,
                 priority = task.priority,
-                startDate = task.weekId.startDate,
+                weekId = task.weekId,
                 dueDate = task.dueDate,
                 hasRetrospective = task.retrospectiveId != null,
                 createdAt = task.createdAt,
@@ -45,8 +46,7 @@ data class TaskDto(
 }
 
 data class WeeklyTaskDto(
-    val weekStart: LocalDate,
-    val weekEnd: LocalDate,
+    val weekId: WeekId,
     val tasks: List<TaskDto>,
     val statistics: TaskStatisticsDto,
 )

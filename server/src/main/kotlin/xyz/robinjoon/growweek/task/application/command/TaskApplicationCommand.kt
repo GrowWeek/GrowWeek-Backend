@@ -15,7 +15,6 @@ sealed interface TaskApplicationCommand {
         val title: String,
         val description: String?,
         val priority: Int,
-        val startDate: LocalDate,
         val dueDate: LocalDate,
         val sensitivityLevel: SensitivityLevel = SensitivityLevel.NONE,
     ) : TaskApplicationCommand

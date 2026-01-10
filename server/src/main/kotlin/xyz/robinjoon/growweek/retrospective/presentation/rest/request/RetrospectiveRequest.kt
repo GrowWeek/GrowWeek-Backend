@@ -4,10 +4,8 @@ package xyz.robinjoon.growweek.retrospective.presentation.rest.request
  * 회고 생성 요청 DTO
  */
 data class CreateRetrospectiveRequest(
-    /** 회고 시작일 (yyyy-MM-dd) */
-    val startDate: String,
-    /** 회고 종료일 (yyyy-MM-dd) */
-    val endDate: String,
+    /** 주 식별자 (YYYY-Www 형식, 예: 2025-W02) */
+    val weekId: String,
     /** 생성할 질문 수 (기본값: 3) */
     val questionCount: Int = 3,
 )

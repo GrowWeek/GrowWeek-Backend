@@ -34,18 +34,18 @@ class CreateTaskServiceTest :
 
         Given("할일 생성 요청이 왔을 때") {
             val memberId = MemberId(1L)
+            val dueDate = LocalDate.of(2025, 1, 12)
             val command =
                 TaskApplicationCommand.CreateTask(
                     memberId = memberId,
                     title = "테스트 할일",
                     description = "테스트 설명",
                     priority = 1,
-                    startDate = LocalDate.of(2025, 1, 6),
-                    dueDate = LocalDate.of(2025, 1, 12),
+                    dueDate = dueDate,
                     sensitivityLevel = SensitivityLevel.NONE,
                 )
 
-            val weekId = WeekId.of(command.startDate)
+            val weekId = WeekId.of(dueDate)
 
             val savedTask =
                 createTask(
@@ -86,7 +86,7 @@ class CreateTaskServiceTest :
                     result.title.value shouldBe command.title
                     result.description?.value shouldBe command.description
                     result.priority.value shouldBe command.priority
-                    result.startDate shouldBe command.startDate
+                    result.weekId shouldBe weekId
                     result.dueDate shouldBe command.dueDate
                     result.sensitivityLevel shouldBe command.sensitivityLevel
                     result.status shouldBe TaskStatus.TODO
@@ -95,18 +95,18 @@ class CreateTaskServiceTest :
         }
 
         Given("설명 없이 할일 생성 요청이 왔을 때") {
+            val dueDate = LocalDate.of(2025, 1, 10)
             val command =
                 TaskApplicationCommand.CreateTask(
                     memberId = MemberId(1L),
                     title = "설명 없는 할일",
                     description = null,
                     priority = 2,
-                    startDate = LocalDate.of(2025, 1, 6),
-                    dueDate = LocalDate.of(2025, 1, 10),
+                    dueDate = dueDate,
                     sensitivityLevel = SensitivityLevel.TITLE_ONLY,
                 )
 
-            val weekId = WeekId.of(command.startDate)
+            val weekId = WeekId.of(dueDate)
 
             val savedTask =
                 createTask(
@@ -136,9 +136,8 @@ class CreateTaskServiceTest :
 
         Given("회고가 완료된 기간에 할일 생성 요청이 왔을 때") {
             val memberId = MemberId(1L)
-            val retrospectiveStartDate = LocalDate.of(2025, 1, 6)
-            val retrospectiveEndDate = LocalDate.of(2025, 1, 12)
-            val weekId = WeekId.of(retrospectiveStartDate)
+            val dueDate = LocalDate.of(2025, 1, 10) // 2025-W02 주차에 속함
+            val weekId = WeekId.of(dueDate)
 
             val command =
                 TaskApplicationCommand.CreateTask(
@@ -146,8 +145,7 @@ class CreateTaskServiceTest :
                     title = "회고 완료 기간 할일",
                     description = "테스트 설명",
                     priority = 1,
-                    startDate = LocalDate.of(2025, 1, 8),
-                    dueDate = LocalDate.of(2025, 1, 10),
+                    dueDate = dueDate,
                     sensitivityLevel = SensitivityLevel.NONE,
                 )
 
@@ -170,8 +168,8 @@ class CreateTaskServiceTest :
 
                 Then("예외가 발생해야 한다") {
                     exception.message shouldContain "회고가 완료된 기간"
-                    exception.message shouldContain retrospectiveStartDate.toString()
-                    exception.message shouldContain retrospectiveEndDate.toString()
+                    exception.message shouldContain weekId.startDate.toString()
+                    exception.message shouldContain weekId.endDate.toString()
                 }
 
                 Then("Repository에 저장 요청을 하지 않아야 한다") {
@@ -182,18 +180,18 @@ class CreateTaskServiceTest :
 
         Given("회고가 완료되지 않은 기간에 할일 생성 요청이 왔을 때") {
             val memberId = MemberId(1L)
+            val dueDate = LocalDate.of(2025, 1, 19)
             val command =
                 TaskApplicationCommand.CreateTask(
                     memberId = memberId,
                     title = "회고 미완료 기간 할일",
                     description = "테스트 설명",
                     priority = 1,
-                    startDate = LocalDate.of(2025, 1, 13),
-                    dueDate = LocalDate.of(2025, 1, 19),
+                    dueDate = dueDate,
                     sensitivityLevel = SensitivityLevel.NONE,
                 )
 
-            val weekId = WeekId.of(command.startDate)
+            val weekId = WeekId.of(dueDate)
 
             val savedTask =
                 createTask(

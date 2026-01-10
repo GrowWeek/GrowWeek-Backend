@@ -6,7 +6,7 @@ import xyz.robinjoon.growweek.common.PageInfo
 import xyz.robinjoon.growweek.common.PageQuery
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.TaskId
-import java.time.LocalDate
+import xyz.robinjoon.growweek.common.domain.WeekId
 
 sealed class TaskApplicationQuery(
     override val pageInfo: PageInfo,
@@ -33,16 +33,14 @@ sealed class TaskApplicationQuery(
 
         fun byMemberIdAndWeek(
             memberId: MemberId,
-            weekStart: LocalDate,
-            weekEnd: LocalDate,
+            weekId: WeekId,
             cursor: String? = null,
             size: Int = 20,
             orderBy: String? = "priority",
         ): CursorByMemberIdAndWeek =
             CursorByMemberIdAndWeek(
                 memberId = memberId,
-                weekStart = weekStart,
-                weekEnd = weekEnd,
+                weekId = weekId,
                 pageInfo =
                     CursorPageInfo(
                         cursor = cursor,
@@ -91,16 +89,14 @@ sealed class TaskApplicationQuery(
 
         fun byMemberIdAndWeek(
             memberId: MemberId,
-            weekStart: LocalDate,
-            weekEnd: LocalDate,
+            weekId: WeekId,
             page: Int = 0,
             size: Int = 20,
             orderBy: String? = "priority",
         ): OffsetByMemberIdAndWeek =
             OffsetByMemberIdAndWeek(
                 memberId = memberId,
-                weekStart = weekStart,
-                weekEnd = weekEnd,
+                weekId = weekId,
                 pageInfo =
                     OffsetPageInfo(
                         page = page,
@@ -140,8 +136,7 @@ sealed class TaskApplicationQuery(
 
     data class CursorByMemberIdAndWeek(
         val memberId: MemberId,
-        val weekStart: LocalDate,
-        val weekEnd: LocalDate,
+        val weekId: WeekId,
         override val pageInfo: CursorPageInfo,
     ) : TaskApplicationQuery(pageInfo) {
         val cursor get() = pageInfo.cursor
@@ -172,8 +167,7 @@ sealed class TaskApplicationQuery(
 
     data class OffsetByMemberIdAndWeek(
         val memberId: MemberId,
-        val weekStart: LocalDate,
-        val weekEnd: LocalDate,
+        val weekId: WeekId,
         override val pageInfo: OffsetPageInfo,
     ) : TaskApplicationQuery(pageInfo) {
         val page get() = pageInfo.page

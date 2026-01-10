@@ -21,8 +21,8 @@ class CreateTaskService(
 ) : CreateTaskUseCase {
     @Transactional
     override fun execute(command: TaskApplicationCommand.CreateTask): TaskDto {
-        // startDate를 WeekId로 변환
-        val weekId = WeekId.of(command.startDate)
+        // dueDate를 기반으로 WeekId 계산
+        val weekId = WeekId.of(command.dueDate)
 
         // 회고 완료된 주인지 검증
         validateNotInCompletedWeek(command, weekId)
