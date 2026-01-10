@@ -19,8 +19,10 @@ import xyz.robinjoon.growweek.retrospective.domain.model.Answer
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
 import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepository
 import xyz.robinjoon.growweek.task.domain.model.*
+import xyz.robinjoon.growweek.task.domain.model.command.CompletedRetrospectivePeriodCommand
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
 import xyz.robinjoon.growweek.task.domain.model.query.TaskQuery
+import xyz.robinjoon.growweek.task.domain.repository.CompletedRetrospectivePeriodRepository
 import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
 import xyz.robinjoon.growweek.task.infrastructure.event.RetrospectiveCompletedHandler
 import java.time.LocalDate
@@ -42,9 +44,10 @@ class RetrospectiveCompletedIntegrationTest :
         Given("회고 완료 시 Task 연결 통합 테스트") {
             val retrospectiveRepository = mockk<RetrospectiveRepository>()
             val taskRepository = mockk<TaskRepository>()
+            val completedRetrospectivePeriodRepository = mockk<CompletedRetrospectivePeriodRepository>()
 
             // Handler 생성
-            val handler = RetrospectiveCompletedHandler(taskRepository)
+            val handler = RetrospectiveCompletedHandler(taskRepository, completedRetrospectivePeriodRepository)
 
             // 이벤트 캡처를 위한 slot
             val eventSlot = slot<Any>()
@@ -129,6 +132,19 @@ class RetrospectiveCompletedIntegrationTest :
                         completedRetrospective,
                     )
 
+                every {
+                    completedRetrospectivePeriodRepository.saveAll(any<List<CompletedRetrospectivePeriodCommand>>())
+                } returns
+                    listOf(
+                        CompletedRetrospectivePeriod(
+                            retrospectiveId = retrospectiveId,
+                            memberId = memberId,
+                            startDate = startDate,
+                            endDate = endDate,
+                            completedAt = now,
+                        ),
+                    )
+
                 every { taskRepository.findAll(any<TaskQuery>()) } returns
                     OffsetPage(
                         items = listOf(task1, task2),
@@ -194,6 +210,19 @@ class RetrospectiveCompletedIntegrationTest :
 
             And("해당 기간에 Task가 없는 경우") {
                 every { retrospectiveRepository.saveAll(any()) } returns listOf(completedRetrospective)
+
+                every {
+                    completedRetrospectivePeriodRepository.saveAll(any<List<CompletedRetrospectivePeriodCommand>>())
+                } returns
+                    listOf(
+                        CompletedRetrospectivePeriod(
+                            retrospectiveId = retrospectiveId,
+                            memberId = memberId,
+                            startDate = startDate,
+                            endDate = endDate,
+                            completedAt = now,
+                        ),
+                    )
 
                 every { taskRepository.findAll(any<TaskQuery>()) } returns
                     OffsetPage(

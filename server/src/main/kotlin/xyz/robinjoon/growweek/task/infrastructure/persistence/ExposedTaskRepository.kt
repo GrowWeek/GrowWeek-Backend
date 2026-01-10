@@ -14,6 +14,7 @@ import xyz.robinjoon.growweek.task.domain.model.*
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
 import xyz.robinjoon.growweek.task.domain.model.query.TaskQuery
 import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Repository
@@ -60,11 +61,10 @@ class ExposedTaskRepository : TaskRepository {
                             .singleOrNull()
                             ?: throw IllegalArgumentException("Task not found: ${command.taskId.value}")
 
-                    // 회고 날짜 확인 (회고가 있으면)
+                    // 회고 날짜 확인 (회고가 있으면 CompletedRetrospectivePeriod에서 종료일 조회)
                     val retrospectiveDate =
-                        existingTask.retrospectiveId?.let {
-                            // TODO: 실제로는 Retrospective를 조회해서 날짜를 가져와야 함
-                            null
+                        existingTask.retrospectiveId?.let { retroId ->
+                            findRetrospectiveEndDate(retroId)
                         }
 
                     // 업데이트 적용
@@ -104,7 +104,10 @@ class ExposedTaskRepository : TaskRepository {
                             .singleOrNull()
                             ?: throw IllegalArgumentException("Task not found: ${command.taskId.value}")
 
-                    val retrospectiveDate = existingTask.retrospectiveId?.let { null }
+                    val retrospectiveDate =
+                        existingTask.retrospectiveId?.let { retroId ->
+                            findRetrospectiveEndDate(retroId)
+                        }
                     val updatedTask = existingTask.updateStatus(command.status, retrospectiveDate)
 
                     // DB 업데이트
@@ -296,4 +299,18 @@ class ExposedTaskRepository : TaskRepository {
             updatedAt = this[TaskTable.updatedAt],
             retrospectiveId = this[TaskTable.retrospectiveId]?.let { RetrospectiveId(it) },
         )
+
+    /**
+     * 회고 ID로 완료된 회고 기간의 종료일을 조회
+     *
+     * @param retrospectiveId 회고 ID
+     * @return 회고 기간 종료일 (없으면 null)
+     */
+    private fun findRetrospectiveEndDate(retrospectiveId: RetrospectiveId): LocalDate? =
+        CompletedRetrospectivePeriodTable
+            .selectAll()
+            .where {
+                CompletedRetrospectivePeriodTable.retrospectiveId eq retrospectiveId.value
+            }.singleOrNull()
+            ?.get(CompletedRetrospectivePeriodTable.endDate)
 }

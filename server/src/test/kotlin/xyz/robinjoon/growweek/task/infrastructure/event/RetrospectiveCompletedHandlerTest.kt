@@ -16,8 +16,10 @@ import xyz.robinjoon.growweek.common.domain.TaskId
 import xyz.robinjoon.growweek.common.event.DefaultDomainEvent
 import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
 import xyz.robinjoon.growweek.task.domain.model.*
+import xyz.robinjoon.growweek.task.domain.model.command.CompletedRetrospectivePeriodCommand
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
 import xyz.robinjoon.growweek.task.domain.model.query.TaskQuery
+import xyz.robinjoon.growweek.task.domain.repository.CompletedRetrospectivePeriodRepository
 import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -28,7 +30,8 @@ class RetrospectiveCompletedHandlerTest :
         isolationMode = IsolationMode.InstancePerLeaf
 
         val taskRepository = mockk<TaskRepository>()
-        val handler = RetrospectiveCompletedHandler(taskRepository)
+        val completedRetrospectivePeriodRepository = mockk<CompletedRetrospectivePeriodRepository>()
+        val handler = RetrospectiveCompletedHandler(taskRepository, completedRetrospectivePeriodRepository)
 
         Given("회고 완료 이벤트가 발행되었을 때") {
             val retrospectiveId = RetrospectiveId(1L)
@@ -50,6 +53,19 @@ class RetrospectiveCompletedHandlerTest :
             val now = LocalDateTime.now()
 
             And("해당 기간에 Task가 있는 경우") {
+                every {
+                    completedRetrospectivePeriodRepository.saveAll(any<List<CompletedRetrospectivePeriodCommand>>())
+                } returns
+                    listOf(
+                        CompletedRetrospectivePeriod(
+                            retrospectiveId = retrospectiveId,
+                            memberId = memberId,
+                            startDate = startDate,
+                            endDate = endDate,
+                            completedAt = now,
+                        ),
+                    )
+
                 val task1 =
                     Task(
                         id = TaskId(1L),
@@ -119,6 +135,19 @@ class RetrospectiveCompletedHandlerTest :
             }
 
             And("해당 기간에 Task가 없는 경우") {
+                every {
+                    completedRetrospectivePeriodRepository.saveAll(any<List<CompletedRetrospectivePeriodCommand>>())
+                } returns
+                    listOf(
+                        CompletedRetrospectivePeriod(
+                            retrospectiveId = retrospectiveId,
+                            memberId = memberId,
+                            startDate = startDate,
+                            endDate = endDate,
+                            completedAt = now,
+                        ),
+                    )
+
                 every { taskRepository.findAll(any<TaskQuery>()) } returns
                     OffsetPage(
                         items = emptyList(),
