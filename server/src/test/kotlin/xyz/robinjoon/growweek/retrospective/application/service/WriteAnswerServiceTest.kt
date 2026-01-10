@@ -9,11 +9,11 @@ import io.mockk.slot
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.*
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
 import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepository
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 class WriteAnswerServiceTest :
@@ -57,11 +57,12 @@ class WriteAnswerServiceTest :
                     updatedAt = now,
                 )
 
+            val weekId = WeekId.of(2025, 2) // 2025-W02
             val updatedRetrospective =
                 Retrospective(
                     id = retrospectiveId,
                     memberId = memberId,
-                    period = RetrospectivePeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 12)),
+                    weekId = weekId,
                     status = RetrospectiveStatus.IN_PROGRESS,
                     questionCount = QuestionCount(3),
                     questions = listOf(question),
@@ -130,11 +131,12 @@ class WriteAnswerServiceTest :
                     updatedAt = now,
                 )
 
+            val weekId = WeekId.of(2025, 2) // 2025-W02
             val updatedRetrospective =
                 Retrospective(
                     id = retrospectiveId,
                     memberId = memberId,
-                    period = RetrospectivePeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 12)),
+                    weekId = weekId,
                     status = RetrospectiveStatus.IN_PROGRESS,
                     questionCount = QuestionCount(3),
                     questions = listOf(question),

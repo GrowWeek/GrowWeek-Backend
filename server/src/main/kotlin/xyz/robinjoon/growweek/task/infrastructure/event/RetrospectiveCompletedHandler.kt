@@ -2,7 +2,6 @@ package xyz.robinjoon.growweek.task.infrastructure.event
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.common.event.DomainEvent
 import xyz.robinjoon.growweek.common.event.DomainEventHandler
 import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
@@ -33,38 +32,29 @@ class RetrospectiveCompletedHandler(
         log.info("Handling Retrospective Completed Event: {}", event)
         val payload = event.payload
 
-        // startDate를 WeekId로 변환
-        val weekId = WeekId.of(payload.startDate)
-
         // 1. 완료된 회고 주 정보 저장
-        saveCompletedWeek(payload, weekId)
+        saveCompletedWeek(payload)
 
         // 2. 해당 주의 Task 조회 및 회고 연결
-        linkTasksToRetrospective(payload, weekId)
+        linkTasksToRetrospective(payload)
     }
 
-    private fun saveCompletedWeek(
-        payload: RetrospectiveEventPayload.Completed,
-        weekId: WeekId,
-    ) {
+    private fun saveCompletedWeek(payload: RetrospectiveEventPayload.Completed) {
         val saveCommand =
             CompletedWeekCommand.Save(
                 retrospectiveId = payload.retrospectiveId,
                 memberId = payload.memberId,
-                weekId = weekId,
+                weekId = payload.weekId,
             )
         completedWeekRepository.saveAll(listOf(saveCommand))
-        log.info("Saved completed week: retrospectiveId={}, weekId={}", payload.retrospectiveId, weekId.value)
+        log.info("Saved completed week: retrospectiveId={}, weekId={}", payload.retrospectiveId, payload.weekId.value)
     }
 
-    private fun linkTasksToRetrospective(
-        payload: RetrospectiveEventPayload.Completed,
-        weekId: WeekId,
-    ) {
+    private fun linkTasksToRetrospective(payload: RetrospectiveEventPayload.Completed) {
         val query =
             TaskQuery.Offset.byMemberIdAndWeek(
                 memberId = payload.memberId,
-                weekId = weekId,
+                weekId = payload.weekId,
                 size = Int.MAX_VALUE,
             )
         val tasks = taskRepository.findAll(query).items

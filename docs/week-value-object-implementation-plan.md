@@ -72,7 +72,7 @@ value class WeekId(val value: String) {
 
 ---
 
-## Phase 2: Task BC 변경
+## Phase 2: Task BC 변경 ✅ 완료
 
 ### 2.1 Task 엔티티에 weekId 추가
 
@@ -409,7 +409,7 @@ WHERE week_id = ?
 
 1. **Phase 1**: WeekId 값 객체 추가 + 테스트 ✅ 완료
 2. **Phase 4**: DB 마이그레이션 스크립트 작성 및 실행
-3. **Phase 2**: Task BC 변경
+3. **Phase 2**: Task BC 변경 ✅ 완료
 4. **Phase 3**: Retrospective BC 변경 (isWritable 로직 BC 내에서 구현)
 5. **Phase 5**: 레거시 코드 제거
 6. **Phase 6**: API 엔드포인트 변경

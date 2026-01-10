@@ -9,24 +9,15 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.OffsetPage
-import xyz.robinjoon.growweek.common.domain.MemberId
-import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.SensitivityLevel
-import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.WeekId
+import xyz.robinjoon.growweek.common.domain.*
 import xyz.robinjoon.growweek.common.event.DefaultDomainEvent
 import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
-import xyz.robinjoon.growweek.task.domain.model.CompletedWeek
-import xyz.robinjoon.growweek.task.domain.model.Priority
-import xyz.robinjoon.growweek.task.domain.model.Task
-import xyz.robinjoon.growweek.task.domain.model.TaskStatus
-import xyz.robinjoon.growweek.task.domain.model.TaskTitle
+import xyz.robinjoon.growweek.task.domain.model.*
 import xyz.robinjoon.growweek.task.domain.model.command.CompletedWeekCommand
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
 import xyz.robinjoon.growweek.task.domain.model.query.TaskQuery
 import xyz.robinjoon.growweek.task.domain.repository.CompletedWeekRepository
 import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 class RetrospectiveCompletedHandlerTest :
@@ -41,9 +32,7 @@ class RetrospectiveCompletedHandlerTest :
         Given("회고 완료 이벤트가 발행되었을 때") {
             val retrospectiveId = RetrospectiveId(1L)
             val memberId = MemberId(1L)
-            val startDate = LocalDate.of(2025, 1, 6) // 2025-W02
-            val endDate = LocalDate.of(2025, 1, 12)
-            val weekId = WeekId.of(startDate)
+            val weekId = WeekId.of(2025, 2) // 2025-W02
 
             val event =
                 DefaultDomainEvent(
@@ -51,8 +40,7 @@ class RetrospectiveCompletedHandlerTest :
                         RetrospectiveEventPayload.Completed(
                             retrospectiveId = retrospectiveId,
                             memberId = memberId,
-                            startDate = startDate,
-                            endDate = endDate,
+                            weekId = weekId,
                         ),
                 )
 
@@ -81,7 +69,7 @@ class RetrospectiveCompletedHandlerTest :
                         sensitivityLevel = SensitivityLevel.NONE,
                         priority = Priority(1),
                         weekId = weekId,
-                        dueDate = endDate.minusDays(1),
+                        dueDate = weekId.endDate.minusDays(1),
                         createdAt = now,
                         updatedAt = now,
                     )
@@ -95,7 +83,7 @@ class RetrospectiveCompletedHandlerTest :
                         sensitivityLevel = SensitivityLevel.NONE,
                         priority = Priority(2),
                         weekId = weekId,
-                        dueDate = endDate,
+                        dueDate = weekId.endDate,
                         createdAt = now,
                         updatedAt = now,
                     )

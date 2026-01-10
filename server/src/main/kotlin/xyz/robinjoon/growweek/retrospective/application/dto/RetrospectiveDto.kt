@@ -24,8 +24,8 @@ data class RetrospectiveDto(
             RetrospectiveDto(
                 id = retrospective.id,
                 memberId = retrospective.memberId,
-                startDate = retrospective.period.startDate,
-                endDate = retrospective.period.endDate,
+                startDate = retrospective.weekId.startDate,
+                endDate = retrospective.weekId.endDate,
                 status = retrospective.status,
                 questionCount = retrospective.questionCount.value,
                 questions = retrospective.questions.map { QuestionDto.from(it) },
@@ -88,8 +88,8 @@ data class RetrospectiveSummaryDto(
         fun from(retrospective: Retrospective): RetrospectiveSummaryDto =
             RetrospectiveSummaryDto(
                 id = retrospective.id,
-                startDate = retrospective.period.startDate,
-                endDate = retrospective.period.endDate,
+                startDate = retrospective.weekId.startDate,
+                endDate = retrospective.weekId.endDate,
                 status = retrospective.status,
                 questionCount = retrospective.questionCount.value,
                 answeredCount = retrospective.answers.count { it.value.content != null },

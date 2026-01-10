@@ -30,10 +30,8 @@ class GetRetrospectiveService(
     @Transactional(readOnly = true)
     override fun getList(query: RetrospectiveApplicationQuery): Page<RetrospectiveSummaryDto> {
         val domainQuery = toDomainQuery(query)
-        val result = retrospectiveRepository.findAll(domainQuery)
-
-        return when (result) {
-            is CursorPage ->
+        return when (val result = retrospectiveRepository.findAll(domainQuery)) {
+            is CursorPage -> {
                 CursorPage(
                     items = result.items.map { RetrospectiveSummaryDto.from(it) },
                     cursor = result.cursor,
@@ -41,36 +39,45 @@ class GetRetrospectiveService(
                     nextCursor = result.nextCursor,
                     hasNext = result.hasNext,
                 )
-            is OffsetPage ->
+            }
+
+            is OffsetPage -> {
                 OffsetPage(
                     items = result.items.map { RetrospectiveSummaryDto.from(it) },
                     page = result.page,
                     size = result.size,
                     totalPage = result.totalPage,
                 )
-            else -> throw IllegalStateException("Unsupported page type")
+            }
+
+            else -> {
+                throw IllegalStateException("Unsupported page type")
+            }
         }
     }
 
     private fun toDomainQuery(query: RetrospectiveApplicationQuery): RetrospectiveQuery =
         when (query) {
-            is RetrospectiveApplicationQuery.CursorByMemberId ->
+            is RetrospectiveApplicationQuery.CursorByMemberId -> {
                 RetrospectiveQuery.Cursor.byMemberId(
                     memberId = query.memberId,
                     cursor = query.pageInfo.cursor,
                     size = query.pageInfo.size,
                     orderBy = query.pageInfo.orderBy,
                 )
-            is RetrospectiveApplicationQuery.CursorByMemberIdAndPeriod ->
-                RetrospectiveQuery.Cursor.byMemberIdAndPeriod(
+            }
+
+            is RetrospectiveApplicationQuery.CursorByMemberIdAndWeekId -> {
+                RetrospectiveQuery.Cursor.byMemberIdAndWeekId(
                     memberId = query.memberId,
-                    startDate = query.startDate,
-                    endDate = query.endDate,
+                    weekId = query.weekId,
                     cursor = query.pageInfo.cursor,
                     size = query.pageInfo.size,
                     orderBy = query.pageInfo.orderBy,
                 )
-            is RetrospectiveApplicationQuery.CursorByMemberIdAndMonth ->
+            }
+
+            is RetrospectiveApplicationQuery.CursorByMemberIdAndMonth -> {
                 RetrospectiveQuery.Cursor.byMemberIdAndMonth(
                     memberId = query.memberId,
                     year = query.year,
@@ -79,23 +86,28 @@ class GetRetrospectiveService(
                     size = query.pageInfo.size,
                     orderBy = query.pageInfo.orderBy,
                 )
-            is RetrospectiveApplicationQuery.OffsetByMemberId ->
+            }
+
+            is RetrospectiveApplicationQuery.OffsetByMemberId -> {
                 RetrospectiveQuery.Offset.byMemberId(
                     memberId = query.memberId,
                     page = query.pageInfo.page,
                     size = query.pageInfo.size,
                     orderBy = query.pageInfo.orderBy,
                 )
-            is RetrospectiveApplicationQuery.OffsetByMemberIdAndPeriod ->
-                RetrospectiveQuery.Offset.byMemberIdAndPeriod(
+            }
+
+            is RetrospectiveApplicationQuery.OffsetByMemberIdAndWeekId -> {
+                RetrospectiveQuery.Offset.byMemberIdAndWeekId(
                     memberId = query.memberId,
-                    startDate = query.startDate,
-                    endDate = query.endDate,
+                    weekId = query.weekId,
                     page = query.pageInfo.page,
                     size = query.pageInfo.size,
                     orderBy = query.pageInfo.orderBy,
                 )
-            is RetrospectiveApplicationQuery.OffsetByMemberIdAndMonth ->
+            }
+
+            is RetrospectiveApplicationQuery.OffsetByMemberIdAndMonth -> {
                 RetrospectiveQuery.Offset.byMemberIdAndMonth(
                     memberId = query.memberId,
                     year = query.year,
@@ -104,7 +116,10 @@ class GetRetrospectiveService(
                     size = query.pageInfo.size,
                     orderBy = query.pageInfo.orderBy,
                 )
-            is RetrospectiveApplicationQuery.ByRetrospectiveId ->
+            }
+
+            is RetrospectiveApplicationQuery.ByRetrospectiveId -> {
                 RetrospectiveQuery.Offset.byRetrospectiveId(query.retrospectiveId)
+            }
         }
 }

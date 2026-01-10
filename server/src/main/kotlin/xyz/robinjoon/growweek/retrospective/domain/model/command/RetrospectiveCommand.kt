@@ -2,10 +2,10 @@ package xyz.robinjoon.growweek.retrospective.domain.model.command
 
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.retrospective.domain.model.AdditionalNotes
 import xyz.robinjoon.growweek.retrospective.domain.model.QuestionCount
 import xyz.robinjoon.growweek.retrospective.domain.model.QuestionId
-import xyz.robinjoon.growweek.retrospective.domain.model.RetrospectivePeriod
 
 sealed interface RetrospectiveCommand {
     /**
@@ -13,7 +13,7 @@ sealed interface RetrospectiveCommand {
      */
     data class CreateRetrospective(
         val memberId: MemberId,
-        val period: RetrospectivePeriod,
+        val weekId: WeekId,
         val questionCount: QuestionCount = QuestionCount.DEFAULT,
     ) : RetrospectiveCommand
 

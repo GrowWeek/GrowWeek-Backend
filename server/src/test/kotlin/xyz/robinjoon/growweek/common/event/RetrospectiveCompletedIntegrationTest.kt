@@ -6,11 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.*
 import org.springframework.context.ApplicationEventPublisher
 import xyz.robinjoon.growweek.common.OffsetPage
-import xyz.robinjoon.growweek.common.domain.MemberId
-import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.SensitivityLevel
-import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.WeekId
+import xyz.robinjoon.growweek.common.domain.*
 import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
 import xyz.robinjoon.growweek.common.infrastructure.SpringDomainEventPublisher
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
@@ -89,7 +85,7 @@ class RetrospectiveCompletedIntegrationTest :
                 Retrospective(
                     id = retrospectiveId,
                     memberId = memberId,
-                    period = RetrospectivePeriod(startDate, endDate),
+                    weekId = weekId,
                     status = RetrospectiveStatus.DONE,
                     questionCount = QuestionCount(3),
                     questions = listOf(question),
@@ -185,8 +181,7 @@ class RetrospectiveCompletedIntegrationTest :
                             RetrospectiveEventPayload.Completed(
                                 retrospectiveId = retrospectiveId,
                                 memberId = memberId,
-                                startDate = startDate,
-                                endDate = endDate,
+                                weekId = weekId,
                             )
                     }
 

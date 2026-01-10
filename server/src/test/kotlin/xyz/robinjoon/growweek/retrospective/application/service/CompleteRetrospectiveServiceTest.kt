@@ -9,13 +9,13 @@ import io.mockk.slot
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.common.event.DomainEventPublisher
 import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.*
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
 import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepository
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 class CompleteRetrospectiveServiceTest :
@@ -57,11 +57,13 @@ class CompleteRetrospectiveServiceTest :
                     updatedAt = now,
                 )
 
+            val weekId = WeekId.of(2025, 2) // 2025-W02
+
             val completedRetrospective =
                 Retrospective(
                     id = retrospectiveId,
                     memberId = memberId,
-                    period = RetrospectivePeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 12)),
+                    weekId = weekId,
                     status = RetrospectiveStatus.DONE,
                     questionCount = QuestionCount(3),
                     questions = listOf(question),
@@ -99,8 +101,7 @@ class CompleteRetrospectiveServiceTest :
                     val capturedPayload = eventSlot.captured
                     capturedPayload.retrospectiveId shouldBe retrospectiveId
                     capturedPayload.memberId shouldBe memberId
-                    capturedPayload.startDate shouldBe LocalDate.of(2025, 1, 6)
-                    capturedPayload.endDate shouldBe LocalDate.of(2025, 1, 12)
+                    capturedPayload.weekId shouldBe weekId
                 }
             }
         }

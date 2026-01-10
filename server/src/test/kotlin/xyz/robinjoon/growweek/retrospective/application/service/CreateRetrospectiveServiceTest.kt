@@ -9,10 +9,10 @@ import io.mockk.slot
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.QuestionCount
 import xyz.robinjoon.growweek.retrospective.domain.model.Retrospective
-import xyz.robinjoon.growweek.retrospective.domain.model.RetrospectivePeriod
 import xyz.robinjoon.growweek.retrospective.domain.model.RetrospectiveStatus
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
 import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepository
@@ -62,7 +62,7 @@ class CreateRetrospectiveServiceTest :
                 Then("Application Command가 Domain Command로 변환되어야 한다") {
                     val capturedCommand = commandSlot.captured.first() as RetrospectiveCommand.CreateRetrospective
                     capturedCommand.memberId shouldBe memberId
-                    capturedCommand.period shouldBe RetrospectivePeriod(startDate, endDate)
+                    capturedCommand.weekId shouldBe WeekId.of(startDate)
                     capturedCommand.questionCount shouldBe QuestionCount(questionCount)
                 }
 
@@ -121,10 +121,11 @@ private fun createRetrospective(
     questionCount: Int,
 ): Retrospective {
     val now = LocalDateTime.now()
+    val weekId = WeekId.of(startDate)
     return Retrospective(
         id = RetrospectiveId(1L),
         memberId = memberId,
-        period = RetrospectivePeriod(startDate, endDate),
+        weekId = weekId,
         status = RetrospectiveStatus.TODO,
         questionCount = QuestionCount(questionCount),
         questions = emptyList(),

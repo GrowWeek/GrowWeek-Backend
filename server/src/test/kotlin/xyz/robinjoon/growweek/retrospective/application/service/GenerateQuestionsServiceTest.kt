@@ -7,11 +7,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.OffsetPage
-import xyz.robinjoon.growweek.common.domain.MemberId
-import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.SensitivityLevel
-import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.WeekId
+import xyz.robinjoon.growweek.common.domain.*
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.*
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
@@ -56,7 +52,7 @@ class GenerateQuestionsServiceTest :
             val retrospectiveId = RetrospectiveId(1L)
             val memberId = MemberId(1L)
             val startDate = LocalDate.of(2025, 1, 6)
-            val endDate = LocalDate.of(2025, 1, 12)
+            LocalDate.of(2025, 1, 12)
             val weekId = WeekId.of(startDate)
             val now = LocalDateTime.now()
 
@@ -70,7 +66,7 @@ class GenerateQuestionsServiceTest :
                 Retrospective(
                     id = retrospectiveId,
                     memberId = memberId,
-                    period = RetrospectivePeriod(startDate, endDate),
+                    weekId = weekId,
                     status = RetrospectiveStatus.TODO,
                     questionCount = QuestionCount(3),
                     questions = emptyList(),
@@ -109,7 +105,7 @@ class GenerateQuestionsServiceTest :
                 Retrospective(
                     id = retrospectiveId,
                     memberId = memberId,
-                    period = RetrospectivePeriod(startDate, endDate),
+                    weekId = weekId,
                     status = RetrospectiveStatus.AFTER_GENERATE_QUESTION,
                     questionCount = QuestionCount(3),
                     questions = questions,
@@ -190,7 +186,7 @@ class GenerateQuestionsServiceTest :
             val retrospectiveId = RetrospectiveId(1L)
             val memberId = MemberId(1L)
             val startDate = LocalDate.of(2025, 1, 6)
-            val endDate = LocalDate.of(2025, 1, 12)
+            LocalDate.of(2025, 1, 12)
             val weekId = WeekId.of(startDate)
             val now = LocalDateTime.now()
 
@@ -204,7 +200,7 @@ class GenerateQuestionsServiceTest :
                 Retrospective(
                     id = retrospectiveId,
                     memberId = memberId,
-                    period = RetrospectivePeriod(startDate, endDate),
+                    weekId = weekId,
                     status = RetrospectiveStatus.TODO,
                     questionCount = QuestionCount(3),
                     questions = emptyList(),
@@ -264,7 +260,7 @@ class GenerateQuestionsServiceTest :
             val retrospectiveId = RetrospectiveId(1L)
             val memberId = MemberId(1L)
             val startDate = LocalDate.of(2025, 1, 6)
-            val endDate = LocalDate.of(2025, 1, 12)
+            LocalDate.of(2025, 1, 12)
             val weekId = WeekId.of(startDate)
             val now = LocalDateTime.now()
 
@@ -278,7 +274,7 @@ class GenerateQuestionsServiceTest :
                 Retrospective(
                     id = retrospectiveId,
                     memberId = memberId,
-                    period = RetrospectivePeriod(startDate, endDate),
+                    weekId = weekId,
                     status = RetrospectiveStatus.TODO,
                     questionCount = QuestionCount(3),
                     questions = emptyList(),
