@@ -10,6 +10,7 @@ import kotlinx.coroutines.runBlocking
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.retrospective.domain.model.QuestionCount
 import xyz.robinjoon.growweek.task.domain.model.*
 import java.time.LocalDate
@@ -183,6 +184,7 @@ private fun createTask(
     status: TaskStatus,
 ): Task {
     val now = LocalDateTime.now()
+    val weekId = WeekId.of(LocalDate.now().minusDays(7))
     return Task(
         id = taskId,
         memberId = MemberId(1L),
@@ -191,7 +193,8 @@ private fun createTask(
         status = status,
         sensitivityLevel = SensitivityLevel.NONE,
         priority = Priority(1),
-        period = TaskPeriod(LocalDate.now().minusDays(7), LocalDate.now()),
+        weekId = weekId,
+        dueDate = weekId.endDate,
         createdAt = now,
         updatedAt = now,
         retrospectiveId = null,

@@ -2,12 +2,15 @@ package xyz.robinjoon.growweek.retrospective.domain.model
 
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
+import xyz.robinjoon.growweek.common.domain.WeekId
+import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class Retrospective(
     val id: RetrospectiveId,
     val memberId: MemberId,
-    val period: RetrospectivePeriod,
+    val weekId: WeekId,
     val status: RetrospectiveStatus,
     val questionCount: QuestionCount,
     val questions: List<Question>,
@@ -18,8 +21,24 @@ data class Retrospective(
 ) {
     /**
      * 회고 작성 가능 여부 확인
+     * 종료일 2일 전(금요일)부터 다음 주 월요일 0시 전까지 작성 가능
      */
-    fun canWrite(): Boolean = period.isWritable() && status != RetrospectiveStatus.DONE
+    fun canWrite(currentDate: LocalDate = LocalDate.now()): Boolean {
+        if (status == RetrospectiveStatus.DONE) return false
+
+        val writableStartDate = weekId.endDate.minusDays(DAYS_BEFORE_END_DATE_TO_START_WRITING)
+        val writableEndDate = calculateNextMonday(weekId.endDate)
+        return !currentDate.isBefore(writableStartDate) && currentDate.isBefore(writableEndDate)
+    }
+
+    private fun calculateNextMonday(date: LocalDate): LocalDate {
+        val daysUntilMonday = (DayOfWeek.MONDAY.value - date.dayOfWeek.value + 7) % 7
+        return if (daysUntilMonday == 0) {
+            date.plusDays(7)
+        } else {
+            date.plusDays(daysUntilMonday.toLong())
+        }
+    }
 
     /**
      * 질문 생성 시작
@@ -114,5 +133,9 @@ data class Retrospective(
             status = RetrospectiveStatus.DONE,
             updatedAt = LocalDateTime.now(),
         )
+    }
+
+    companion object {
+        private const val DAYS_BEFORE_END_DATE_TO_START_WRITING = 2L
     }
 }

@@ -2,6 +2,7 @@ package xyz.robinjoon.growweek.task.application.service
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.task.application.dto.TaskDto
 import xyz.robinjoon.growweek.task.application.dto.TaskStatisticsDto
 import xyz.robinjoon.growweek.task.application.dto.WeeklyTaskDto
@@ -21,12 +22,11 @@ class GetWeeklyTasksService(
         val domainQuery =
             TaskQuery.OffsetByMemberIdAndWeek(
                 memberId = query.memberId,
-                weekStart = query.weekStart,
-                weekEnd = query.weekEnd,
+                weekId = query.weekId,
                 pageInfo = query.pageInfo,
             )
 
-        return executeInternal(domainQuery, query.weekStart, query.weekEnd)
+        return executeInternal(domainQuery, query.weekId)
     }
 
     @Transactional(readOnly = true)
@@ -35,18 +35,16 @@ class GetWeeklyTasksService(
         val domainQuery =
             TaskQuery.CursorByMemberIdAndWeek(
                 memberId = query.memberId,
-                weekStart = query.weekStart,
-                weekEnd = query.weekEnd,
+                weekId = query.weekId,
                 pageInfo = query.pageInfo,
             )
 
-        return executeInternal(domainQuery, query.weekStart, query.weekEnd)
+        return executeInternal(domainQuery, query.weekId)
     }
 
     private fun executeInternal(
         domainQuery: TaskQuery,
-        weekStart: java.time.LocalDate,
-        weekEnd: java.time.LocalDate,
+        weekId: WeekId,
     ): WeeklyTaskDto {
         // Repository를 통해 조회
         val page = taskRepository.findAll(domainQuery)
@@ -56,8 +54,7 @@ class GetWeeklyTasksService(
         val statistics = calculateStatistics(tasks)
 
         return WeeklyTaskDto(
-            weekStart = weekStart,
-            weekEnd = weekEnd,
+            weekId = weekId,
             tasks = tasks,
             statistics = statistics,
         )

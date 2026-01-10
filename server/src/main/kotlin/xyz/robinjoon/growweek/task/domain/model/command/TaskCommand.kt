@@ -4,7 +4,11 @@ import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.task.domain.model.*
+import xyz.robinjoon.growweek.common.domain.WeekId
+import xyz.robinjoon.growweek.task.domain.model.Priority
+import xyz.robinjoon.growweek.task.domain.model.TaskDescription
+import xyz.robinjoon.growweek.task.domain.model.TaskStatus
+import xyz.robinjoon.growweek.task.domain.model.TaskTitle
 import java.time.LocalDate
 
 sealed interface TaskCommand {
@@ -16,7 +20,8 @@ sealed interface TaskCommand {
         val title: TaskTitle,
         val description: TaskDescription?,
         val priority: Priority,
-        val period: TaskPeriod,
+        val weekId: WeekId,
+        val dueDate: LocalDate,
         val sensitivityLevel: SensitivityLevel = SensitivityLevel.NONE,
     ) : TaskCommand
 

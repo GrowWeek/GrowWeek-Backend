@@ -5,10 +5,10 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.mockk.*
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.common.event.DefaultDomainEvent
 import xyz.robinjoon.growweek.common.event.DomainEventHandler
 import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
-import java.time.LocalDate
 
 class DomainEventDispatcherTest :
     BehaviorSpec({
@@ -34,8 +34,7 @@ class DomainEventDispatcherTest :
                     RetrospectiveEventPayload.Completed(
                         retrospectiveId = RetrospectiveId(1L),
                         memberId = MemberId(1L),
-                        startDate = LocalDate.of(2025, 1, 6),
-                        endDate = LocalDate.of(2025, 1, 12),
+                        weekId = WeekId.of(2025, 2),
                     )
                 val event = DefaultDomainEvent(payload = completedPayload)
 
@@ -82,8 +81,7 @@ class DomainEventDispatcherTest :
                     RetrospectiveEventPayload.Completed(
                         retrospectiveId = RetrospectiveId(1L),
                         memberId = MemberId(1L),
-                        startDate = LocalDate.of(2025, 1, 6),
-                        endDate = LocalDate.of(2025, 1, 12),
+                        weekId = WeekId.of(2025, 2),
                     )
                 val event = DefaultDomainEvent(payload = payload)
 

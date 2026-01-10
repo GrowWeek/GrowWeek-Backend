@@ -2,14 +2,13 @@ package xyz.robinjoon.growweek.retrospective.application.command
 
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.retrospective.domain.model.QuestionId
-import java.time.LocalDate
 
 sealed interface RetrospectiveApplicationCommand {
     data class CreateRetrospective(
         val memberId: MemberId,
-        val startDate: LocalDate,
-        val endDate: LocalDate,
+        val weekId: WeekId,
         val questionCount: Int = 3,
     ) : RetrospectiveApplicationCommand
 

@@ -2,15 +2,14 @@ package xyz.robinjoon.growweek.retrospective.application.dto
 
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.retrospective.domain.model.*
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class RetrospectiveDto(
     val id: RetrospectiveId,
     val memberId: MemberId,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
+    val weekId: WeekId,
     val status: RetrospectiveStatus,
     val questionCount: Int,
     val questions: List<QuestionDto>,
@@ -24,8 +23,7 @@ data class RetrospectiveDto(
             RetrospectiveDto(
                 id = retrospective.id,
                 memberId = retrospective.memberId,
-                startDate = retrospective.period.startDate,
-                endDate = retrospective.period.endDate,
+                weekId = retrospective.weekId,
                 status = retrospective.status,
                 questionCount = retrospective.questionCount.value,
                 questions = retrospective.questions.map { QuestionDto.from(it) },
@@ -77,8 +75,7 @@ data class AnswerDto(
 
 data class RetrospectiveSummaryDto(
     val id: RetrospectiveId,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
+    val weekId: WeekId,
     val status: RetrospectiveStatus,
     val questionCount: Int,
     val answeredCount: Int,
@@ -88,8 +85,7 @@ data class RetrospectiveSummaryDto(
         fun from(retrospective: Retrospective): RetrospectiveSummaryDto =
             RetrospectiveSummaryDto(
                 id = retrospective.id,
-                startDate = retrospective.period.startDate,
-                endDate = retrospective.period.endDate,
+                weekId = retrospective.weekId,
                 status = retrospective.status,
                 questionCount = retrospective.questionCount.value,
                 answeredCount = retrospective.answers.count { it.value.content != null },

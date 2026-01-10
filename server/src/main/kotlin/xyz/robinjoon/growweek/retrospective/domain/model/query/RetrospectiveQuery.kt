@@ -6,7 +6,7 @@ import xyz.robinjoon.growweek.common.PageInfo
 import xyz.robinjoon.growweek.common.PageQuery
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import java.time.LocalDate
+import xyz.robinjoon.growweek.common.domain.WeekId
 
 sealed class RetrospectiveQuery(
     override val pageInfo: PageInfo,
@@ -31,18 +31,16 @@ sealed class RetrospectiveQuery(
                     ),
             )
 
-        fun byMemberIdAndPeriod(
+        fun byMemberIdAndWeekId(
             memberId: MemberId,
-            startDate: LocalDate,
-            endDate: LocalDate,
+            weekId: WeekId,
             cursor: String? = null,
             size: Int = 20,
-            orderBy: String? = "startDate",
-        ): CursorByMemberIdAndPeriod =
-            CursorByMemberIdAndPeriod(
+            orderBy: String? = "weekId",
+        ): CursorByMemberIdAndWeekId =
+            CursorByMemberIdAndWeekId(
                 memberId = memberId,
-                startDate = startDate,
-                endDate = endDate,
+                weekId = weekId,
                 pageInfo =
                     CursorPageInfo(
                         cursor = cursor,
@@ -73,7 +71,7 @@ sealed class RetrospectiveQuery(
             month: Int,
             cursor: String? = null,
             size: Int = 20,
-            orderBy: String? = "startDate",
+            orderBy: String? = "weekId",
         ): CursorByMemberIdAndMonth =
             CursorByMemberIdAndMonth(
                 memberId = memberId,
@@ -108,18 +106,16 @@ sealed class RetrospectiveQuery(
                     ),
             )
 
-        fun byMemberIdAndPeriod(
+        fun byMemberIdAndWeekId(
             memberId: MemberId,
-            startDate: LocalDate,
-            endDate: LocalDate,
+            weekId: WeekId,
             page: Int = 0,
             size: Int = 20,
-            orderBy: String? = "startDate",
-        ): OffsetByMemberIdAndPeriod =
-            OffsetByMemberIdAndPeriod(
+            orderBy: String? = "weekId",
+        ): OffsetByMemberIdAndWeekId =
+            OffsetByMemberIdAndWeekId(
                 memberId = memberId,
-                startDate = startDate,
-                endDate = endDate,
+                weekId = weekId,
                 pageInfo =
                     OffsetPageInfo(
                         page = page,
@@ -150,7 +146,7 @@ sealed class RetrospectiveQuery(
             month: Int,
             page: Int = 0,
             size: Int = 20,
-            orderBy: String? = "startDate",
+            orderBy: String? = "weekId",
         ): OffsetByMemberIdAndMonth =
             OffsetByMemberIdAndMonth(
                 memberId = memberId,
@@ -176,10 +172,9 @@ sealed class RetrospectiveQuery(
         val orderBy: String? get() = pageInfo.orderBy
     }
 
-    data class CursorByMemberIdAndPeriod(
+    data class CursorByMemberIdAndWeekId(
         val memberId: MemberId,
-        val startDate: LocalDate,
-        val endDate: LocalDate,
+        val weekId: WeekId,
         override val pageInfo: CursorPageInfo,
     ) : RetrospectiveQuery(pageInfo) {
         val cursor get() = pageInfo.cursor
@@ -218,10 +213,9 @@ sealed class RetrospectiveQuery(
         val orderBy: String? get() = pageInfo.orderBy
     }
 
-    data class OffsetByMemberIdAndPeriod(
+    data class OffsetByMemberIdAndWeekId(
         val memberId: MemberId,
-        val startDate: LocalDate,
-        val endDate: LocalDate,
+        val weekId: WeekId,
         override val pageInfo: OffsetPageInfo,
     ) : RetrospectiveQuery(pageInfo) {
         val page get() = pageInfo.page

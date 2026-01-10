@@ -7,10 +7,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.OffsetPage
-import xyz.robinjoon.growweek.common.domain.MemberId
-import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import xyz.robinjoon.growweek.common.domain.SensitivityLevel
-import xyz.robinjoon.growweek.common.domain.TaskId
+import xyz.robinjoon.growweek.common.domain.*
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.*
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
@@ -55,7 +52,8 @@ class GenerateQuestionsServiceTest :
             val retrospectiveId = RetrospectiveId(1L)
             val memberId = MemberId(1L)
             val startDate = LocalDate.of(2025, 1, 6)
-            val endDate = LocalDate.of(2025, 1, 12)
+            LocalDate.of(2025, 1, 12)
+            val weekId = WeekId.of(startDate)
             val now = LocalDateTime.now()
 
             val command =
@@ -68,7 +66,7 @@ class GenerateQuestionsServiceTest :
                 Retrospective(
                     id = retrospectiveId,
                     memberId = memberId,
-                    period = RetrospectivePeriod(startDate, endDate),
+                    weekId = weekId,
                     status = RetrospectiveStatus.TODO,
                     questionCount = QuestionCount(3),
                     questions = emptyList(),
@@ -80,9 +78,9 @@ class GenerateQuestionsServiceTest :
 
             val tasks =
                 listOf(
-                    createTask(TaskId(1L), memberId, "할일 1", "설명 1", SensitivityLevel.NONE),
-                    createTask(TaskId(2L), memberId, "할일 2", "설명 2", SensitivityLevel.TITLE_ONLY),
-                    createTask(TaskId(3L), memberId, "할일 3", "설명 3", SensitivityLevel.NEVER),
+                    createTask(TaskId(1L), memberId, "할일 1", "설명 1", SensitivityLevel.NONE, weekId),
+                    createTask(TaskId(2L), memberId, "할일 2", "설명 2", SensitivityLevel.TITLE_ONLY, weekId),
+                    createTask(TaskId(3L), memberId, "할일 3", "설명 3", SensitivityLevel.NEVER, weekId),
                 )
 
             val generatedQuestionContents =
@@ -107,7 +105,7 @@ class GenerateQuestionsServiceTest :
                 Retrospective(
                     id = retrospectiveId,
                     memberId = memberId,
-                    period = RetrospectivePeriod(startDate, endDate),
+                    weekId = weekId,
                     status = RetrospectiveStatus.AFTER_GENERATE_QUESTION,
                     questionCount = QuestionCount(3),
                     questions = questions,
@@ -188,7 +186,8 @@ class GenerateQuestionsServiceTest :
             val retrospectiveId = RetrospectiveId(1L)
             val memberId = MemberId(1L)
             val startDate = LocalDate.of(2025, 1, 6)
-            val endDate = LocalDate.of(2025, 1, 12)
+            LocalDate.of(2025, 1, 12)
+            val weekId = WeekId.of(startDate)
             val now = LocalDateTime.now()
 
             val command =
@@ -201,7 +200,7 @@ class GenerateQuestionsServiceTest :
                 Retrospective(
                     id = retrospectiveId,
                     memberId = memberId,
-                    period = RetrospectivePeriod(startDate, endDate),
+                    weekId = weekId,
                     status = RetrospectiveStatus.TODO,
                     questionCount = QuestionCount(3),
                     questions = emptyList(),
@@ -213,8 +212,8 @@ class GenerateQuestionsServiceTest :
 
             val tasks =
                 listOf(
-                    createTask(TaskId(1L), memberId, "할일 1", "설명 1", SensitivityLevel.NONE),
-                    createTask(TaskId(2L), memberId, "비밀 할일", "비밀 설명", SensitivityLevel.NEVER),
+                    createTask(TaskId(1L), memberId, "할일 1", "설명 1", SensitivityLevel.NONE, weekId),
+                    createTask(TaskId(2L), memberId, "비밀 할일", "비밀 설명", SensitivityLevel.NEVER, weekId),
                 )
 
             val generatedQuestionContents = listOf("질문1", "질문2", "질문3")
@@ -261,7 +260,8 @@ class GenerateQuestionsServiceTest :
             val retrospectiveId = RetrospectiveId(1L)
             val memberId = MemberId(1L)
             val startDate = LocalDate.of(2025, 1, 6)
-            val endDate = LocalDate.of(2025, 1, 12)
+            LocalDate.of(2025, 1, 12)
+            val weekId = WeekId.of(startDate)
             val now = LocalDateTime.now()
 
             val command =
@@ -274,7 +274,7 @@ class GenerateQuestionsServiceTest :
                 Retrospective(
                     id = retrospectiveId,
                     memberId = memberId,
-                    period = RetrospectivePeriod(startDate, endDate),
+                    weekId = weekId,
                     status = RetrospectiveStatus.TODO,
                     questionCount = QuestionCount(3),
                     questions = emptyList(),
@@ -286,7 +286,7 @@ class GenerateQuestionsServiceTest :
 
             val tasks =
                 listOf(
-                    createTask(TaskId(1L), memberId, "제목만 공개", "비밀 설명", SensitivityLevel.TITLE_ONLY),
+                    createTask(TaskId(1L), memberId, "제목만 공개", "비밀 설명", SensitivityLevel.TITLE_ONLY, weekId),
                 )
 
             val generatedQuestionContents = listOf("질문1", "질문2", "질문3")
@@ -336,6 +336,7 @@ private fun createTask(
     title: String,
     description: String,
     sensitivityLevel: SensitivityLevel,
+    weekId: WeekId,
 ): Task {
     val now = LocalDateTime.now()
     return Task(
@@ -346,7 +347,8 @@ private fun createTask(
         status = TaskStatus.TODO,
         sensitivityLevel = sensitivityLevel,
         priority = Priority(1),
-        period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 12)),
+        weekId = weekId,
+        dueDate = weekId.endDate,
         createdAt = now,
         updatedAt = now,
         retrospectiveId = null,

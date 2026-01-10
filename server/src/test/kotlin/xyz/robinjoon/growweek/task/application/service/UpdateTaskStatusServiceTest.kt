@@ -10,6 +10,7 @@ import io.mockk.verify
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.task.application.command.TaskApplicationCommand
 import xyz.robinjoon.growweek.task.domain.model.*
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
@@ -29,6 +30,7 @@ class UpdateTaskStatusServiceTest :
             val taskId = TaskId(1L)
             val memberId = MemberId(1L)
             val newStatus = TaskStatus.IN_PROGRESS
+            val weekId = WeekId.of(LocalDate.of(2025, 1, 6))
 
             val command =
                 TaskApplicationCommand.UpdateTaskStatus(
@@ -46,7 +48,8 @@ class UpdateTaskStatusServiceTest :
                     status = newStatus,
                     sensitivityLevel = SensitivityLevel.NONE,
                     priority = Priority(1),
-                    period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 12)),
+                    weekId = weekId,
+                    dueDate = LocalDate.of(2025, 1, 12),
                     createdAt = LocalDateTime.now(),
                     updatedAt = LocalDateTime.now(),
                     retrospectiveId = null,
@@ -79,6 +82,7 @@ class UpdateTaskStatusServiceTest :
         Given("TODO에서 DONE으로 상태 변경 요청이 왔을 때") {
             val taskId = TaskId(2L)
             val memberId = MemberId(1L)
+            val weekId = WeekId.of(LocalDate.of(2025, 1, 6))
 
             val command =
                 TaskApplicationCommand.UpdateTaskStatus(
@@ -96,7 +100,8 @@ class UpdateTaskStatusServiceTest :
                     status = TaskStatus.DONE,
                     sensitivityLevel = SensitivityLevel.NONE,
                     priority = Priority(1),
-                    period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 12)),
+                    weekId = weekId,
+                    dueDate = LocalDate.of(2025, 1, 12),
                     createdAt = LocalDateTime.now(),
                     updatedAt = LocalDateTime.now(),
                     retrospectiveId = null,
@@ -116,6 +121,7 @@ class UpdateTaskStatusServiceTest :
         Given("CANCEL 상태로 변경 요청이 왔을 때") {
             val taskId = TaskId(3L)
             val memberId = MemberId(1L)
+            val weekId = WeekId.of(LocalDate.of(2025, 1, 6))
 
             val command =
                 TaskApplicationCommand.UpdateTaskStatus(
@@ -133,7 +139,8 @@ class UpdateTaskStatusServiceTest :
                     status = TaskStatus.CANCEL,
                     sensitivityLevel = SensitivityLevel.NONE,
                     priority = Priority(1),
-                    period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 12)),
+                    weekId = weekId,
+                    dueDate = LocalDate.of(2025, 1, 12),
                     createdAt = LocalDateTime.now(),
                     updatedAt = LocalDateTime.now(),
                     retrospectiveId = null,

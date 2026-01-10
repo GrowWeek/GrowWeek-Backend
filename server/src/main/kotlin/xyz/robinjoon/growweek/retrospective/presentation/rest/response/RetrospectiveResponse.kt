@@ -9,10 +9,8 @@ import java.time.format.DateTimeFormatter
 data class RetrospectiveResponse(
     /** 회고 고유 식별자 */
     val id: Long,
-    /** 회고 시작일 (yyyy-MM-dd) */
-    val startDate: String,
-    /** 회고 종료일 (yyyy-MM-dd) */
-    val endDate: String,
+    /** 주 식별자 (YYYY-Www 형식, 예: 2025-W02) */
+    val weekId: String,
     /** 회고 상태 (TODO, BEFORE_GENERATE_QUESTION, AFTER_GENERATE_QUESTION, IN_PROGRESS, DONE) */
     val status: String,
     /** 질문 수 */
@@ -29,14 +27,12 @@ data class RetrospectiveResponse(
     val updatedAt: String,
 ) {
     companion object {
-        private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
         private val dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
         fun from(dto: RetrospectiveDto): RetrospectiveResponse =
             RetrospectiveResponse(
                 id = dto.id.value,
-                startDate = dto.startDate.format(dateFormatter),
-                endDate = dto.endDate.format(dateFormatter),
+                weekId = dto.weekId.value,
                 status = dto.status.name,
                 questionCount = dto.questionCount,
                 questions = dto.questions.map { QuestionResponse.from(it) },
@@ -109,10 +105,8 @@ data class AnswerResponse(
 data class RetrospectiveSummaryResponse(
     /** 회고 고유 식별자 */
     val id: Long,
-    /** 회고 시작일 (yyyy-MM-dd) */
-    val startDate: String,
-    /** 회고 종료일 (yyyy-MM-dd) */
-    val endDate: String,
+    /** 주 식별자 (YYYY-Www 형식, 예: 2025-W02) */
+    val weekId: String,
     /** 회고 상태 (TODO, BEFORE_GENERATE_QUESTION, AFTER_GENERATE_QUESTION, IN_PROGRESS, DONE) */
     val status: String,
     /** 질문 수 */
@@ -123,14 +117,12 @@ data class RetrospectiveSummaryResponse(
     val createdAt: String,
 ) {
     companion object {
-        private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
         private val dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
         fun from(dto: RetrospectiveSummaryDto): RetrospectiveSummaryResponse =
             RetrospectiveSummaryResponse(
                 id = dto.id.value,
-                startDate = dto.startDate.format(dateFormatter),
-                endDate = dto.endDate.format(dateFormatter),
+                weekId = dto.weekId.value,
                 status = dto.status.name,
                 questionCount = dto.questionCount,
                 answeredCount = dto.answeredCount,

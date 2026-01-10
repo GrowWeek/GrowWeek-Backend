@@ -41,13 +41,13 @@ class GenerateQuestionsService(
             ),
         )
 
-        // 3. 해당 기간의 할일 목록 조회
+        // 3. 해당 주의 할일 목록 조회
+        val weekId = retrospective.weekId
         val tasksPage =
             taskRepository.findAll(
                 TaskQuery.Offset.byMemberIdAndWeek(
                     memberId = command.memberId,
-                    weekStart = retrospective.period.startDate,
-                    weekEnd = retrospective.period.endDate,
+                    weekId = weekId,
                     size = 100,
                 ),
             )

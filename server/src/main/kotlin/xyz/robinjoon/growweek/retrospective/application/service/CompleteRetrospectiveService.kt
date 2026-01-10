@@ -31,8 +31,7 @@ class CompleteRetrospectiveService(
             RetrospectiveEventPayload.Completed(
                 retrospectiveId = completed.id,
                 memberId = completed.memberId,
-                startDate = completed.period.startDate,
-                endDate = completed.period.endDate,
+                weekId = completed.weekId,
             ),
         )
 

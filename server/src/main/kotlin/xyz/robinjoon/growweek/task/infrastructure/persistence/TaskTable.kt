@@ -16,7 +16,7 @@ object TaskTable : LongIdTable("tasks") {
     val priority = integer("priority")
 
     // 기간
-    val startDate = date("start_date")
+    val weekId = varchar("week_id", 10)
     val dueDate = date("due_date")
 
     // 감사 정보
@@ -28,7 +28,7 @@ object TaskTable : LongIdTable("tasks") {
 
     init {
         // 복합 인덱스
-        index(false, userId, startDate, dueDate)
+        index(false, userId, weekId)
         index(false, userId)
         index(false, retrospectiveId)
         index(false, status)

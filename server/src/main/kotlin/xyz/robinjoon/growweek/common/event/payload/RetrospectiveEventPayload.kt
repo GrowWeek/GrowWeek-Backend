@@ -2,7 +2,7 @@ package xyz.robinjoon.growweek.common.event.payload
 
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
-import java.time.LocalDate
+import xyz.robinjoon.growweek.common.domain.WeekId
 
 /**
  * Retrospective 관련 이벤트 페이로드 (공유 계약)
@@ -17,8 +17,7 @@ sealed interface RetrospectiveEventPayload {
     data class Completed(
         val retrospectiveId: RetrospectiveId,
         val memberId: MemberId,
-        val startDate: LocalDate,
-        val endDate: LocalDate,
+        val weekId: WeekId,
     ) : RetrospectiveEventPayload
 
     /**

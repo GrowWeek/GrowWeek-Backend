@@ -1,13 +1,11 @@
 package xyz.robinjoon.growweek.retrospective.infrastructure.persistence
 
 import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
-import org.jetbrains.exposed.v1.javatime.date
 import org.jetbrains.exposed.v1.javatime.datetime
 
 object RetrospectiveTable : LongIdTable("retrospectives") {
     val userId = long("user_id")
-    val startDate = date("start_date")
-    val endDate = date("end_date")
+    val weekId = varchar("week_id", 10)
     val status = varchar("status", 50)
     val questionCount = integer("question_count")
     val additionalNotes = text("additional_notes").nullable()
@@ -16,7 +14,7 @@ object RetrospectiveTable : LongIdTable("retrospectives") {
 
     init {
         index(false, userId)
-        index(false, startDate, endDate)
+        index(false, weekId)
         index(false, status)
     }
 }

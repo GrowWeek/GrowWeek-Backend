@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -404,10 +405,12 @@ private fun createRetrospective(
     answers: Map<QuestionId, Answer> = emptyMap(),
 ): Retrospective {
     val now = LocalDateTime.now()
+    // endDate가 속한 주의 weekId를 사용하여 canWrite() 검증이 올바르게 동작하도록 함
+    val weekId = WeekId.of(endDate)
     return Retrospective(
         id = RetrospectiveId(1),
         memberId = MemberId(1L),
-        period = RetrospectivePeriod(endDate.minusDays(6), endDate),
+        weekId = weekId,
         status = status,
         questionCount = questionCount,
         questions = questions,

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional
 import xyz.robinjoon.growweek.common.*
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.retrospective.domain.model.*
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.query.RetrospectiveQuery
@@ -27,8 +28,7 @@ class ExposedRetrospectiveRepository : RetrospectiveRepository {
                     val insertedId =
                         RetrospectiveTable.insert {
                             it[userId] = command.memberId.value
-                            it[startDate] = command.period.startDate
-                            it[endDate] = command.period.endDate
+                            it[weekId] = command.weekId.value
                             it[status] = RetrospectiveStatus.TODO.name
                             it[questionCount] = command.questionCount.value
                             it[additionalNotes] = null
@@ -163,12 +163,11 @@ class ExposedRetrospectiveRepository : RetrospectiveRepository {
                 baseQuery = baseQuery.andWhere { RetrospectiveTable.userId eq query.memberId.value }
             }
 
-            is RetrospectiveQuery.CursorByMemberIdAndPeriod -> {
+            is RetrospectiveQuery.CursorByMemberIdAndWeekId -> {
                 baseQuery =
                     baseQuery.andWhere {
                         (RetrospectiveTable.userId eq query.memberId.value) and
-                            (RetrospectiveTable.startDate lessEq query.endDate) and
-                            (RetrospectiveTable.endDate greaterEq query.startDate)
+                            (RetrospectiveTable.weekId eq query.weekId.value)
                     }
             }
 
@@ -180,11 +179,13 @@ class ExposedRetrospectiveRepository : RetrospectiveRepository {
                 val yearMonth = YearMonth.of(query.year, query.month)
                 val monthStart = yearMonth.atDay(1)
                 val monthEnd = yearMonth.atEndOfMonth()
+                val startWeekId = WeekId.of(monthStart)
+                val endWeekId = WeekId.of(monthEnd)
                 baseQuery =
                     baseQuery.andWhere {
                         (RetrospectiveTable.userId eq query.memberId.value) and
-                            (RetrospectiveTable.startDate lessEq monthEnd) and
-                            (RetrospectiveTable.endDate greaterEq monthStart)
+                            (RetrospectiveTable.weekId greaterEq startWeekId.value) and
+                            (RetrospectiveTable.weekId lessEq endWeekId.value)
                     }
             }
 
@@ -201,7 +202,7 @@ class ExposedRetrospectiveRepository : RetrospectiveRepository {
         baseQuery =
             when (pageInfo.orderBy) {
                 "createdAt" -> baseQuery.orderBy(RetrospectiveTable.createdAt to SortOrder.DESC)
-                "startDate" -> baseQuery.orderBy(RetrospectiveTable.startDate to SortOrder.DESC)
+                "weekId" -> baseQuery.orderBy(RetrospectiveTable.weekId to SortOrder.DESC)
                 else -> baseQuery.orderBy(RetrospectiveTable.id to SortOrder.DESC)
             }
 
@@ -241,12 +242,11 @@ class ExposedRetrospectiveRepository : RetrospectiveRepository {
                 baseQuery = baseQuery.andWhere { RetrospectiveTable.userId eq query.memberId.value }
             }
 
-            is RetrospectiveQuery.OffsetByMemberIdAndPeriod -> {
+            is RetrospectiveQuery.OffsetByMemberIdAndWeekId -> {
                 baseQuery =
                     baseQuery.andWhere {
                         (RetrospectiveTable.userId eq query.memberId.value) and
-                            (RetrospectiveTable.startDate lessEq query.endDate) and
-                            (RetrospectiveTable.endDate greaterEq query.startDate)
+                            (RetrospectiveTable.weekId eq query.weekId.value)
                     }
             }
 
@@ -258,11 +258,13 @@ class ExposedRetrospectiveRepository : RetrospectiveRepository {
                 val yearMonth = YearMonth.of(query.year, query.month)
                 val monthStart = yearMonth.atDay(1)
                 val monthEnd = yearMonth.atEndOfMonth()
+                val startWeekId = WeekId.of(monthStart)
+                val endWeekId = WeekId.of(monthEnd)
                 baseQuery =
                     baseQuery.andWhere {
                         (RetrospectiveTable.userId eq query.memberId.value) and
-                            (RetrospectiveTable.startDate lessEq monthEnd) and
-                            (RetrospectiveTable.endDate greaterEq monthStart)
+                            (RetrospectiveTable.weekId greaterEq startWeekId.value) and
+                            (RetrospectiveTable.weekId lessEq endWeekId.value)
                     }
             }
 
@@ -272,7 +274,7 @@ class ExposedRetrospectiveRepository : RetrospectiveRepository {
         baseQuery =
             when (pageInfo.orderBy) {
                 "createdAt" -> baseQuery.orderBy(RetrospectiveTable.createdAt to SortOrder.DESC)
-                "startDate" -> baseQuery.orderBy(RetrospectiveTable.startDate to SortOrder.DESC)
+                "weekId" -> baseQuery.orderBy(RetrospectiveTable.weekId to SortOrder.DESC)
                 else -> baseQuery.orderBy(RetrospectiveTable.id to SortOrder.DESC)
             }
 
@@ -316,11 +318,7 @@ class ExposedRetrospectiveRepository : RetrospectiveRepository {
         return Retrospective(
             id = retrospectiveId,
             memberId = MemberId(this[RetrospectiveTable.userId]),
-            period =
-                RetrospectivePeriod(
-                    startDate = this[RetrospectiveTable.startDate],
-                    endDate = this[RetrospectiveTable.endDate],
-                ),
+            weekId = WeekId(this[RetrospectiveTable.weekId]),
             status = RetrospectiveStatus.valueOf(this[RetrospectiveTable.status]),
             questionCount = QuestionCount(this[RetrospectiveTable.questionCount]),
             questions = questions,

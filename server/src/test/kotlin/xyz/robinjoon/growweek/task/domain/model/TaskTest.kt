@@ -7,6 +7,7 @@ import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -29,7 +30,8 @@ class TaskTest :
                 val task =
                     baseTask.copy(
                         retrospectiveId = RetrospectiveId(1),
-                        period = TaskPeriod(LocalDate.now(), futureDate),
+                        weekId = WeekId.of(LocalDate.now()),
+                        dueDate = futureDate,
                     )
 
                 Then("제한적 수정이 가능해야 한다") {
@@ -42,7 +44,8 @@ class TaskTest :
                 val task =
                     baseTask.copy(
                         retrospectiveId = RetrospectiveId(1),
-                        period = TaskPeriod(pastDate.minusDays(7), pastDate),
+                        weekId = WeekId.of(pastDate.minusDays(7)),
+                        dueDate = pastDate,
                     )
 
                 Then("수정 불가능해야 한다") {
@@ -69,7 +72,8 @@ class TaskTest :
                 val task =
                     baseTask.copy(
                         retrospectiveId = RetrospectiveId(1),
-                        period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 15)),
+                        weekId = WeekId.of(LocalDate.of(2025, 1, 6)),
+                        dueDate = LocalDate.of(2025, 1, 15),
                     )
                 val newTitle = TaskTitle("수정된 제목")
 
@@ -84,7 +88,8 @@ class TaskTest :
                 val task =
                     baseTask.copy(
                         retrospectiveId = RetrospectiveId(1),
-                        period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 15)),
+                        weekId = WeekId.of(LocalDate.of(2025, 1, 6)),
+                        dueDate = LocalDate.of(2025, 1, 15),
                     )
                 val newTitle = TaskTitle("수정된 제목")
 
@@ -114,7 +119,8 @@ class TaskTest :
                 val task =
                     baseTask.copy(
                         retrospectiveId = RetrospectiveId(1),
-                        period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 15)),
+                        weekId = WeekId.of(LocalDate.of(2025, 1, 6)),
+                        dueDate = LocalDate.of(2025, 1, 15),
                     )
                 val newDescription = TaskDescription("수정된 설명")
 
@@ -129,7 +135,8 @@ class TaskTest :
                 val task =
                     baseTask.copy(
                         retrospectiveId = RetrospectiveId(1),
-                        period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 15)),
+                        weekId = WeekId.of(LocalDate.of(2025, 1, 6)),
+                        dueDate = LocalDate.of(2025, 1, 15),
                     )
                 val newDescription = TaskDescription("수정된 설명")
 
@@ -185,7 +192,8 @@ class TaskTest :
                 val task =
                     baseTask.copy(
                         retrospectiveId = RetrospectiveId(1),
-                        period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 15)),
+                        weekId = WeekId.of(LocalDate.of(2025, 1, 6)),
+                        dueDate = LocalDate.of(2025, 1, 15),
                         status = TaskStatus.TODO,
                     )
 
@@ -200,7 +208,8 @@ class TaskTest :
                 val task =
                     baseTask.copy(
                         retrospectiveId = RetrospectiveId(1),
-                        period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 15)),
+                        weekId = WeekId.of(LocalDate.of(2025, 1, 6)),
+                        dueDate = LocalDate.of(2025, 1, 15),
                         status = TaskStatus.TODO,
                     )
 
@@ -230,7 +239,8 @@ class TaskTest :
                 val task =
                     baseTask.copy(
                         retrospectiveId = RetrospectiveId(1),
-                        period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 15)),
+                        weekId = WeekId.of(LocalDate.of(2025, 1, 6)),
+                        dueDate = LocalDate.of(2025, 1, 15),
                     )
                 val newPriority = Priority(5)
 
@@ -263,7 +273,8 @@ class TaskTest :
                 val task =
                     baseTask.copy(
                         retrospectiveId = RetrospectiveId(1),
-                        period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 15)),
+                        weekId = WeekId.of(LocalDate.of(2025, 1, 6)),
+                        dueDate = LocalDate.of(2025, 1, 15),
                     )
 
                 Then("수정이 가능해야 한다") {
@@ -280,13 +291,14 @@ class TaskTest :
                 val task =
                     baseTask.copy(
                         retrospectiveId = null,
-                        period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 15)),
+                        weekId = WeekId.of(LocalDate.of(2025, 1, 6)),
+                        dueDate = LocalDate.of(2025, 1, 15),
                     )
                 val newDueDate = LocalDate.of(2025, 1, 20)
 
                 Then("마감일 수정이 가능해야 한다") {
                     val updatedTask = task.updateDueDate(newDueDate, null)
-                    updatedTask.period.dueDate shouldBe newDueDate
+                    updatedTask.dueDate shouldBe newDueDate
                 }
             }
 
@@ -295,13 +307,14 @@ class TaskTest :
                 val task =
                     baseTask.copy(
                         retrospectiveId = RetrospectiveId(1),
-                        period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 15)),
+                        weekId = WeekId.of(LocalDate.of(2025, 1, 6)),
+                        dueDate = LocalDate.of(2025, 1, 15),
                     )
                 val newDueDate = LocalDate.of(2025, 1, 20)
 
                 Then("마감일 수정이 가능해야 한다") {
                     val updatedTask = task.updateDueDate(newDueDate, retrospectiveDate)
-                    updatedTask.period.dueDate shouldBe newDueDate
+                    updatedTask.dueDate shouldBe newDueDate
                 }
             }
 
@@ -310,7 +323,8 @@ class TaskTest :
                 val task =
                     baseTask.copy(
                         retrospectiveId = RetrospectiveId(1),
-                        period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 15)),
+                        weekId = WeekId.of(LocalDate.of(2025, 1, 6)),
+                        dueDate = LocalDate.of(2025, 1, 15),
                     )
                 val newDueDate = LocalDate.of(2025, 1, 8)
 
@@ -326,7 +340,8 @@ class TaskTest :
                 val task =
                     baseTask.copy(
                         retrospectiveId = RetrospectiveId(1),
-                        period = TaskPeriod(LocalDate.of(2025, 1, 6), LocalDate.of(2025, 1, 15)),
+                        weekId = WeekId.of(LocalDate.of(2025, 1, 6)),
+                        dueDate = LocalDate.of(2025, 1, 15),
                     )
                 val newDueDate = LocalDate.of(2025, 1, 10)
 
@@ -352,42 +367,31 @@ class TaskTest :
         }
 
         Given("할일이 특정 주에 속하는지 확인할 때") {
-            val weekStart = LocalDate.of(2025, 1, 6) // 월요일
-            val weekEnd = LocalDate.of(2025, 1, 12) // 일요일
+            val targetWeekId = WeekId.of(2025, 2) // 2025-W02 (2025-01-06 ~ 2025-01-12)
 
-            When("할일 기간이 해당 주와 겹치는 경우") {
+            When("할일의 weekId가 해당 주와 일치하는 경우") {
                 val task =
                     createTask().copy(
-                        period = TaskPeriod(LocalDate.of(2025, 1, 8), LocalDate.of(2025, 1, 10)),
+                        weekId = WeekId.of(2025, 2),
+                        dueDate = LocalDate.of(2025, 1, 10),
                         status = TaskStatus.TODO,
                     )
 
                 Then("해당 주의 할일로 간주되어야 한다") {
-                    task.belongsToWeek(weekStart, weekEnd) shouldBe true
+                    task.belongsToWeek(targetWeekId) shouldBe true
                 }
             }
 
-            When("할일 시작일이 이번 주이고 마감일이 다음 주인 경우") {
+            When("할일의 weekId가 해당 주와 일치하지 않는 경우") {
                 val task =
                     createTask().copy(
-                        period = TaskPeriod(LocalDate.of(2025, 1, 10), LocalDate.of(2025, 1, 20)),
-                        status = TaskStatus.IN_PROGRESS,
-                    )
-
-                Then("해당 주의 할일로 간주되어야 한다") {
-                    task.belongsToWeek(weekStart, weekEnd) shouldBe true
-                }
-            }
-
-            When("할일 기간이 해당 주와 겹치지 않는 경우") {
-                val task =
-                    createTask().copy(
-                        period = TaskPeriod(LocalDate.of(2025, 1, 13), LocalDate.of(2025, 1, 20)),
+                        weekId = WeekId.of(2025, 3),
+                        dueDate = LocalDate.of(2025, 1, 20),
                         status = TaskStatus.TODO,
                     )
 
                 Then("해당 주의 할일로 간주되지 않아야 한다") {
-                    task.belongsToWeek(weekStart, weekEnd) shouldBe false
+                    task.belongsToWeek(targetWeekId) shouldBe false
                 }
             }
 
@@ -396,13 +400,14 @@ class TaskTest :
                 val completedAt = LocalDateTime.of(2025, 1, 10, 12, 0)
                 val task =
                     createTask().copy(
-                        period = TaskPeriod(LocalDate.of(2025, 1, 6), dueDate),
+                        weekId = WeekId.of(2025, 2),
+                        dueDate = dueDate,
                         status = TaskStatus.DONE,
                         updatedAt = completedAt,
                     )
 
                 Then("해당 주의 할일로 간주되지 않아야 한다 (마감일 이전 완료)") {
-                    task.belongsToWeek(weekStart, weekEnd) shouldBe false
+                    task.belongsToWeek(targetWeekId) shouldBe false
                 }
             }
 
@@ -411,13 +416,14 @@ class TaskTest :
                 val completedAt = LocalDateTime.of(2025, 1, 10, 12, 0)
                 val task =
                     createTask().copy(
-                        period = TaskPeriod(LocalDate.of(2025, 1, 6), dueDate),
+                        weekId = WeekId.of(2025, 2),
+                        dueDate = dueDate,
                         status = TaskStatus.DONE,
                         updatedAt = completedAt,
                     )
 
                 Then("해당 주의 할일로 간주되어야 한다") {
-                    task.belongsToWeek(weekStart, weekEnd) shouldBe true
+                    task.belongsToWeek(targetWeekId) shouldBe true
                 }
             }
 
@@ -426,13 +432,14 @@ class TaskTest :
                 val completedAt = LocalDateTime.of(2025, 1, 12, 12, 0)
                 val task =
                     createTask().copy(
-                        period = TaskPeriod(LocalDate.of(2025, 1, 6), dueDate),
+                        weekId = WeekId.of(2025, 2),
+                        dueDate = dueDate,
                         status = TaskStatus.DONE,
                         updatedAt = completedAt,
                     )
 
                 Then("해당 주의 할일로 간주되어야 한다") {
-                    task.belongsToWeek(weekStart, weekEnd) shouldBe true
+                    task.belongsToWeek(targetWeekId) shouldBe true
                 }
             }
         }
@@ -448,7 +455,8 @@ private fun createTask(): Task {
         status = TaskStatus.TODO,
         sensitivityLevel = SensitivityLevel.NONE,
         priority = Priority(1),
-        period = TaskPeriod(LocalDate.now(), LocalDate.now().plusDays(7)),
+        weekId = WeekId.of(LocalDate.now()),
+        dueDate = LocalDate.now().plusDays(7),
         createdAt = now,
         updatedAt = now,
         retrospectiveId = null,

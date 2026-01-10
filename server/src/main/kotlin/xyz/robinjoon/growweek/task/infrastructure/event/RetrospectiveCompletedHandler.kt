@@ -5,10 +5,10 @@ import org.springframework.stereotype.Component
 import xyz.robinjoon.growweek.common.event.DomainEvent
 import xyz.robinjoon.growweek.common.event.DomainEventHandler
 import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
-import xyz.robinjoon.growweek.task.domain.model.command.CompletedRetrospectivePeriodCommand
+import xyz.robinjoon.growweek.task.domain.model.command.CompletedWeekCommand
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
 import xyz.robinjoon.growweek.task.domain.model.query.TaskQuery
-import xyz.robinjoon.growweek.task.domain.repository.CompletedRetrospectivePeriodRepository
+import xyz.robinjoon.growweek.task.domain.repository.CompletedWeekRepository
 import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
 import kotlin.reflect.KClass
 
@@ -24,7 +24,7 @@ import kotlin.reflect.KClass
 @Component
 class RetrospectiveCompletedHandler(
     private val taskRepository: TaskRepository,
-    private val completedRetrospectivePeriodRepository: CompletedRetrospectivePeriodRepository,
+    private val completedWeekRepository: CompletedWeekRepository,
 ) : DomainEventHandler<RetrospectiveEventPayload.Completed> {
     private val log = LoggerFactory.getLogger(RetrospectiveCompletedHandler::class.java)
 
@@ -32,31 +32,29 @@ class RetrospectiveCompletedHandler(
         log.info("Handling Retrospective Completed Event: {}", event)
         val payload = event.payload
 
-        // 1. 완료된 회고 기간 정보 저장
-        saveCompletedRetrospectivePeriod(payload)
+        // 1. 완료된 회고 주 정보 저장
+        saveCompletedWeek(payload)
 
-        // 2. 해당 기간의 Task 조회 및 회고 연결
+        // 2. 해당 주의 Task 조회 및 회고 연결
         linkTasksToRetrospective(payload)
     }
 
-    private fun saveCompletedRetrospectivePeriod(payload: RetrospectiveEventPayload.Completed) {
+    private fun saveCompletedWeek(payload: RetrospectiveEventPayload.Completed) {
         val saveCommand =
-            CompletedRetrospectivePeriodCommand.Save(
+            CompletedWeekCommand.Save(
                 retrospectiveId = payload.retrospectiveId,
                 memberId = payload.memberId,
-                startDate = payload.startDate,
-                endDate = payload.endDate,
+                weekId = payload.weekId,
             )
-        completedRetrospectivePeriodRepository.saveAll(listOf(saveCommand))
-        log.info("Saved completed retrospective period: retrospectiveId={}", payload.retrospectiveId)
+        completedWeekRepository.saveAll(listOf(saveCommand))
+        log.info("Saved completed week: retrospectiveId={}, weekId={}", payload.retrospectiveId, payload.weekId.value)
     }
 
     private fun linkTasksToRetrospective(payload: RetrospectiveEventPayload.Completed) {
         val query =
             TaskQuery.Offset.byMemberIdAndWeek(
                 memberId = payload.memberId,
-                weekStart = payload.startDate,
-                weekEnd = payload.endDate,
+                weekId = payload.weekId,
                 size = Int.MAX_VALUE,
             )
         val tasks = taskRepository.findAll(query).items

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
+import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.task.application.command.TaskApplicationCommand
 import xyz.robinjoon.growweek.task.application.query.TaskApplicationQuery
 import xyz.robinjoon.growweek.task.application.usecase.*
@@ -51,7 +52,6 @@ class TaskController(
                 title = request.title,
                 description = request.description,
                 priority = request.priority,
-                startDate = LocalDate.parse(request.startDate),
                 dueDate = LocalDate.parse(request.dueDate),
                 sensitivityLevel =
                     request.sensitivityLevel?.let { SensitivityLevel.valueOf(it) }
@@ -176,7 +176,7 @@ class TaskController(
     /**
      * 주간 할일 목록과 통계를 조회한다.
      *
-     * @param weekStart 조회할 주의 시작일 (yyyy-MM-dd)
+     * @param weekId 조회할 주 식별자 (YYYY-Www 형식, 예: 2025-W02)
      * @param userId 사용자 식별자
      * @param page 페이지 번호 (오프셋 기반, 0부터 시작)
      * @param size 페이지 크기 (기본값: 20)
@@ -185,14 +185,13 @@ class TaskController(
      */
     @GetMapping("/weekly")
     fun getWeeklyTasks(
-        @RequestParam weekStart: String,
+        @RequestParam weekId: String,
         @RequestHeader("X-User-Id") userId: Long,
         @RequestParam(required = false) page: Int?,
         @RequestParam(required = false) size: Int?,
         @RequestParam(required = false) cursor: String?,
     ): ResponseEntity<WeeklyTaskResponse> {
-        val startDate = LocalDate.parse(weekStart)
-        val endDate = startDate.plusDays(6)
+        val week = WeekId(weekId)
 
         val weeklyDto =
             if (cursor != null) {
@@ -200,8 +199,7 @@ class TaskController(
                 val query =
                     TaskApplicationQuery.Cursor.byMemberIdAndWeek(
                         memberId = MemberId(userId),
-                        weekStart = startDate,
-                        weekEnd = endDate,
+                        weekId = week,
                         cursor = cursor,
                         size = size ?: 20,
                     )
@@ -211,8 +209,7 @@ class TaskController(
                 val query =
                     TaskApplicationQuery.Offset.byMemberIdAndWeek(
                         memberId = MemberId(userId),
-                        weekStart = startDate,
-                        weekEnd = endDate,
+                        weekId = week,
                         page = page ?: 0,
                         size = size ?: 20,
                     )
