@@ -1,9 +1,10 @@
 package xyz.robinjoon.growweek.retrospective.infrastructure.external
 
 import org.springframework.stereotype.Service
+import xyz.robinjoon.growweek.common.domain.TaskSummary
+import xyz.robinjoon.growweek.common.domain.TaskSummaryStatus
 import xyz.robinjoon.growweek.retrospective.domain.model.QuestionCount
 import xyz.robinjoon.growweek.retrospective.domain.service.QuestionGenerationService
-import xyz.robinjoon.growweek.task.domain.model.Task
 
 /**
  * Mock 질문 생성 서비스
@@ -25,20 +26,20 @@ class MockQuestionGenerationService : QuestionGenerationService {
         )
 
     override suspend fun generateQuestions(
-        tasks: List<Task>,
+        tasks: List<TaskSummary>,
         questionCount: QuestionCount,
     ): List<String> {
         val questions = mutableListOf<String>()
 
         if (tasks.isNotEmpty()) {
-            val completedTasks = tasks.filter { it.status.name == "DONE" }
-            val inProgressTasks = tasks.filter { it.status.name == "IN_PROGRESS" }
+            val completedTasks = tasks.filter { it.status == TaskSummaryStatus.DONE }
+            val inProgressTasks = tasks.filter { it.status == TaskSummaryStatus.IN_PROGRESS }
 
             if (completedTasks.isNotEmpty()) {
-                questions.add("완료한 '${completedTasks.first().title.value}' 작업에서 얻은 인사이트는 무엇인가요?")
+                questions.add("완료한 '${completedTasks.first().title}' 작업에서 얻은 인사이트는 무엇인가요?")
             }
             if (inProgressTasks.isNotEmpty()) {
-                questions.add("진행 중인 '${inProgressTasks.first().title.value}' 작업에서 어려운 점이 있나요?")
+                questions.add("진행 중인 '${inProgressTasks.first().title}' 작업에서 어려운 점이 있나요?")
             }
         }
 

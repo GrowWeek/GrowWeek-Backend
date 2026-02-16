@@ -3,6 +3,9 @@ package xyz.robinjoon.growweek.retrospective.application.service
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
+import xyz.robinjoon.growweek.common.domain.TaskSummary
+import xyz.robinjoon.growweek.common.domain.TaskSummaryPayload
+import xyz.robinjoon.growweek.common.port.TaskSummaryPort
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.application.dto.RetrospectiveDto
 import xyz.robinjoon.growweek.retrospective.application.usecase.GenerateQuestionsUseCase
@@ -10,14 +13,11 @@ import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCo
 import xyz.robinjoon.growweek.retrospective.domain.model.query.RetrospectiveQuery
 import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepository
 import xyz.robinjoon.growweek.retrospective.domain.service.QuestionGenerationService
-import xyz.robinjoon.growweek.task.domain.model.Task
-import xyz.robinjoon.growweek.task.domain.model.query.TaskQuery
-import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
 
 @Service
 class GenerateQuestionsService(
     private val retrospectiveRepository: RetrospectiveRepository,
-    private val taskRepository: TaskRepository,
+    private val taskSummaryPort: TaskSummaryPort,
     private val questionGenerationService: QuestionGenerationService,
 ) : GenerateQuestionsUseCase {
     @Transactional
@@ -43,9 +43,9 @@ class GenerateQuestionsService(
 
         // 3. 해당 주의 할일 목록 조회
         val weekId = retrospective.weekId
-        val tasksPage =
-            taskRepository.findAll(
-                TaskQuery.Offset.byMemberIdAndWeek(
+        val taskSummaries =
+            taskSummaryPort.getWeeklyTaskSummaries(
+                TaskSummaryPayload(
                     memberId = command.memberId,
                     weekId = weekId,
                     size = 100,
@@ -53,7 +53,7 @@ class GenerateQuestionsService(
             )
 
         // 4. 민감도에 따라 할일 데이터 필터링
-        val filteredTasks = filterTasksBySensitivity(tasksPage.items)
+        val filteredTasks = filterTasksBySensitivity(taskSummaries)
 
         // 5. AI 질문 생성
         val generatedQuestions =
@@ -76,7 +76,7 @@ class GenerateQuestionsService(
         return RetrospectiveDto.from(savedRetrospectives.first())
     }
 
-    private fun filterTasksBySensitivity(tasks: List<Task>): List<Task> =
+    private fun filterTasksBySensitivity(tasks: List<TaskSummary>): List<TaskSummary> =
         tasks.mapNotNull { task ->
             when (task.sensitivityLevel) {
                 SensitivityLevel.NONE -> task

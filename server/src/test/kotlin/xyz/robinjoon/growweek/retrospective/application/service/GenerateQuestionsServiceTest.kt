@@ -7,16 +7,24 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.OffsetPage
-import xyz.robinjoon.growweek.common.domain.*
+import xyz.robinjoon.growweek.common.domain.MemberId
+import xyz.robinjoon.growweek.common.domain.RetrospectiveId
+import xyz.robinjoon.growweek.common.domain.SensitivityLevel
+import xyz.robinjoon.growweek.common.domain.TaskSummary
+import xyz.robinjoon.growweek.common.domain.TaskSummaryPayload
+import xyz.robinjoon.growweek.common.domain.TaskSummaryStatus
+import xyz.robinjoon.growweek.common.domain.WeekId
+import xyz.robinjoon.growweek.common.port.TaskSummaryPort
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
-import xyz.robinjoon.growweek.retrospective.domain.model.*
+import xyz.robinjoon.growweek.retrospective.domain.model.Question
+import xyz.robinjoon.growweek.retrospective.domain.model.QuestionCount
+import xyz.robinjoon.growweek.retrospective.domain.model.QuestionId
+import xyz.robinjoon.growweek.retrospective.domain.model.Retrospective
+import xyz.robinjoon.growweek.retrospective.domain.model.RetrospectiveStatus
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.query.RetrospectiveQuery
 import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepository
 import xyz.robinjoon.growweek.retrospective.domain.service.QuestionGenerationService
-import xyz.robinjoon.growweek.task.domain.model.*
-import xyz.robinjoon.growweek.task.domain.model.query.TaskQuery
-import xyz.robinjoon.growweek.task.domain.repository.TaskRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -25,11 +33,11 @@ import java.time.LocalDateTime
  */
 class FakeQuestionGenerationService : QuestionGenerationService {
     var returnValue: List<String> = emptyList()
-    var capturedTasks: List<Task>? = null
+    var capturedTasks: List<TaskSummary>? = null
     var capturedQuestionCount: QuestionCount? = null
 
     override suspend fun generateQuestions(
-        tasks: List<Task>,
+        tasks: List<TaskSummary>,
         questionCount: QuestionCount,
     ): List<String> {
         capturedTasks = tasks
@@ -44,9 +52,9 @@ class GenerateQuestionsServiceTest :
         isolationMode = IsolationMode.InstancePerLeaf
 
         val retrospectiveRepository = mockk<RetrospectiveRepository>()
-        val taskRepository = mockk<TaskRepository>()
+        val taskSummaryPort = mockk<TaskSummaryPort>()
         val fakeQuestionGenerationService = FakeQuestionGenerationService()
-        val service = GenerateQuestionsService(retrospectiveRepository, taskRepository, fakeQuestionGenerationService)
+        val service = GenerateQuestionsService(retrospectiveRepository, taskSummaryPort, fakeQuestionGenerationService)
 
         Given("질문 생성 요청이 왔을 때") {
             val retrospectiveId = RetrospectiveId(1L)
@@ -76,11 +84,11 @@ class GenerateQuestionsServiceTest :
                     updatedAt = now,
                 )
 
-            val tasks =
+            val taskSummaries =
                 listOf(
-                    createTask(TaskId(1L), memberId, "할일 1", "설명 1", SensitivityLevel.NONE, weekId),
-                    createTask(TaskId(2L), memberId, "할일 2", "설명 2", SensitivityLevel.TITLE_ONLY, weekId),
-                    createTask(TaskId(3L), memberId, "할일 3", "설명 3", SensitivityLevel.NEVER, weekId),
+                    createTaskSummary("할일 1", "설명 1", TaskSummaryStatus.TODO, SensitivityLevel.NONE),
+                    createTaskSummary("할일 2", "설명 2", TaskSummaryStatus.TODO, SensitivityLevel.TITLE_ONLY),
+                    createTaskSummary("할일 3", "설명 3", TaskSummaryStatus.TODO, SensitivityLevel.NEVER),
                 )
 
             val generatedQuestionContents =
@@ -126,8 +134,7 @@ class GenerateQuestionsServiceTest :
                 )
             } returns listOf(existingRetrospective.copy(status = RetrospectiveStatus.BEFORE_GENERATE_QUESTION))
 
-            every { taskRepository.findAll(any<TaskQuery.OffsetByMemberIdAndWeek>()) } returns
-                OffsetPage(size = 100, page = 0, totalPage = 1, items = tasks)
+            every { taskSummaryPort.getWeeklyTaskSummaries(any()) } returns taskSummaries
 
             fakeQuestionGenerationService.returnValue = generatedQuestionContents
 
@@ -156,8 +163,16 @@ class GenerateQuestionsServiceTest :
                     }
                 }
 
-                Then("해당 기간의 할일을 조회해야 한다") {
-                    verify { taskRepository.findAll(any<TaskQuery.OffsetByMemberIdAndWeek>()) }
+                Then("해당 기간의 할일 요약을 조회해야 한다") {
+                    verify {
+                        taskSummaryPort.getWeeklyTaskSummaries(
+                            TaskSummaryPayload(
+                                memberId = memberId,
+                                weekId = weekId,
+                                size = 100,
+                            ),
+                        )
+                    }
                 }
 
                 Then("AI 질문 생성 서비스를 호출해야 한다") {
@@ -210,10 +225,10 @@ class GenerateQuestionsServiceTest :
                     updatedAt = now,
                 )
 
-            val tasks =
+            val taskSummaries =
                 listOf(
-                    createTask(TaskId(1L), memberId, "할일 1", "설명 1", SensitivityLevel.NONE, weekId),
-                    createTask(TaskId(2L), memberId, "비밀 할일", "비밀 설명", SensitivityLevel.NEVER, weekId),
+                    createTaskSummary("할일 1", "설명 1", TaskSummaryStatus.TODO, SensitivityLevel.NONE),
+                    createTaskSummary("비밀 할일", "비밀 설명", TaskSummaryStatus.TODO, SensitivityLevel.NEVER),
                 )
 
             val generatedQuestionContents = listOf("질문1", "질문2", "질문3")
@@ -240,8 +255,7 @@ class GenerateQuestionsServiceTest :
 
             every { retrospectiveRepository.saveAll(any()) } returns listOf(completedRetrospective)
 
-            every { taskRepository.findAll(any<TaskQuery.OffsetByMemberIdAndWeek>()) } returns
-                OffsetPage(size = 100, page = 0, totalPage = 1, items = tasks)
+            every { taskSummaryPort.getWeeklyTaskSummaries(any()) } returns taskSummaries
 
             fakeQuestionGenerationService.returnValue = generatedQuestionContents
 
@@ -284,9 +298,9 @@ class GenerateQuestionsServiceTest :
                     updatedAt = now,
                 )
 
-            val tasks =
+            val taskSummaries =
                 listOf(
-                    createTask(TaskId(1L), memberId, "제목만 공개", "비밀 설명", SensitivityLevel.TITLE_ONLY, weekId),
+                    createTaskSummary("제목만 공개", "비밀 설명", TaskSummaryStatus.TODO, SensitivityLevel.TITLE_ONLY),
                 )
 
             val generatedQuestionContents = listOf("질문1", "질문2", "질문3")
@@ -313,8 +327,7 @@ class GenerateQuestionsServiceTest :
 
             every { retrospectiveRepository.saveAll(any()) } returns listOf(completedRetrospective)
 
-            every { taskRepository.findAll(any<TaskQuery.OffsetByMemberIdAndWeek>()) } returns
-                OffsetPage(size = 100, page = 0, totalPage = 1, items = tasks)
+            every { taskSummaryPort.getWeeklyTaskSummaries(any()) } returns taskSummaries
 
             fakeQuestionGenerationService.returnValue = generatedQuestionContents
 
@@ -330,29 +343,17 @@ class GenerateQuestionsServiceTest :
         }
     })
 
-private fun createTask(
-    taskId: TaskId,
-    memberId: MemberId,
+private fun createTaskSummary(
     title: String,
     description: String,
+    status: TaskSummaryStatus,
     sensitivityLevel: SensitivityLevel,
-    weekId: WeekId,
-): Task {
-    val now = LocalDateTime.now()
-    return Task(
-        id = taskId,
-        memberId = memberId,
-        title = TaskTitle(title),
-        description = TaskDescription(description),
-        status = TaskStatus.TODO,
+): TaskSummary =
+    TaskSummary(
+        title = title,
+        description = description,
+        status = status,
         sensitivityLevel = sensitivityLevel,
-        priority = Priority(1),
-        weekId = weekId,
-        dueDate = weekId.endDate,
-        createdAt = now,
-        updatedAt = now,
-        retrospectiveId = null,
     )
-}
 
 private fun <T> runBlocking(block: suspend () -> T): T = kotlinx.coroutines.runBlocking { block() }
