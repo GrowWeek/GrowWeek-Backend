@@ -76,8 +76,9 @@ data class Retrospective(
     fun writeAnswer(
         questionId: QuestionId,
         content: String?,
+        currentDate: LocalDate = LocalDate.now(),
     ): Retrospective {
-        require(canWrite()) {
+        require(canWrite(currentDate)) {
             "회고 작성 기간이 지났거나 이미 완료된 회고입니다"
         }
         require(questions.any { it.id == questionId }) {
@@ -112,8 +113,11 @@ data class Retrospective(
     /**
      * 기타 회고 내용 작성
      */
-    fun writeAdditionalNotes(notes: AdditionalNotes): Retrospective {
-        require(canWrite()) {
+    fun writeAdditionalNotes(
+        notes: AdditionalNotes,
+        currentDate: LocalDate = LocalDate.now(),
+    ): Retrospective {
+        require(canWrite(currentDate)) {
             "회고 작성 기간이 지났거나 이미 완료된 회고입니다"
         }
         return copy(

@@ -22,7 +22,7 @@ class RetrospectiveTest :
                     )
 
                 Then("작성 가능해야 한다") {
-                    retrospective.canWrite() shouldBe true
+                    retrospective.canWrite(currentDate = retrospective.weekId.endDate.minusDays(1)) shouldBe true
                 }
             }
 
@@ -33,7 +33,7 @@ class RetrospectiveTest :
                     )
 
                 Then("작성 가능해야 한다") {
-                    retrospective.canWrite() shouldBe true
+                    retrospective.canWrite(currentDate = retrospective.weekId.endDate.minusDays(1)) shouldBe true
                 }
             }
 
@@ -44,7 +44,7 @@ class RetrospectiveTest :
                     )
 
                 Then("작성 가능해야 한다") {
-                    retrospective.canWrite() shouldBe true
+                    retrospective.canWrite(currentDate = retrospective.weekId.endDate.minusDays(1)) shouldBe true
                 }
             }
 
@@ -55,7 +55,7 @@ class RetrospectiveTest :
                     )
 
                 Then("작성 불가능해야 한다") {
-                    retrospective.canWrite() shouldBe false
+                    retrospective.canWrite(currentDate = retrospective.weekId.endDate.minusDays(1)) shouldBe false
                 }
             }
 
@@ -68,7 +68,7 @@ class RetrospectiveTest :
                     )
 
                 Then("작성 불가능해야 한다") {
-                    retrospective.canWrite() shouldBe false
+                    retrospective.canWrite(currentDate = retrospective.weekId.endDate.plusDays(1)) shouldBe false
                 }
             }
         }
@@ -173,7 +173,12 @@ class RetrospectiveTest :
                     )
 
                 Then("상태가 IN_PROGRESS로 변경되고 답변이 저장되어야 한다") {
-                    val updated = retrospective.writeAnswer(QuestionId(1), "첫 번째 답변")
+                    val updated =
+                        retrospective.writeAnswer(
+                            questionId = QuestionId(1),
+                            content = "첫 번째 답변",
+                            currentDate = retrospective.weekId.endDate.minusDays(1),
+                        )
                     updated.status shouldBe RetrospectiveStatus.IN_PROGRESS
                     updated.answers[QuestionId(1)] shouldNotBe null
                     updated.answers[QuestionId(1)]?.content shouldBe "첫 번째 답변"
@@ -192,7 +197,12 @@ class RetrospectiveTest :
                     )
 
                 Then("답변이 추가되어야 한다 (순서 상관 없음)") {
-                    val updated = retrospective.writeAnswer(QuestionId(2), "두 번째 답변")
+                    val updated =
+                        retrospective.writeAnswer(
+                            questionId = QuestionId(2),
+                            content = "두 번째 답변",
+                            currentDate = retrospective.weekId.endDate.minusDays(1),
+                        )
                     updated.answers.size shouldBe 2
                     updated.answers[QuestionId(2)]?.content shouldBe "두 번째 답변"
                 }
@@ -206,7 +216,12 @@ class RetrospectiveTest :
                     )
 
                 Then("답변이 저장되어야 한다") {
-                    val updated = retrospective.writeAnswer(QuestionId(3), "세 번째 답변 먼저 작성")
+                    val updated =
+                        retrospective.writeAnswer(
+                            questionId = QuestionId(3),
+                            content = "세 번째 답변 먼저 작성",
+                            currentDate = retrospective.weekId.endDate.minusDays(1),
+                        )
                     updated.answers[QuestionId(3)]?.content shouldBe "세 번째 답변 먼저 작성"
                 }
             }
@@ -219,7 +234,12 @@ class RetrospectiveTest :
                     )
 
                 Then("일부 질문만 답변이 있어도 된다") {
-                    val updated = retrospective.writeAnswer(QuestionId(1), "첫 번째 답변만")
+                    val updated =
+                        retrospective.writeAnswer(
+                            questionId = QuestionId(1),
+                            content = "첫 번째 답변만",
+                            currentDate = retrospective.weekId.endDate.minusDays(1),
+                        )
                     updated.answers.size shouldBe 1
                     updated.answers[QuestionId(1)]?.content shouldBe "첫 번째 답변만"
                 }
@@ -233,7 +253,12 @@ class RetrospectiveTest :
                     )
 
                 Then("null 답변이 저장되어야 한다") {
-                    val updated = retrospective.writeAnswer(QuestionId(1), null)
+                    val updated =
+                        retrospective.writeAnswer(
+                            questionId = QuestionId(1),
+                            content = null,
+                            currentDate = retrospective.weekId.endDate.minusDays(1),
+                        )
                     updated.answers[QuestionId(1)]?.content shouldBe null
                 }
             }
@@ -250,7 +275,12 @@ class RetrospectiveTest :
                     )
 
                 Then("답변이 수정되어야 한다") {
-                    val updated = retrospective.writeAnswer(QuestionId(1), "수정된 답변")
+                    val updated =
+                        retrospective.writeAnswer(
+                            questionId = QuestionId(1),
+                            content = "수정된 답변",
+                            currentDate = retrospective.weekId.endDate.minusDays(1),
+                        )
                     updated.answers[QuestionId(1)]?.content shouldBe "수정된 답변"
                 }
             }
@@ -264,7 +294,11 @@ class RetrospectiveTest :
 
                 Then("예외가 발생해야 한다") {
                     shouldThrow<IllegalArgumentException> {
-                        retrospective.writeAnswer(QuestionId(999), "존재하지 않는 질문")
+                        retrospective.writeAnswer(
+                            questionId = QuestionId(999),
+                            content = "존재하지 않는 질문",
+                            currentDate = retrospective.weekId.endDate.minusDays(1),
+                        )
                     }.message shouldBe "존재하지 않는 질문입니다"
                 }
             }
@@ -279,7 +313,11 @@ class RetrospectiveTest :
 
                 Then("예외가 발생해야 한다") {
                     shouldThrow<IllegalArgumentException> {
-                        retrospective.writeAnswer(QuestionId(1), "기간 지남")
+                        retrospective.writeAnswer(
+                            questionId = QuestionId(1),
+                            content = "기간 지남",
+                            currentDate = retrospective.weekId.endDate.plusDays(1),
+                        )
                     }.message shouldBe "회고 작성 기간이 지났거나 이미 완료된 회고입니다"
                 }
             }
@@ -293,7 +331,11 @@ class RetrospectiveTest :
 
                 Then("예외가 발생해야 한다") {
                     shouldThrow<IllegalArgumentException> {
-                        retrospective.writeAnswer(QuestionId(1), "완료된 회고")
+                        retrospective.writeAnswer(
+                            questionId = QuestionId(1),
+                            content = "완료된 회고",
+                            currentDate = retrospective.weekId.endDate.minusDays(1),
+                        )
                     }.message shouldBe "회고 작성 기간이 지났거나 이미 완료된 회고입니다"
                 }
             }
@@ -309,7 +351,11 @@ class RetrospectiveTest :
                 val notes = AdditionalNotes("이번 주는 정말 바빴습니다.")
 
                 Then("내용이 저장되어야 한다") {
-                    val updated = retrospective.writeAdditionalNotes(notes)
+                    val updated =
+                        retrospective.writeAdditionalNotes(
+                            notes = notes,
+                            currentDate = retrospective.weekId.endDate.minusDays(1),
+                        )
                     updated.additionalNotes shouldBe notes
                 }
             }
@@ -324,7 +370,10 @@ class RetrospectiveTest :
 
                 Then("예외가 발생해야 한다") {
                     shouldThrow<IllegalArgumentException> {
-                        retrospective.writeAdditionalNotes(notes)
+                        retrospective.writeAdditionalNotes(
+                            notes = notes,
+                            currentDate = retrospective.weekId.endDate.plusDays(1),
+                        )
                     }.message shouldBe "회고 작성 기간이 지났거나 이미 완료된 회고입니다"
                 }
             }
@@ -338,7 +387,10 @@ class RetrospectiveTest :
 
                 Then("예외가 발생해야 한다") {
                     shouldThrow<IllegalArgumentException> {
-                        retrospective.writeAdditionalNotes(notes)
+                        retrospective.writeAdditionalNotes(
+                            notes = notes,
+                            currentDate = retrospective.weekId.endDate.minusDays(1),
+                        )
                     }.message shouldBe "회고 작성 기간이 지났거나 이미 완료된 회고입니다"
                 }
             }
