@@ -13,4 +13,6 @@ class JwtAuthenticationToken(
     override fun getCredentials(): Any? = null
 
     override fun getPrincipal(): MemberId = memberId
+
+    override fun getName(): String = memberId.value.toString()
 }

@@ -49,4 +49,66 @@ sealed interface TaskApplicationCommand {
         val taskId: TaskId,
         val memberId: MemberId,
     ) : TaskApplicationCommand
+
+    companion object {
+        fun createTask(
+            memberId: Long,
+            title: String,
+            description: String?,
+            priority: Int,
+            dueDate: String,
+            sensitivityLevel: String? = null,
+        ): CreateTask =
+            CreateTask(
+                memberId = MemberId(memberId),
+                title = title,
+                description = description,
+                priority = priority,
+                dueDate = LocalDate.parse(dueDate),
+                sensitivityLevel = parseSensitivityLevel(sensitivityLevel),
+            )
+
+        fun updateTask(
+            taskId: Long,
+            memberId: Long,
+            title: String?,
+            description: String?,
+            status: String?,
+            priority: Int?,
+            dueDate: String?,
+            sensitivityLevel: String?,
+        ): UpdateTask =
+            UpdateTask(
+                taskId = TaskId(taskId),
+                memberId = MemberId(memberId),
+                title = title,
+                description = description,
+                status = status?.let(TaskStatus::valueOf),
+                priority = priority,
+                dueDate = dueDate?.let(LocalDate::parse),
+                sensitivityLevel = sensitivityLevel?.let(SensitivityLevel::valueOf),
+            )
+
+        fun updateTaskStatus(
+            taskId: Long,
+            memberId: Long,
+            status: String,
+        ): UpdateTaskStatus =
+            UpdateTaskStatus(
+                taskId = TaskId(taskId),
+                memberId = MemberId(memberId),
+                status = TaskStatus.valueOf(status),
+            )
+
+        fun deleteTask(
+            taskId: Long,
+            memberId: Long,
+        ): DeleteTask =
+            DeleteTask(
+                taskId = TaskId(taskId),
+                memberId = MemberId(memberId),
+            )
+
+        private fun parseSensitivityLevel(level: String?): SensitivityLevel = level?.let(SensitivityLevel::valueOf) ?: SensitivityLevel.NONE
+    }
 }

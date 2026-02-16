@@ -1,7 +1,7 @@
 package xyz.robinjoon.growweek.retrospective.domain.service
 
 import xyz.robinjoon.growweek.retrospective.domain.model.QuestionCount
-import xyz.robinjoon.growweek.task.domain.model.Task
+import xyz.robinjoon.growweek.retrospective.domain.model.RetrospectiveTask
 
 /**
  * 회고 질문 생성 서비스 인터페이스
@@ -18,7 +18,7 @@ interface QuestionGenerationService {
      * @return 생성된 질문 내용 목록
      */
     suspend fun generateQuestions(
-        tasks: List<Task>,
+        tasks: List<RetrospectiveTask>,
         questionCount: QuestionCount,
     ): List<String>
 }

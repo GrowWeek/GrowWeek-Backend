@@ -7,8 +7,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Service
 import xyz.robinjoon.growweek.retrospective.domain.model.QuestionCount
+import xyz.robinjoon.growweek.retrospective.domain.model.RetrospectiveTask
 import xyz.robinjoon.growweek.retrospective.domain.service.QuestionGenerationService
-import xyz.robinjoon.growweek.task.domain.model.Task
 
 /**
  * Gemini API를 활용한 회고 질문 생성 서비스
@@ -26,7 +26,7 @@ class GeminiQuestionGenerationService(
     private val objectMapper = jacksonObjectMapper()
 
     override suspend fun generateQuestions(
-        tasks: List<Task>,
+        tasks: List<RetrospectiveTask>,
         questionCount: QuestionCount,
     ): List<String> {
         val prompt = buildPrompt(tasks, questionCount)
@@ -44,7 +44,7 @@ class GeminiQuestionGenerationService(
     }
 
     private fun buildPrompt(
-        tasks: List<Task>,
+        tasks: List<RetrospectiveTask>,
         questionCount: QuestionCount,
     ): String {
         val taskSummary =
@@ -74,30 +74,30 @@ class GeminiQuestionGenerationService(
             """.trimIndent()
     }
 
-    private fun buildTaskSummary(tasks: List<Task>): String {
-        val completedTasks = tasks.filter { it.status.name == "DONE" }
-        val inProgressTasks = tasks.filter { it.status.name == "IN_PROGRESS" }
-        val todoTasks = tasks.filter { it.status.name == "TODO" }
+    private fun buildTaskSummary(tasks: List<RetrospectiveTask>): String {
+        val completedTasks = tasks.filter { it.status == "DONE" }
+        val inProgressTasks = tasks.filter { it.status == "IN_PROGRESS" }
+        val todoTasks = tasks.filter { it.status == "TODO" }
 
         return buildString {
             if (completedTasks.isNotEmpty()) {
                 appendLine("완료된 할일:")
                 completedTasks.forEach { task ->
-                    appendLine("- ${task.title.value}")
+                    appendLine("- ${task.title}")
                 }
             }
 
             if (inProgressTasks.isNotEmpty()) {
                 appendLine("\n진행 중인 할일:")
                 inProgressTasks.forEach { task ->
-                    appendLine("- ${task.title.value}")
+                    appendLine("- ${task.title}")
                 }
             }
 
             if (todoTasks.isNotEmpty()) {
                 appendLine("\n시작하지 않은 할일:")
                 todoTasks.forEach { task ->
-                    appendLine("- ${task.title.value}")
+                    appendLine("- ${task.title}")
                 }
             }
 
@@ -142,20 +142,20 @@ class GeminiQuestionGenerationService(
     }
 
     private fun generateFallbackQuestions(
-        tasks: List<Task>,
+        tasks: List<RetrospectiveTask>,
         questionCount: QuestionCount,
     ): List<String> {
         val fallbackQuestions = mutableListOf<String>()
 
         if (tasks.isNotEmpty()) {
-            val completedTasks = tasks.filter { it.status.name == "DONE" }
-            val inProgressTasks = tasks.filter { it.status.name == "IN_PROGRESS" }
+            val completedTasks = tasks.filter { it.status == "DONE" }
+            val inProgressTasks = tasks.filter { it.status == "IN_PROGRESS" }
 
             if (completedTasks.isNotEmpty()) {
-                fallbackQuestions.add("완료한 '${completedTasks.first().title.value}' 작업에서 얻은 가장 큰 배움은 무엇인가요?")
+                fallbackQuestions.add("완료한 '${completedTasks.first().title}' 작업에서 얻은 가장 큰 배움은 무엇인가요?")
             }
             if (inProgressTasks.isNotEmpty()) {
-                fallbackQuestions.add("진행 중인 '${inProgressTasks.first().title.value}' 작업을 완료하기 위해 필요한 것은 무엇인가요?")
+                fallbackQuestions.add("진행 중인 '${inProgressTasks.first().title}' 작업을 완료하기 위해 필요한 것은 무엇인가요?")
             }
         }
 

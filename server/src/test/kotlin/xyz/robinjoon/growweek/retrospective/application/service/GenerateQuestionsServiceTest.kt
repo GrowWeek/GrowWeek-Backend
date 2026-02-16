@@ -25,11 +25,11 @@ import java.time.LocalDateTime
  */
 class FakeQuestionGenerationService : QuestionGenerationService {
     var returnValue: List<String> = emptyList()
-    var capturedTasks: List<Task>? = null
+    var capturedTasks: List<RetrospectiveTask>? = null
     var capturedQuestionCount: QuestionCount? = null
 
     override suspend fun generateQuestions(
-        tasks: List<Task>,
+        tasks: List<RetrospectiveTask>,
         questionCount: QuestionCount,
     ): List<String> {
         capturedTasks = tasks
@@ -251,7 +251,7 @@ class GenerateQuestionsServiceTest :
                 Then("NEVER 민감도의 할일은 필터링되어야 한다") {
                     val filteredTasks = fakeQuestionGenerationService.capturedTasks!!
                     filteredTasks.size shouldBe 1
-                    filteredTasks.none { it.sensitivityLevel == SensitivityLevel.NEVER } shouldBe true
+                    filteredTasks.none { it.title == "비밀 할일" } shouldBe true
                 }
             }
         }

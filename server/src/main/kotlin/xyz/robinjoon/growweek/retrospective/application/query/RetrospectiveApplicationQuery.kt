@@ -28,6 +28,13 @@ sealed class RetrospectiveApplicationQuery(
                     ),
             )
 
+        fun byMemberId(
+            memberId: Long,
+            cursor: String? = null,
+            size: Int = 20,
+            orderBy: String? = "createdAt",
+        ): CursorByMemberId = byMemberId(MemberId(memberId), cursor, size, orderBy)
+
         fun byMemberIdAndWeekId(
             memberId: MemberId,
             weekId: WeekId,
@@ -45,6 +52,14 @@ sealed class RetrospectiveApplicationQuery(
                         orderBy = orderBy,
                     ),
             )
+
+        fun byMemberIdAndWeekId(
+            memberId: Long,
+            weekId: String,
+            cursor: String? = null,
+            size: Int = 20,
+            orderBy: String? = "weekId",
+        ): CursorByMemberIdAndWeekId = byMemberIdAndWeekId(MemberId(memberId), WeekId(weekId), cursor, size, orderBy)
 
         fun byMemberIdAndMonth(
             memberId: MemberId,
@@ -65,6 +80,15 @@ sealed class RetrospectiveApplicationQuery(
                         orderBy = orderBy,
                     ),
             )
+
+        fun byMemberIdAndMonth(
+            memberId: Long,
+            year: Int,
+            month: Int,
+            cursor: String? = null,
+            size: Int = 20,
+            orderBy: String? = "weekId",
+        ): CursorByMemberIdAndMonth = byMemberIdAndMonth(MemberId(memberId), year, month, cursor, size, orderBy)
     }
 
     object Offset {
@@ -84,6 +108,13 @@ sealed class RetrospectiveApplicationQuery(
                     ),
             )
 
+        fun byMemberId(
+            memberId: Long,
+            page: Int = 0,
+            size: Int = 20,
+            orderBy: String? = "createdAt",
+        ): OffsetByMemberId = byMemberId(MemberId(memberId), page, size, orderBy)
+
         fun byMemberIdAndWeekId(
             memberId: MemberId,
             weekId: WeekId,
@@ -101,6 +132,14 @@ sealed class RetrospectiveApplicationQuery(
                         orderBy = orderBy,
                     ),
             )
+
+        fun byMemberIdAndWeekId(
+            memberId: Long,
+            weekId: String,
+            page: Int = 0,
+            size: Int = 20,
+            orderBy: String? = "weekId",
+        ): OffsetByMemberIdAndWeekId = byMemberIdAndWeekId(MemberId(memberId), WeekId(weekId), page, size, orderBy)
 
         fun byMemberIdAndMonth(
             memberId: MemberId,
@@ -121,6 +160,15 @@ sealed class RetrospectiveApplicationQuery(
                         orderBy = orderBy,
                     ),
             )
+
+        fun byMemberIdAndMonth(
+            memberId: Long,
+            year: Int,
+            month: Int,
+            page: Int = 0,
+            size: Int = 20,
+            orderBy: String? = "weekId",
+        ): OffsetByMemberIdAndMonth = byMemberIdAndMonth(MemberId(memberId), year, month, page, size, orderBy)
     }
 
     // 단건 조회
@@ -166,4 +214,15 @@ sealed class RetrospectiveApplicationQuery(
         val month: Int,
         override val pageInfo: OffsetPageInfo,
     ) : RetrospectiveApplicationQuery(pageInfo)
+
+    companion object {
+        fun byRetrospectiveId(
+            retrospectiveId: Long,
+            memberId: Long,
+        ): ByRetrospectiveId =
+            ByRetrospectiveId(
+                retrospectiveId = RetrospectiveId(retrospectiveId),
+                memberId = MemberId(memberId),
+            )
+    }
 }

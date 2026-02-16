@@ -39,4 +39,68 @@ sealed interface RetrospectiveApplicationCommand {
         val retrospectiveId: RetrospectiveId,
         val memberId: MemberId,
     ) : RetrospectiveApplicationCommand
+
+    companion object {
+        fun createRetrospective(
+            memberId: Long,
+            weekId: String,
+            questionCount: Int = 3,
+        ): CreateRetrospective =
+            CreateRetrospective(
+                memberId = MemberId(memberId),
+                weekId = WeekId(weekId),
+                questionCount = questionCount,
+            )
+
+        fun generateQuestions(
+            retrospectiveId: Long,
+            memberId: Long,
+        ): GenerateQuestions =
+            GenerateQuestions(
+                retrospectiveId = RetrospectiveId(retrospectiveId),
+                memberId = MemberId(memberId),
+            )
+
+        fun writeAnswer(
+            retrospectiveId: Long,
+            memberId: Long,
+            questionId: Long,
+            content: String?,
+        ): WriteAnswer =
+            WriteAnswer(
+                retrospectiveId = RetrospectiveId(retrospectiveId),
+                memberId = MemberId(memberId),
+                questionId = QuestionId(questionId),
+                content = content,
+            )
+
+        fun writeAdditionalNotes(
+            retrospectiveId: Long,
+            memberId: Long,
+            notes: String,
+        ): WriteAdditionalNotes =
+            WriteAdditionalNotes(
+                retrospectiveId = RetrospectiveId(retrospectiveId),
+                memberId = MemberId(memberId),
+                notes = notes,
+            )
+
+        fun completeRetrospective(
+            retrospectiveId: Long,
+            memberId: Long,
+        ): CompleteRetrospective =
+            CompleteRetrospective(
+                retrospectiveId = RetrospectiveId(retrospectiveId),
+                memberId = MemberId(memberId),
+            )
+
+        fun deleteRetrospective(
+            retrospectiveId: Long,
+            memberId: Long,
+        ): DeleteRetrospective =
+            DeleteRetrospective(
+                retrospectiveId = RetrospectiveId(retrospectiveId),
+                memberId = MemberId(memberId),
+            )
+    }
 }

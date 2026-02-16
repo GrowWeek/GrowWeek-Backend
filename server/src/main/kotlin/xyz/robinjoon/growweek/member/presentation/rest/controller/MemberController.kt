@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
-import xyz.robinjoon.growweek.common.infrastructure.security.JwtAuthenticationToken
 import xyz.robinjoon.growweek.member.application.command.MemberApplicationCommand
 import xyz.robinjoon.growweek.member.application.usecase.GetMemberUseCase
 import xyz.robinjoon.growweek.member.application.usecase.LoginUseCase
@@ -56,10 +55,14 @@ class MemberController(
     @GetMapping("/me")
     @Operation(summary = "현재 사용자 조회", description = "로그인된 사용자의 정보를 조회합니다")
     fun getCurrentMember(authentication: Authentication): ResponseEntity<MemberResponse> {
-        val memberId = (authentication as JwtAuthenticationToken).memberId
+        val memberId =
+            authentication.name.toLongOrNull()
+                ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
         val member =
             getMemberUseCase.getMember(memberId)
                 ?: return ResponseEntity.notFound().build()
+
         return ResponseEntity.ok(MemberResponse.from(member))
     }
 }

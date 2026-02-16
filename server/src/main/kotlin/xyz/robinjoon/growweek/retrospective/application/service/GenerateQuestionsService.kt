@@ -6,6 +6,7 @@ import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.application.dto.RetrospectiveDto
 import xyz.robinjoon.growweek.retrospective.application.usecase.GenerateQuestionsUseCase
+import xyz.robinjoon.growweek.retrospective.domain.model.RetrospectiveTask
 import xyz.robinjoon.growweek.retrospective.domain.model.command.RetrospectiveCommand
 import xyz.robinjoon.growweek.retrospective.domain.model.query.RetrospectiveQuery
 import xyz.robinjoon.growweek.retrospective.domain.repository.RetrospectiveRepository
@@ -76,11 +77,21 @@ class GenerateQuestionsService(
         return RetrospectiveDto.from(savedRetrospectives.first())
     }
 
-    private fun filterTasksBySensitivity(tasks: List<Task>): List<Task> =
+    private fun filterTasksBySensitivity(tasks: List<Task>): List<RetrospectiveTask> =
         tasks.mapNotNull { task ->
             when (task.sensitivityLevel) {
-                SensitivityLevel.NONE -> task
-                SensitivityLevel.TITLE_ONLY -> task.copy(description = null)
+                SensitivityLevel.NONE ->
+                    RetrospectiveTask(
+                        title = task.title.value,
+                        description = task.description?.value,
+                        status = task.status.name,
+                    )
+                SensitivityLevel.TITLE_ONLY ->
+                    RetrospectiveTask(
+                        title = task.title.value,
+                        description = null,
+                        status = task.status.name,
+                    )
                 SensitivityLevel.NEVER -> null
             }
         }

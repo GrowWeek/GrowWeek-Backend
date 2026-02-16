@@ -31,6 +31,13 @@ sealed class TaskApplicationQuery(
                     ),
             )
 
+        fun byMemberId(
+            memberId: Long,
+            cursor: String? = null,
+            size: Int = 20,
+            orderBy: String? = "updatedAt",
+        ): CursorByMemberId = byMemberId(MemberId(memberId), cursor, size, orderBy)
+
         fun byMemberIdAndWeek(
             memberId: MemberId,
             weekId: WeekId,
@@ -49,6 +56,14 @@ sealed class TaskApplicationQuery(
                     ),
             )
 
+        fun byMemberIdAndWeek(
+            memberId: Long,
+            weekId: String,
+            cursor: String? = null,
+            size: Int = 20,
+            orderBy: String? = "priority",
+        ): CursorByMemberIdAndWeek = byMemberIdAndWeek(MemberId(memberId), WeekId(weekId), cursor, size, orderBy)
+
         fun byTaskId(
             taskId: TaskId,
             memberId: MemberId,
@@ -65,6 +80,13 @@ sealed class TaskApplicationQuery(
                         orderBy = null,
                     ),
             )
+
+        fun byTaskId(
+            taskId: Long,
+            memberId: Long,
+            cursor: String? = null,
+            size: Int = 1,
+        ): CursorByTaskId = byTaskId(TaskId(taskId), MemberId(memberId), cursor, size)
     }
 
     /**
@@ -87,6 +109,13 @@ sealed class TaskApplicationQuery(
                     ),
             )
 
+        fun byMemberId(
+            memberId: Long,
+            page: Int = 0,
+            size: Int = 20,
+            orderBy: String? = "updatedAt",
+        ): OffsetByMemberId = byMemberId(MemberId(memberId), page, size, orderBy)
+
         fun byMemberIdAndWeek(
             memberId: MemberId,
             weekId: WeekId,
@@ -105,6 +134,14 @@ sealed class TaskApplicationQuery(
                     ),
             )
 
+        fun byMemberIdAndWeek(
+            memberId: Long,
+            weekId: String,
+            page: Int = 0,
+            size: Int = 20,
+            orderBy: String? = "priority",
+        ): OffsetByMemberIdAndWeek = byMemberIdAndWeek(MemberId(memberId), WeekId(weekId), page, size, orderBy)
+
         fun byTaskId(
             taskId: TaskId,
             memberId: MemberId,
@@ -121,6 +158,13 @@ sealed class TaskApplicationQuery(
                         orderBy = null,
                     ),
             )
+
+        fun byTaskId(
+            taskId: Long,
+            memberId: Long,
+            page: Int = 0,
+            size: Int = 1,
+        ): OffsetByTaskId = byTaskId(TaskId(taskId), MemberId(memberId), page, size)
     }
 
     // Cursor 기반 쿼리 구현체들

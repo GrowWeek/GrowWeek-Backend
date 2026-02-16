@@ -3,19 +3,19 @@ package xyz.robinjoon.growweek.member.application.service
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import xyz.robinjoon.growweek.common.infrastructure.security.JwtTokenProvider
 import xyz.robinjoon.growweek.member.application.command.MemberApplicationCommand
 import xyz.robinjoon.growweek.member.application.dto.TokenDto
 import xyz.robinjoon.growweek.member.application.usecase.LoginUseCase
 import xyz.robinjoon.growweek.member.domain.model.Email
 import xyz.robinjoon.growweek.member.domain.model.query.MemberQuery
 import xyz.robinjoon.growweek.member.domain.repository.MemberRepository
+import xyz.robinjoon.growweek.member.domain.service.AccessTokenProvider
 
 @Service
 class LoginService(
     private val memberRepository: MemberRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val jwtTokenProvider: JwtTokenProvider,
+    private val accessTokenProvider: AccessTokenProvider,
 ) : LoginUseCase {
     @Transactional(readOnly = true)
     override fun login(command: MemberApplicationCommand.Login): TokenDto {
@@ -33,11 +33,11 @@ class LoginService(
             throw IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다")
         }
 
-        val accessToken = jwtTokenProvider.createToken(member.id)
+        val accessToken = accessTokenProvider.createToken(member.id)
 
         return TokenDto(
             accessToken = accessToken,
-            expiresIn = jwtTokenProvider.getExpirationInSeconds(),
+            expiresIn = accessTokenProvider.getExpirationInSeconds(),
         )
     }
 }

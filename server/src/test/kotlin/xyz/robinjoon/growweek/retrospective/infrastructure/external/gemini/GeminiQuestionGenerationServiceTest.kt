@@ -7,14 +7,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.runBlocking
-import xyz.robinjoon.growweek.common.domain.MemberId
-import xyz.robinjoon.growweek.common.domain.SensitivityLevel
-import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.retrospective.domain.model.QuestionCount
-import xyz.robinjoon.growweek.task.domain.model.*
-import java.time.LocalDate
-import java.time.LocalDateTime
+import xyz.robinjoon.growweek.retrospective.domain.model.RetrospectiveTask
 
 class GeminiQuestionGenerationServiceTest :
     BehaviorSpec({
@@ -28,9 +22,9 @@ class GeminiQuestionGenerationServiceTest :
 
             val tasks =
                 listOf(
-                    createTask(TaskId(1L), "프로젝트 기획서 작성", TaskStatus.DONE),
-                    createTask(TaskId(2L), "코드 리뷰", TaskStatus.IN_PROGRESS),
-                    createTask(TaskId(3L), "회의 준비", TaskStatus.TODO),
+                    createTask("프로젝트 기획서 작성", "DONE"),
+                    createTask("코드 리뷰", "IN_PROGRESS"),
+                    createTask("회의 준비", "TODO"),
                 )
             val questionCount = QuestionCount(3)
 
@@ -72,7 +66,7 @@ class GeminiQuestionGenerationServiceTest :
 
             val tasks =
                 listOf(
-                    createTask(TaskId(1L), "완료된 작업", TaskStatus.DONE),
+                    createTask("완료된 작업", "DONE"),
                 )
             val questionCount = QuestionCount(3)
 
@@ -103,7 +97,7 @@ class GeminiQuestionGenerationServiceTest :
 
         Given("할일 목록이 비어있을 때") {
 
-            val emptyTasks = emptyList<Task>()
+            val emptyTasks = emptyList<RetrospectiveTask>()
             val questionCount = QuestionCount(3)
 
             When("질문 생성을 요청하면") {
@@ -123,10 +117,10 @@ class GeminiQuestionGenerationServiceTest :
 
             val tasks =
                 listOf(
-                    createTask(TaskId(1L), "완료된 작업 A", TaskStatus.DONE),
-                    createTask(TaskId(2L), "완료된 작업 B", TaskStatus.DONE),
-                    createTask(TaskId(3L), "진행 중인 작업", TaskStatus.IN_PROGRESS),
-                    createTask(TaskId(4L), "시작 전 작업", TaskStatus.TODO),
+                    createTask("완료된 작업 A", "DONE"),
+                    createTask("완료된 작업 B", "DONE"),
+                    createTask("진행 중인 작업", "IN_PROGRESS"),
+                    createTask("시작 전 작업", "TODO"),
                 )
 
             When("프롬프트를 생성하면") {
@@ -157,7 +151,7 @@ class GeminiQuestionGenerationServiceTest :
 
         Given("JSON이 아닌 텍스트 응답이 왔을 때") {
 
-            val tasks = listOf(createTask(TaskId(1L), "작업", TaskStatus.DONE))
+            val tasks = listOf(createTask("작업", "DONE"))
 
             When("번호가 붙은 질문 목록이 반환되면") {
                 val textResponse =
@@ -179,27 +173,14 @@ class GeminiQuestionGenerationServiceTest :
     })
 
 private fun createTask(
-    taskId: TaskId,
     title: String,
-    status: TaskStatus,
-): Task {
-    val now = LocalDateTime.now()
-    val weekId = WeekId.of(LocalDate.now().minusDays(7))
-    return Task(
-        id = taskId,
-        memberId = MemberId(1L),
-        title = TaskTitle(title),
-        description = TaskDescription("설명"),
+    status: String,
+): RetrospectiveTask =
+    RetrospectiveTask(
+        title = title,
+        description = "설명",
         status = status,
-        sensitivityLevel = SensitivityLevel.NONE,
-        priority = Priority(1),
-        weekId = weekId,
-        dueDate = weekId.endDate,
-        createdAt = now,
-        updatedAt = now,
-        retrospectiveId = null,
     )
-}
 
 private infix fun String?.shouldContainSubstring(substring: String) {
     this?.contains(substring) shouldBe true
