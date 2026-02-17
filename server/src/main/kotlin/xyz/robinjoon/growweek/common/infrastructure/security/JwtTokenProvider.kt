@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import xyz.robinjoon.growweek.common.domain.MemberId
+import xyz.robinjoon.growweek.common.port.MemberTokenPort
 import java.util.*
 import javax.crypto.SecretKey
 
@@ -12,12 +13,12 @@ import javax.crypto.SecretKey
 class JwtTokenProvider(
     @Value("\${jwt.secret}") private val secret: String,
     @Value("\${jwt.expiration}") private val expirationMs: Long,
-) {
+) : MemberTokenPort {
     private val secretKey: SecretKey by lazy {
         Keys.hmacShaKeyFor(secret.toByteArray())
     }
 
-    fun createToken(memberId: MemberId): String {
+    override fun createToken(memberId: MemberId): String {
         val now = Date()
         val expiration = Date(now.time + expirationMs)
 
@@ -54,5 +55,5 @@ class JwtTokenProvider(
             false
         }
 
-    fun getExpirationInSeconds(): Long = expirationMs / 1000
+    override fun getExpirationInSeconds(): Long = expirationMs / 1000
 }

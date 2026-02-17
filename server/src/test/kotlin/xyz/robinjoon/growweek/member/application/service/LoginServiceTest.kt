@@ -9,7 +9,7 @@ import io.mockk.verify
 import org.springframework.security.crypto.password.PasswordEncoder
 import xyz.robinjoon.growweek.common.OffsetPage
 import xyz.robinjoon.growweek.common.domain.MemberId
-import xyz.robinjoon.growweek.common.infrastructure.security.JwtTokenProvider
+import xyz.robinjoon.growweek.common.port.MemberTokenPort
 import xyz.robinjoon.growweek.member.application.command.MemberApplicationCommand
 import xyz.robinjoon.growweek.member.domain.model.*
 import xyz.robinjoon.growweek.member.domain.repository.MemberRepository
@@ -20,8 +20,8 @@ class LoginServiceTest :
 
         val memberRepository = mockk<MemberRepository>()
         val passwordEncoder = mockk<PasswordEncoder>()
-        val jwtTokenProvider = mockk<JwtTokenProvider>()
-        val loginService = LoginService(memberRepository, passwordEncoder, jwtTokenProvider)
+        val memberTokenPort = mockk<MemberTokenPort>()
+        val loginService = LoginService(memberRepository, passwordEncoder, memberTokenPort)
 
         Given("로그인 요청이 왔을 때") {
             val command =
@@ -51,8 +51,8 @@ class LoginServiceTest :
                         totalPage = 1,
                     )
                 every { passwordEncoder.matches(command.password, "encodedPassword") } returns true
-                every { jwtTokenProvider.createToken(MemberId(1L)) } returns "jwt.token.here"
-                every { jwtTokenProvider.getExpirationInSeconds() } returns 3600L
+                every { memberTokenPort.createToken(MemberId(1L)) } returns "jwt.token.here"
+                every { memberTokenPort.getExpirationInSeconds() } returns 3600L
 
                 val result = loginService.login(command)
 
@@ -63,7 +63,7 @@ class LoginServiceTest :
                 }
 
                 Then("JWT 토큰이 생성된다") {
-                    verify(exactly = 1) { jwtTokenProvider.createToken(MemberId(1L)) }
+                    verify(exactly = 1) { memberTokenPort.createToken(MemberId(1L)) }
                 }
             }
 
