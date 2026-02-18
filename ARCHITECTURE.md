@@ -155,6 +155,7 @@ xyz.robinjoon.growweek/
   - 기반 인터페이스/추상 클래스
   - 공통 설정 (Security, OpenAPI, Redis 등)
   - 공통 응답 포맷
+- **하위 구조**: 다른 Bounded Context의 레이어 구조(presentation, application, domain, infrastructure)에서 필요한 것만 만들어서 사용합니다.
 
 ## CQRS 패턴 적용
 

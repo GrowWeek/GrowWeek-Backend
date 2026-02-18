@@ -14,6 +14,7 @@ description: Bounded Context에 새로운 infrastructure 를 추가하거나 수
 ```
 └── infrastructure/
     ├── persistence/
+    ├── security/
     └── external/
 ```
 
@@ -251,3 +252,11 @@ data class NotificationResponse(
         ├── kafka/
         └── aws/
 ```
+
+### 4. security 디렉토리
+
+security 디렉토리에는 Spring Security 관련 인프라 구현체가 위치합니다. 기능상 필요하지 않다면 이 디렉토리 안에는 파일이 존재하지 않을 수 있습니다. 예를 들어 JWT 인증 필터, 인증 토큰, ArgumentResolver 등이 이 디렉토리에 위치합니다.
+
+### 5. 기타 경로 추가
+
+위에 정의된 persistence, external, security 외에 새로운 하위 디렉토리가 필요한 경우 추가할 수 있습니다. 단, 새로운 경로를 추가할 경우 반드시 이 skills 문서에 해당 디렉토리의 역할과 규칙을 반영하고, 사용자에게 새로운 경로가 추가되었음을 분명히 응답해야 합니다.

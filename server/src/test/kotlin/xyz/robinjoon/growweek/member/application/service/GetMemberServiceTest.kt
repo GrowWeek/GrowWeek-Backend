@@ -41,7 +41,7 @@ class GetMemberServiceTest :
                         totalPage = 1,
                     )
 
-                val result = getMemberService.getMember(memberId)
+                val result = getMemberService.getMember(memberId.value)
 
                 Then("MemberDto가 반환된다") {
                     result shouldNotBe null
@@ -53,7 +53,7 @@ class GetMemberServiceTest :
             }
 
             When("존재하지 않는 회원 ID로 조회하면") {
-                val memberId = MemberId(999L)
+                val memberId = 999L
 
                 every { memberRepository.findAll(any()) } returns
                     OffsetPage(
