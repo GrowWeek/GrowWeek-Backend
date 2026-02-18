@@ -97,6 +97,7 @@ xyz.robinjoon.growweek/
     │   └── service/            # Domain Services
     └── infrastructure/          # Infrastructure Layer (구현체)
         ├── persistence/        # 영속성 구현 (JPA, Repository Impl)
+        ├── event/              # 도메인 이벤트 핸들러
         └── external/           # 외부 시스템 연동
 ```
 
@@ -140,10 +141,12 @@ xyz.robinjoon.growweek/
     - Repository 구현체 (Exposed DSL 쿼리)
     - Redis Repository (캐싱)
     - 데이터베이스 매핑 로직
+  - **event/**:
+    - 다른 BC에서 발행한 도메인 이벤트를 수신하는 핸들러
+    - `DomainEventHandler` 인터페이스 구현체
   - **external/**:
     - OpenFeign 클라이언트 (외부 API 호출)
     - 외부 서비스 어댑터
-    - 외부 이벤트 구독/발행
 - **의존성**: Domain Layer의 인터페이스를 구현
 
 ### Common Layer (common/)

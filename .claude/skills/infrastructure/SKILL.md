@@ -14,6 +14,7 @@ description: Bounded Context에 새로운 infrastructure 를 추가하거나 수
 ```
 └── infrastructure/
     ├── persistence/
+    ├── event/
     ├── security/
     └── external/
 ```
