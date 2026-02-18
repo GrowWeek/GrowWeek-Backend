@@ -71,7 +71,22 @@ class TaskController(
 }
 ```
 
-### 3. 별도 디렉토리
+### 3. 인증된 사용자 정보 주입
+
+인증이 필요한 엔드포인트에서 현재 로그인된 사용자의 ID를 받을 때는 `@CurrentMemberId` 애너테이션을 사용합니다. 타입은 반드시 `Long`(Primitive Type)을 사용합니다.
+
+```kotlin
+import xyz.robinjoon.growweek.common.presentation.security.CurrentMemberId
+
+@GetMapping("/me")
+fun getCurrentMember(
+    @CurrentMemberId memberId: Long,
+): ResponseEntity<MemberResponse> {
+    // ...
+}
+```
+
+### 4. 별도 디렉토리
 
 필요에 따라 presentation 레이어 내에 추가적인 디렉토리를 생성할 수 있습니다. 예를 들어, GraphQL API를 위한 디렉토리나 WebSocket 관련 디렉토리를 추가할 수 있습니다.
 각 디렉토리의 하위에 rest 디렉토리와 유사하게 request, response, controller 등의 하위 디렉토리를 포함할 수 있습니다.

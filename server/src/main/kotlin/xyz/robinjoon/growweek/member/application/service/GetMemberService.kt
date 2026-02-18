@@ -13,9 +13,9 @@ class GetMemberService(
     private val memberRepository: MemberRepository,
 ) : GetMemberUseCase {
     @Transactional(readOnly = true)
-    override fun getMember(memberId: MemberId): MemberDto? {
+    override fun getMember(memberId: Long): MemberDto? {
         val member =
-            memberRepository.findAll(MemberQuery.byId(memberId)).items.firstOrNull()
+            memberRepository.findAll(MemberQuery.byId(MemberId(memberId))).items.firstOrNull()
                 ?: return null
 
         return MemberDto.from(member)
