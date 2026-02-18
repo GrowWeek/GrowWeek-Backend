@@ -31,6 +31,19 @@ sealed class TaskApplicationQuery(
                     ),
             )
 
+        fun byMemberId(
+            memberId: Long,
+            cursor: String? = null,
+            size: Int = 20,
+            orderBy: String? = "updatedAt",
+        ): CursorByMemberId =
+            byMemberId(
+                memberId = MemberId(memberId),
+                cursor = cursor,
+                size = size,
+                orderBy = orderBy,
+            )
+
         fun byMemberIdAndWeek(
             memberId: MemberId,
             weekId: WeekId,
@@ -49,6 +62,21 @@ sealed class TaskApplicationQuery(
                     ),
             )
 
+        fun byMemberIdAndWeek(
+            memberId: Long,
+            weekId: String,
+            cursor: String? = null,
+            size: Int = 20,
+            orderBy: String? = "priority",
+        ): CursorByMemberIdAndWeek =
+            byMemberIdAndWeek(
+                memberId = MemberId(memberId),
+                weekId = WeekId(weekId),
+                cursor = cursor,
+                size = size,
+                orderBy = orderBy,
+            )
+
         fun byTaskId(
             taskId: TaskId,
             memberId: MemberId,
@@ -64,6 +92,19 @@ sealed class TaskApplicationQuery(
                         size = size,
                         orderBy = null,
                     ),
+            )
+
+        fun byTaskId(
+            taskId: Long,
+            memberId: Long,
+            cursor: String? = null,
+            size: Int = 1,
+        ): CursorByTaskId =
+            byTaskId(
+                taskId = TaskId(taskId),
+                memberId = MemberId(memberId),
+                cursor = cursor,
+                size = size,
             )
     }
 
@@ -87,6 +128,19 @@ sealed class TaskApplicationQuery(
                     ),
             )
 
+        fun byMemberId(
+            memberId: Long,
+            page: Int = 0,
+            size: Int = 20,
+            orderBy: String? = "updatedAt",
+        ): OffsetByMemberId =
+            byMemberId(
+                memberId = MemberId(memberId),
+                page = page,
+                size = size,
+                orderBy = orderBy,
+            )
+
         fun byMemberIdAndWeek(
             memberId: MemberId,
             weekId: WeekId,
@@ -105,6 +159,21 @@ sealed class TaskApplicationQuery(
                     ),
             )
 
+        fun byMemberIdAndWeek(
+            memberId: Long,
+            weekId: String,
+            page: Int = 0,
+            size: Int = 20,
+            orderBy: String? = "priority",
+        ): OffsetByMemberIdAndWeek =
+            byMemberIdAndWeek(
+                memberId = MemberId(memberId),
+                weekId = WeekId(weekId),
+                page = page,
+                size = size,
+                orderBy = orderBy,
+            )
+
         fun byTaskId(
             taskId: TaskId,
             memberId: MemberId,
@@ -120,6 +189,19 @@ sealed class TaskApplicationQuery(
                         size = size,
                         orderBy = null,
                     ),
+            )
+
+        fun byTaskId(
+            taskId: Long,
+            memberId: Long,
+            page: Int = 0,
+            size: Int = 1,
+        ): OffsetByTaskId =
+            byTaskId(
+                taskId = TaskId(taskId),
+                memberId = MemberId(memberId),
+                page = page,
+                size = size,
             )
     }
 

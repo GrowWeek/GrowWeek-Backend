@@ -3,14 +3,9 @@ package xyz.robinjoon.growweek.task.presentation.rest.controller
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import xyz.robinjoon.growweek.common.domain.MemberId
-import xyz.robinjoon.growweek.common.domain.SensitivityLevel
-import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.task.application.command.TaskApplicationCommand
 import xyz.robinjoon.growweek.task.application.query.TaskApplicationQuery
 import xyz.robinjoon.growweek.task.application.usecase.*
-import xyz.robinjoon.growweek.task.domain.model.TaskStatus
 import xyz.robinjoon.growweek.task.presentation.rest.request.CreateTaskRequest
 import xyz.robinjoon.growweek.task.presentation.rest.request.UpdateTaskRequest
 import xyz.robinjoon.growweek.task.presentation.rest.request.UpdateTaskStatusRequest
@@ -18,7 +13,6 @@ import xyz.robinjoon.growweek.task.presentation.rest.response.PageResponse
 import xyz.robinjoon.growweek.task.presentation.rest.response.TaskResponse
 import xyz.robinjoon.growweek.task.presentation.rest.response.WeeklyTaskResponse
 import xyz.robinjoon.growweek.task.presentation.rest.response.toResponse
-import java.time.LocalDate
 
 /**
  * 할일 관리 API 컨트롤러
@@ -48,14 +42,12 @@ class TaskController(
     ): ResponseEntity<TaskResponse> {
         val command =
             TaskApplicationCommand.CreateTask(
-                memberId = MemberId(userId),
+                memberId = userId,
                 title = request.title,
                 description = request.description,
                 priority = request.priority,
-                dueDate = LocalDate.parse(request.dueDate),
-                sensitivityLevel =
-                    request.sensitivityLevel?.let { SensitivityLevel.valueOf(it) }
-                        ?: SensitivityLevel.NONE,
+                dueDate = request.dueDate,
+                sensitivityLevel = request.sensitivityLevel,
             )
 
         val taskDto = createTaskUseCase.execute(command)
@@ -80,14 +72,14 @@ class TaskController(
     ): ResponseEntity<TaskResponse> {
         val command =
             TaskApplicationCommand.UpdateTask(
-                taskId = TaskId(taskId),
-                memberId = MemberId(userId),
+                taskId = taskId,
+                memberId = userId,
                 title = request.title,
                 description = request.description,
-                status = request.status?.let { TaskStatus.valueOf(it) },
+                status = request.status,
                 priority = request.priority,
-                dueDate = request.dueDate?.let { LocalDate.parse(it) },
-                sensitivityLevel = request.sensitivityLevel?.let { SensitivityLevel.valueOf(it) },
+                dueDate = request.dueDate,
+                sensitivityLevel = request.sensitivityLevel,
             )
 
         val taskDto = updateTaskUseCase.execute(command)
@@ -112,9 +104,9 @@ class TaskController(
     ): ResponseEntity<TaskResponse> {
         val command =
             TaskApplicationCommand.UpdateTaskStatus(
-                taskId = TaskId(taskId),
-                memberId = MemberId(userId),
-                status = TaskStatus.valueOf(request.status),
+                taskId = taskId,
+                memberId = userId,
+                status = request.status,
             )
 
         val taskDto = updateTaskStatusUseCase.execute(command)
@@ -137,8 +129,8 @@ class TaskController(
     ): ResponseEntity<Void> {
         val command =
             TaskApplicationCommand.DeleteTask(
-                taskId = TaskId(taskId),
-                memberId = MemberId(userId),
+                taskId = taskId,
+                memberId = userId,
             )
 
         deleteTaskUseCase.execute(command)
@@ -160,8 +152,8 @@ class TaskController(
     ): ResponseEntity<TaskResponse> {
         val query =
             TaskApplicationQuery.Offset.byTaskId(
-                taskId = TaskId(taskId),
-                memberId = MemberId(userId),
+                taskId = taskId,
+                memberId = userId,
             )
 
         val taskDto =
@@ -191,15 +183,13 @@ class TaskController(
         @RequestParam(required = false) size: Int?,
         @RequestParam(required = false) cursor: String?,
     ): ResponseEntity<WeeklyTaskResponse> {
-        val week = WeekId(weekId)
-
         val weeklyDto =
             if (cursor != null) {
                 // Cursor 기반 페이징
                 val query =
                     TaskApplicationQuery.Cursor.byMemberIdAndWeek(
-                        memberId = MemberId(userId),
-                        weekId = week,
+                        memberId = userId,
+                        weekId = weekId,
                         cursor = cursor,
                         size = size ?: 20,
                     )
@@ -208,8 +198,8 @@ class TaskController(
                 // Offset 기반 페이징
                 val query =
                     TaskApplicationQuery.Offset.byMemberIdAndWeek(
-                        memberId = MemberId(userId),
-                        weekId = week,
+                        memberId = userId,
+                        weekId = weekId,
                         page = page ?: 0,
                         size = size ?: 20,
                     )
@@ -242,7 +232,7 @@ class TaskController(
                 // Cursor 기반 페이징
                 val query =
                     TaskApplicationQuery.Cursor.byMemberId(
-                        memberId = MemberId(userId),
+                        memberId = userId,
                         cursor = cursor,
                         size = size ?: 20,
                     )
@@ -251,7 +241,7 @@ class TaskController(
                 // Offset 기반 페이징
                 val query =
                     TaskApplicationQuery.Offset.byMemberId(
-                        memberId = MemberId(userId),
+                        memberId = userId,
                         page = page ?: 0,
                         size = size ?: 20,
                     )
