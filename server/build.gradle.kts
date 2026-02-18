@@ -78,6 +78,7 @@ dependencies {
     testImplementation("io.kotest:kotest-property:$kotestVersion")
     testImplementation("io.kotest:kotest-extensions-spring:$kotestVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("com.tngtech.archunit:archunit-junit5:1.4.1")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
