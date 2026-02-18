@@ -38,15 +38,15 @@ description: Bounded Context에 새로운 도메인 이벤트 핸들러를 추�
 @Component
 class SomeEventHandler(
     private val someRepository: SomeRepository,
-) : DomainEventHandler<SomeEventPayload> {
+) : DomainEventHandler<SomeEventPayload.Completed> {
 
-    override fun handle(event: DomainEvent<SomeEventPayload>) {
+    override fun handle(event: DomainEvent<SomeEventPayload.Completed>) {
         val payload = event.payload
         // 이벤트 처리 로직
     }
 
     override fun supports(payloadType: KClass<*>): Boolean =
-        payloadType == SomeEventPayload::class
+        payloadType == SomeEventPayload.Completed::class
 }
 ```
 
