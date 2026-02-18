@@ -14,9 +14,12 @@ description: Bounded Context에 새로운 infrastructure 를 추가하거나 수
 ```
 └── infrastructure/
     ├── persistence/
+    ├── event/          # → 별도 skill(event) 참고
     ├── security/
     └── external/
 ```
+
+> **참고**: `event/` 디렉토리의 상세 작성 규칙은 별도의 `add-or-update-event-handler` skill에 정의되어 있습니다. 이벤트 핸들러를 추가하거나 수정할 때는 해당 skill을 사용하세요.
 
 ### 2. persistence 디렉토리
 
