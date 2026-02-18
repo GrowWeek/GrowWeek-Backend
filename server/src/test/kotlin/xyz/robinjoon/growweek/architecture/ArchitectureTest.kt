@@ -56,7 +56,7 @@ class ArchitectureTest {
                 JavaClass.Predicates.resideInAPackage("..presentation.."),
                 JavaClass.Predicates.resideInAPackage("..domain.model.."),
             ).whereLayer("Presentation")
-            .mayOnlyBeAccessedByLayers("Infrastructure")
+            .mayNotBeAccessedByAnyLayer()
             .whereLayer("Application")
             .mayOnlyBeAccessedByLayers("Presentation", "Infrastructure")
             .whereLayer("Domain")
