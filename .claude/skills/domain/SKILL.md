@@ -168,28 +168,37 @@ sealed class TaskQuery(
 
 그 외 도메인의 엔티티나 VO 등은 model 디렉토리에 함께 위치시키며 다음 조건을 따릅니다.
 
-1. 다른 바운디드 컨텍스트에서 사용해야 하는 것들은 common 에 추가합니다.
-    ```kotlin
-        @JvmInline
-        value class MemberId(val value: Long) {
-            init {
-                require(value >= 0) { "MemberId must be greater than or equal to 0" }
-            }
-        }
+1. 다른 바운디드 컨텍스트에서 사용해야 하는 것들은 common 에 추가합니다. 단, **추가 위치는 성격에 따라 구분**합니다:
+
+   **Shared Kernel (`common/domain/`)**: 다음 조건을 **모두** 만족하는 경우에만 배치
+   - 3개 이상의 BC에서 동일한 의미로 사용
+   - 변경 빈도가 매우 낮은 식별자(ID VO) 또는 범용 열거형
+   ```kotlin
+       @JvmInline
+       value class MemberId(val value: Long) {
+           init {
+               require(value >= 0) { "MemberId must be greater than or equal to 0" }
+           }
+       }
+   ```
+   ```
+      ├── common/
+      │   ├── domain/
+      │   │   ├── MemberId.kt      # Shared Kernel (3개+ BC 공유)
    ```
 
-    ```
-       ├── common /
-       │   ├── domain/
-       │   │   ├── MemberId.kt/
-       {bounded-context}/
-       ├── domain/
-       │   ├── model/
-       │   │   ├── command/
-       │   │   └── query/
-       │   ├── repository/
-       │   └── service/
-    ```
+   **BC 간 공유 계약 (`common/contract/{provider-bc}/`)**: 다음 중 하나라도 해당하면 배치
+   - 특정 BC의 도메인 개념을 다른 BC가 소비하기 위한 계약 모델
+   - BC 간 통신 포트 인터페이스
+   - 특정 BC가 발행하는 이벤트 페이로드
+   ```
+      ├── common/
+      │   ├── contract/
+      │   │   ├── task/            # task BC가 제공하는 계약
+      │   │   │   ├── TaskSummary.kt
+      │   │   │   └── TaskSummaryPort.kt
+   ```
+
 2. **common 을 제외한 다른 바운디드 컨텍스트의 도메인 모델**은 참조하지 않도록 합니다.
 
 ### 2. repository 디렉토리

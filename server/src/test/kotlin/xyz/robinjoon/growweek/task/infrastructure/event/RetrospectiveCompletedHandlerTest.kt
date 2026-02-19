@@ -9,9 +9,9 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.OffsetPage
+import xyz.robinjoon.growweek.common.contract.retrospective.RetrospectiveEventPayload
 import xyz.robinjoon.growweek.common.domain.*
 import xyz.robinjoon.growweek.common.event.DefaultDomainEvent
-import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
 import xyz.robinjoon.growweek.task.domain.model.*
 import xyz.robinjoon.growweek.task.domain.model.command.CompletedWeekCommand
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand

@@ -1,4 +1,4 @@
-package xyz.robinjoon.growweek.common.domain
+package xyz.robinjoon.growweek.common.contract.task
 
 enum class TaskSummaryStatus {
     TODO,

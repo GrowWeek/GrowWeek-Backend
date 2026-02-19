@@ -3,7 +3,7 @@ package xyz.robinjoon.growweek.member.application.service
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import xyz.robinjoon.growweek.common.port.MemberTokenPort
+import xyz.robinjoon.growweek.common.contract.member.MemberTokenPort
 import xyz.robinjoon.growweek.member.application.command.MemberApplicationCommand
 import xyz.robinjoon.growweek.member.application.dto.TokenDto
 import xyz.robinjoon.growweek.member.application.usecase.LoginUseCase

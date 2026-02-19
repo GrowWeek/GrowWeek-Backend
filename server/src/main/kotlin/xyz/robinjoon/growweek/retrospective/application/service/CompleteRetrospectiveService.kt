@@ -2,8 +2,8 @@ package xyz.robinjoon.growweek.retrospective.application.service
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import xyz.robinjoon.growweek.common.contract.retrospective.RetrospectiveEventPayload
 import xyz.robinjoon.growweek.common.event.DomainEventPublisher
-import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.application.dto.RetrospectiveDto
 import xyz.robinjoon.growweek.retrospective.application.usecase.CompleteRetrospectiveUseCase

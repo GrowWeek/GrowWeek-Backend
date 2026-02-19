@@ -9,11 +9,11 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import xyz.robinjoon.growweek.common.OffsetPage
+import xyz.robinjoon.growweek.common.contract.task.TaskSummaryPayload
+import xyz.robinjoon.growweek.common.contract.task.TaskSummaryStatus
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
 import xyz.robinjoon.growweek.common.domain.TaskId
-import xyz.robinjoon.growweek.common.domain.TaskSummaryPayload
-import xyz.robinjoon.growweek.common.domain.TaskSummaryStatus
 import xyz.robinjoon.growweek.common.domain.WeekId
 import xyz.robinjoon.growweek.task.domain.model.Priority
 import xyz.robinjoon.growweek.task.domain.model.Task

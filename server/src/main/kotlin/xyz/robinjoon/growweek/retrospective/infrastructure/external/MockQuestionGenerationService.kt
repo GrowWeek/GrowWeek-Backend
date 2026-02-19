@@ -1,8 +1,8 @@
 package xyz.robinjoon.growweek.retrospective.infrastructure.external
 
 import org.springframework.stereotype.Service
-import xyz.robinjoon.growweek.common.domain.TaskSummary
-import xyz.robinjoon.growweek.common.domain.TaskSummaryStatus
+import xyz.robinjoon.growweek.common.contract.task.TaskSummary
+import xyz.robinjoon.growweek.common.contract.task.TaskSummaryStatus
 import xyz.robinjoon.growweek.retrospective.domain.model.QuestionCount
 import xyz.robinjoon.growweek.retrospective.domain.service.QuestionGenerationService
 

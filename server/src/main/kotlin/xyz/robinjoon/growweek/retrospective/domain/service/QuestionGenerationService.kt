@@ -1,6 +1,6 @@
 package xyz.robinjoon.growweek.retrospective.domain.service
 
-import xyz.robinjoon.growweek.common.domain.TaskSummary
+import xyz.robinjoon.growweek.common.contract.task.TaskSummary
 import xyz.robinjoon.growweek.retrospective.domain.model.QuestionCount
 
 /**

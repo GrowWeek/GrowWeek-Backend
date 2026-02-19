@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Service
-import xyz.robinjoon.growweek.common.domain.TaskSummary
-import xyz.robinjoon.growweek.common.domain.TaskSummaryStatus
+import xyz.robinjoon.growweek.common.contract.task.TaskSummary
+import xyz.robinjoon.growweek.common.contract.task.TaskSummaryStatus
 import xyz.robinjoon.growweek.retrospective.domain.model.QuestionCount
 import xyz.robinjoon.growweek.retrospective.domain.service.QuestionGenerationService
 

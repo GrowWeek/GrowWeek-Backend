@@ -151,14 +151,89 @@ xyz.robinjoon.growweek/
 
 ### Common Layer (common/)
 - **역할**: 모든 Bounded Context에서 공유하는 공통 요소
-- **포함 요소**:
-  - 공통 예외 및 에러 핸들러
-  - 공통 유틸리티
-  - 공통 Value Objects
-  - 기반 인터페이스/추상 클래스
-  - 공통 설정 (Security, OpenAPI, Redis 등)
-  - 공통 응답 포맷
-- **하위 구조**: 다른 Bounded Context의 레이어 구조(presentation, application, domain, infrastructure)에서 필요한 것만 만들어서 사용합니다.
+- **두 가지 역할로 명확히 구분**:
+
+| 역할 | 위치 | 내용 |
+|------|------|------|
+| **Shared Kernel** | `common/` (루트 및 기존 패키지) | 모든 BC가 동일하게 사용하는 범용 요소 |
+| **BC 간 공유 계약** | `common/contract/{provider-bc}/` | 특정 BC 간 통신에 필요한 계약 모델/포트 |
+
+- **Shared Kernel (`common/domain/`) 배치 기준** — 다음 조건을 **모두** 만족해야 함:
+  1. 3개 이상의 BC에서 동일한 의미로 사용
+  2. 변경 빈도가 매우 낮고, 변경 시 모든 BC가 동시에 적응
+  3. 식별자(ID VO) 또는 범용 열거형 수준의 단순한 타입
+
+- **BC 간 공유 계약 (`common/contract/{provider-bc}/`) 배치 기준** — 다음 중 **하나라도** 해당:
+  1. 특정 BC의 내부 도메인 개념을 다른 BC가 소비할 수 있도록 변환한 모델 (예: `TaskSummary`)
+  2. 특정 BC 간 통신 인터페이스 (예: `TaskSummaryPort`)
+  3. 특정 BC가 발행하는 이벤트의 페이로드 (예: `RetrospectiveEventPayload`)
+  4. 2개 이하의 BC 사이에서만 사용되며, 해당 BC 내부 변경에 따라 함께 변경될 가능성이 있는 요소
+
+- **하위 구조**:
+
+```
+common/
+├── Page.kt                                    # Shared Kernel
+├── config/                                     # Shared Kernel (횡단 관심사)
+├── domain/                                     # Shared Kernel (범용 식별자/VO)
+│   ├── MemberId.kt
+│   ├── TaskId.kt
+│   ├── WeekId.kt
+│   ├── RetrospectiveId.kt
+│   └── SensitivityLevel.kt
+├── event/                                      # Shared Kernel (이벤트 프레임워크)
+│   ├── DomainEvent.kt
+│   ├── DomainEventHandler.kt
+│   └── DomainEventPublisher.kt
+├── infrastructure/                              # Shared Kernel (공통 인프라)
+│   ├── DomainEventDispatcher.kt
+│   ├── SpringDomainEventPublisher.kt
+│   └── security/
+├── presentation/                                # Shared Kernel (공통 프레젠테이션)
+│   └── security/
+│       └── CurrentMemberId.kt
+└── contract/                                    # BC 간 공유 계약
+    ├── task/                                    # task BC가 제공하는 계약
+    │   ├── TaskSummary.kt
+    │   ├── TaskSummaryPayload.kt
+    │   ├── TaskSummaryStatus.kt
+    │   └── TaskSummaryPort.kt
+    ├── retrospective/                           # retrospective BC가 제공하는 계약
+    │   └── RetrospectiveEventPayload.kt
+    └── member/                                  # member BC가 제공하는 계약
+        └── MemberTokenPort.kt
+```
+
+- **네이밍 규칙**:
+
+| 요소 | 위치 | 네이밍 |
+|------|------|--------|
+| BC 식별자 (ID VO) | `common/domain/` | `{BcName}Id.kt` |
+| 범용 열거형/VO | `common/domain/` | 도메인 언어 그대로 |
+| BC 제공 계약 모델 | `common/contract/{provider-bc}/` | `{BcConcept}.kt` |
+| BC 제공 포트 | `common/contract/{provider-bc}/` | `{BcConcept}Port.kt` |
+| 이벤트 페이로드 | `common/contract/{publisher-bc}/` | `{BcName}EventPayload.kt` |
+
+- **새로운 공유 요소 추가 시 의사결정**:
+
+```
+새로운 공유 요소가 필요한가?
+  │
+  ├─ ID Value Object인가?
+  │   └─ YES → common/domain/{BcName}Id.kt
+  │
+  ├─ 3개+ BC에서 동일 의미로 사용하는 범용 타입인가?
+  │   └─ YES → common/domain/ (Shared Kernel)
+  │
+  ├─ BC 간 통신(조회/이벤트)을 위한 계약 모델인가?
+  │   └─ YES → common/contract/{provider-bc}/
+  │
+  ├─ BC 간 통신을 위한 포트 인터페이스인가?
+  │   └─ YES → common/contract/{provider-bc}/
+  │
+  └─ 기반 프레임워크(이벤트 시스템, 페이징 등)인가?
+      └─ YES → common/event/ 또는 common/ 루트
+```
 
 ## CQRS 패턴 적용
 
