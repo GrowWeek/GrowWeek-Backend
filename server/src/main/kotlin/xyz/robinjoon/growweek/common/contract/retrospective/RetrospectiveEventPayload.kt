@@ -1,4 +1,4 @@
-package xyz.robinjoon.growweek.common.event.payload
+package xyz.robinjoon.growweek.common.contract.retrospective
 
 import xyz.robinjoon.growweek.common.domain.MemberId
 import xyz.robinjoon.growweek.common.domain.RetrospectiveId

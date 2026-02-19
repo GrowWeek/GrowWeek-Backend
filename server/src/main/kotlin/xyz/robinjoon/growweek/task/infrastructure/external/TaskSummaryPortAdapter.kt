@@ -1,10 +1,10 @@
 package xyz.robinjoon.growweek.task.infrastructure.external
 
 import org.springframework.stereotype.Component
-import xyz.robinjoon.growweek.common.domain.TaskSummary
-import xyz.robinjoon.growweek.common.domain.TaskSummaryPayload
-import xyz.robinjoon.growweek.common.domain.TaskSummaryStatus
-import xyz.robinjoon.growweek.common.port.TaskSummaryPort
+import xyz.robinjoon.growweek.common.contract.task.TaskSummary
+import xyz.robinjoon.growweek.common.contract.task.TaskSummaryPayload
+import xyz.robinjoon.growweek.common.contract.task.TaskSummaryPort
+import xyz.robinjoon.growweek.common.contract.task.TaskSummaryStatus
 import xyz.robinjoon.growweek.task.domain.model.Task
 import xyz.robinjoon.growweek.task.domain.model.TaskStatus
 import xyz.robinjoon.growweek.task.domain.model.query.TaskQuery

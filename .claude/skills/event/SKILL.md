@@ -24,10 +24,10 @@ description: Bounded Context에 새로운 도메인 이벤트 핸들러를 추�
 
 이벤트 관련 공통 인터페이스와 구현체는 `common/` 레이어에 위치합니다:
 
-- `common/event/DomainEvent.kt` — 이벤트 래퍼 인터페이스
-- `common/event/DomainEventHandler.kt` — 핸들러 인터페이스
-- `common/event/DomainEventPublisher.kt` — 발행 인터페이스
-- `common/event/payload/` — 이벤트 페이로드 정의
+- `common/event/DomainEvent.kt` — 이벤트 래퍼 인터페이스 (Shared Kernel)
+- `common/event/DomainEventHandler.kt` — 핸들러 인터페이스 (Shared Kernel)
+- `common/event/DomainEventPublisher.kt` — 발행 인터페이스 (Shared Kernel)
+- `common/contract/{publisher-bc}/` — 이벤트 페이로드 정의 (BC 간 공유 계약)
 - `common/infrastructure/DomainEventDispatcher.kt` — 중앙 디스패처 (Spring `@TransactionalEventListener` 기반)
 
 ### 3. 핸들러 작성 규칙
@@ -52,7 +52,14 @@ class SomeEventHandler(
 
 ### 4. 페이로드 작성 규칙
 
-이벤트 페이로드는 `common/event/payload/` 디렉토리에 sealed interface로 정의합니다. 페이로드 필드에는 `common/domain/`의 VO 클래스를 사용합니다.
+이벤트 페이로드는 **발행하는 BC가 제공하는 계약**이므로 `common/contract/{publisher-bc}/` 디렉토리에 sealed interface로 정의합니다. 페이로드 필드에는 `common/domain/`의 VO 클래스를 사용합니다.
+
+```
+common/
+└── contract/
+    └── {publisher-bc}/          # 이벤트를 발행하는 BC 이름
+        └── SomeEventPayload.kt
+```
 
 ```kotlin
 sealed interface SomeEventPayload {

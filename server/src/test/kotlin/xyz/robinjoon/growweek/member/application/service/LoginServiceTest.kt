@@ -8,8 +8,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.springframework.security.crypto.password.PasswordEncoder
 import xyz.robinjoon.growweek.common.OffsetPage
+import xyz.robinjoon.growweek.common.contract.member.MemberTokenPort
 import xyz.robinjoon.growweek.common.domain.MemberId
-import xyz.robinjoon.growweek.common.port.MemberTokenPort
 import xyz.robinjoon.growweek.member.application.command.MemberApplicationCommand
 import xyz.robinjoon.growweek.member.domain.model.*
 import xyz.robinjoon.growweek.member.domain.repository.MemberRepository

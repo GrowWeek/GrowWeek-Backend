@@ -7,9 +7,9 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.runBlocking
+import xyz.robinjoon.growweek.common.contract.task.TaskSummary
+import xyz.robinjoon.growweek.common.contract.task.TaskSummaryStatus
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
-import xyz.robinjoon.growweek.common.domain.TaskSummary
-import xyz.robinjoon.growweek.common.domain.TaskSummaryStatus
 import xyz.robinjoon.growweek.retrospective.domain.model.QuestionCount
 
 class GeminiQuestionGenerationServiceTest :

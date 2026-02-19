@@ -2,10 +2,10 @@ package xyz.robinjoon.growweek.retrospective.application.service
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import xyz.robinjoon.growweek.common.contract.task.TaskSummary
+import xyz.robinjoon.growweek.common.contract.task.TaskSummaryPayload
+import xyz.robinjoon.growweek.common.contract.task.TaskSummaryPort
 import xyz.robinjoon.growweek.common.domain.SensitivityLevel
-import xyz.robinjoon.growweek.common.domain.TaskSummary
-import xyz.robinjoon.growweek.common.domain.TaskSummaryPayload
-import xyz.robinjoon.growweek.common.port.TaskSummaryPort
 import xyz.robinjoon.growweek.retrospective.application.command.RetrospectiveApplicationCommand
 import xyz.robinjoon.growweek.retrospective.application.dto.RetrospectiveDto
 import xyz.robinjoon.growweek.retrospective.application.usecase.GenerateQuestionsUseCase

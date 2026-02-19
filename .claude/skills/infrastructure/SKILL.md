@@ -225,7 +225,10 @@ object TaskTable : LongIdTable("tasks") {
 
 ### 3. external 디렉토리
 
-external 디렉토리에는 OpenFeign 클라이언트를 사용한 외부 서비스 연동 관련 domain/repository 인터페이스의 구현체가 위치합니다. 기능상 필요하지 않다면 이 디렉토리 안에는 파일이 존재하지 않을 수 있습니다. 예를 들어 :
+external 디렉토리에는 OpenFeign 클라이언트를 사용한 외부 서비스 연동 관련 domain/repository 인터페이스의 구현체가 위치합니다. 또한, **BC 간 공유 계약 포트(`common/contract/{provider-bc}/`에 정의된 포트)의 어댑터 구현체**도 이 디렉토리에 위치합니다.
+
+> **포트-어댑터 패턴**: 포트 인터페이스는 `common/contract/{provider-bc}/`에 정의하고, 해당 포트를 구현하는 어댑터는 `{provider-bc}/infrastructure/external/`에 위치합니다.
+> 예: `common/contract/task/TaskSummaryPort.kt` (인터페이스) → `task/infrastructure/external/TaskSummaryPortAdapter.kt` (구현체) 기능상 필요하지 않다면 이 디렉토리 안에는 파일이 존재하지 않을 수 있습니다. 예를 들어 :
 
 ```kotlin
 @FeignClient(name = "notificationService", url = "\${feign.notification-service.url}")

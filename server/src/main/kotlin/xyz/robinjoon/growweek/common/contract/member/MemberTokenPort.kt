@@ -1,4 +1,4 @@
-package xyz.robinjoon.growweek.common.port
+package xyz.robinjoon.growweek.common.contract.member
 
 import xyz.robinjoon.growweek.common.domain.MemberId
 

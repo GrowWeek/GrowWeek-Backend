@@ -2,9 +2,9 @@ package xyz.robinjoon.growweek.task.infrastructure.event
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import xyz.robinjoon.growweek.common.contract.retrospective.RetrospectiveEventPayload
 import xyz.robinjoon.growweek.common.event.DomainEvent
 import xyz.robinjoon.growweek.common.event.DomainEventHandler
-import xyz.robinjoon.growweek.common.event.payload.RetrospectiveEventPayload
 import xyz.robinjoon.growweek.task.domain.model.command.CompletedWeekCommand
 import xyz.robinjoon.growweek.task.domain.model.command.TaskCommand
 import xyz.robinjoon.growweek.task.domain.model.query.TaskQuery
